@@ -79,6 +79,31 @@ body {
   color: #00ff88;
 }
 
+/* Submenu */
+.sidebar nav ul .submenu {
+  list-style: none;
+  padding-left: 15px;
+  display: none;  /* hidden by default */
+}
+
+.sidebar nav ul li:hover .submenu {
+  display: block; /* show on hover */
+}
+
+.sidebar nav ul .submenu li {
+  margin: 8px 0;
+}
+
+.sidebar nav ul .submenu li a {
+  font-size: 0.9rem;
+  color: #bbb;
+}
+
+.sidebar nav ul .submenu li a:hover {
+  color: #00ff88;
+}
+
+
 /* Landing Page */
 .landing {
   margin-left: 240px;
