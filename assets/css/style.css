@@ -33,7 +33,7 @@ body {
   justify-content: space-between;
   position: fixed;
   height: 100%;
-  z-index: 2;
+  overflow-y: auto;
 }
 
 .sidebar .logo {
@@ -52,10 +52,11 @@ body {
 .sidebar nav ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidebar nav ul li {
-  margin: 15px 0;
+  margin: 18px 0;
 }
 
 .sidebar nav ul li a {
@@ -63,6 +64,8 @@ body {
   color: #FCFAF1;
   font-weight: bold;
   transition: color 0.3s;
+  display: block;
+  padding: 5px 0; 
 }
 
 .sidebar nav ul li a:hover,
@@ -71,15 +74,19 @@ body {
 }
 
 .sidebar .social {
+  margin-top: 30px; 
+  padding-top: 15px; 
+  border-top: 1px solid #333; 
   display: flex;
   flex-direction: column;
 }
 
 .sidebar .social a {
   color: #aaa;
-  margin: 5px 0;
+  margin: 8px 0;
   text-decoration: none;
   transition: color 0.3s;
+  display: block;
 }
 
 .sidebar .social a:hover {
