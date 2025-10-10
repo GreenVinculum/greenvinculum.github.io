@@ -9,30 +9,64 @@
 
 <body>
   <!---Navigation--->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="index.html"> Charles Ahn </a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="cv.html">CV</a></li>
-            <li class="nav-item"><a class="nav-link" href="publications.html">Publications</a></li>
-            <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
-          </ul>
-        </div>
+  <aside class="sidebar">
+    <div class="logo"> C </div>
+    <nav>
+      <ul>
+        <li><a href="#about" class="active">About</a></li>
+        <li><a href="#cv">CV</a></li>
+        <li><a href="#publication">Publications</a></li>
+        <li><a href="#projects">Projects</a>
+          <ul class="submenu">
+            <li><a href="#research-projects">Research</a></li>
+            <li><a href="#personal-projects">Personal</a></li>
+        </li>
+      </ul>
+    </nav>
+    <div class="social">
+      <a href="https://github.com/" target="_blank">Github</a>
+      <a href="https://linkedin.com/" target="_blank">LinkedIn</a>
+      <a href="https://youtube.com/" target="_blank">Youtube</a>
     </div>
-  </nav>
-  <!--- Hero Section --->
-  <header class="bg-primary text-white text-center p-5">
-    <h1> Welcome to My Site</h1>
-    <p class="lead">Researcher | Developer | Learner</p>
-  </header>
+  </aside>
   <!--- Main Content --->
-  <div class="container my-5">
-    <h2>Hi, I'm Charles</h2>
-    <p>This is my personal website</p>
-  </div>
-  
+  <main class="content">
+    <section id="home" class="hero">
+      <img src="assets/...." alt="Profile Picture" class="profile-pic">
+      <h1>Hi, I'm <span class="highlight"> Charles Ahn </span></h1>
+      <p>Researcher, Developer, Learner</p>
+    </section>
+   
+    <section id="about">
+      <h2> About Me </h2>
+      <p> Write a bio...coming soon! </p>
+    </section>
+
+    <section id="cv">
+      <h2>CV</h2>
+      <p>Link to cv/details coming soon. </p>
+    </section>
+
+    <section id="publications"> 
+      <h2> Pulications </h2>
+      <ul>
+        <li>Publication 1</li>
+        <li>Publication 2</li>
+      </ul>
+    </section>
+
+    <section id="projects"> 
+      <h2> Projects </h2>
+      <div id="research-projects">
+        <h3> Research Projects </h3>
+        <p> Details on research projects coming soon. </p>
+      </div>
+      <div id="personal-projects">
+        <h3> Personal Projects </h3>
+        <p> Details on personal projects coming soon. </p>
+      </div>  
+    </section>
+  </main>
   <!---Footer--->
   <footer class="bg-dark text-white text-center py-3">
     © 2025 Your Name | Powered by GitHub Pages
