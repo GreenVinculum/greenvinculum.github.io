@@ -1,0 +1,150 @@
+/* Center layout for paper content */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+/* Paper title */
+.paper-header h1 {
+  font-size: 2rem;
+  color: #00ff88;
+  margin-bottom: 15px;
+}
+
+/* Authors */
+.authors p {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+.authors img {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-left: 4px;
+  margin-right: 10px;
+}
+
+.authors a {
+  color: #00ff88;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.authors a:hover {
+  text-decoration: underline;
+}
+
+/* Affiliations */
+.affiliations {
+  font-style: italic;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+/* Publication info */
+.publication {
+  color: #ccc;
+  margin: 15px 0;
+  font-size: 1rem;
+}
+
+/* Links row */
+.links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.links a {
+  color: #111;
+  background-color: #00ff88;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s;
+  font-weight: bold;
+}
+
+.links a:hover {
+  background-color: #00cc6e;
+}
+
+/* Presentation image */
+.presentation img {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.presentation .caption {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Abstract */
+.abstract {
+  margin-top: 40px;
+}
+
+.abstract h2 {
+  color: #00ff88;
+  margin-bottom: 10px;
+}
+
+.abstract p {
+  color: #ddd;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* Slideshow */
+.slideshow {
+  margin-top: 50px;
+}
+
+.slideshow h2 {
+  color: #00ff88;
+  margin-bottom: 15px;
+}
+
+.slides {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.slides img {
+  max-width: 250px;
+  border-radius: 10px;
+  transition: transform 0.3s;
+}
+
+.slides img:hover {
+  transform: scale(1.05);
+}
+
+/* BibTeX */
+.bibtex {
+  margin-top: 60px;
+  text-align: left;
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.bibtex pre {
+  color: #00ff88;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
