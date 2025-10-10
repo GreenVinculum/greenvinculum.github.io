@@ -42,8 +42,8 @@ body {
 }
 
 .sidebar .logo img{
-  max-width: 80%;
-  max-height: 100px; 
+  max-width: 120px;
+  /*max-height: 120px;*/ 
   height: auto;
   width: auto; 
   border-radius: 8px; 
