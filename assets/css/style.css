@@ -1,65 +1,106 @@
-*{
-  margin: 0; 
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Global */
 body {
-  font-family: "Helvetica Neue", Arial, sans-serif; 
-  background-color: #121212
-  color: #e0e0e0; 
-  line-height: 1.6; 
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #121212;
+  color: white;
+  display: flex;
 }
 
-/* Navigation Bar */
-.navbar {
-  background-color: #1b1b1b
-  border-bottom: 2x solid #00ff7f; 
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #1a1a1a;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  height: 100%;
 }
 
-.navbar-brand{
-  color: #00ff7f; 
-  font-weight: bold; 
+.sidebar .logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ff88;
+  margin-bottom: 30px;
 }
 
-.navbar-nav .nav-link{
-  color: #e0e0e0; 
-  transition: color 0.3s ease; 
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
 }
 
-.navbar-nav .nav-link:hover {
-  color: #00ff7f; 
+.sidebar nav ul li {
+  margin: 15px 0;
 }
 
-header {
-  background: linear-gradient(135deg, #0d0d0d, #1e1e1e); 
-  color: #00ff7f; 
-  padding: 3rem 1rem; 
+.sidebar nav ul li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
-header h1{
-  font-size: 2.5 rem; 
+.sidebar nav ul li a:hover,
+.sidebar nav ul li a.active {
+  color: #00ff88;
 }
 
-header p{
-  font-size: 1.2 rem; 
-  color: #a0a0a0; 
+.sidebar .submenu {
+  margin-left: 15px;
 }
 
-/* Links */
-a{
-  color: #00ff7f; 
-  text-decoration: none; 
+.sidebar .social {
+  display: flex;
+  flex-direction: column;
 }
 
-a:hover{
-  text-decoration: underline; 
-  color: #66ffb2; 
+.sidebar .social a {
+  color: #aaa;
+  margin: 5px 0;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-/* Footer */
-footer {
-  background-color: #1b1b1b; 
-  color: #a0a0a0; 
-  border-top: 2px soli #00ff7f; 
+.sidebar .social a:hover {
+  color: #00ff88;
+}
+
+/* Main content */
+.content {
+  margin-left: 240px;
+  padding: 40px;
+  flex: 1;
+}
+
+/* Hero section */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 3px solid #00ff88;
+  margin-bottom: 20px;
+}
+
+.highlight {
+  color: #00ff88;
+}
+
+/* Section styling */
+section {
+  margin-bottom: 80px;
+}
+
+h2 {
+  color: #00ff88;
 }
