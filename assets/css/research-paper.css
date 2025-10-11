@@ -1,0 +1,146 @@
+@import url('theme.css');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.paper-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center; /* centers all inline content */
+}
+
+/* Title + Header */
+.paper-header {
+  margin-bottom: 40px;
+}
+
+.paper-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--accent-color);
+}
+
+/* Authors */
+.paper-authors {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.author-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.author-link:hover {
+  text-decoration: underline;
+}
+
+.orcid {
+  color: #ccc;
+  margin: 0 4px;
+}
+
+/* Affiliations + publication */
+.paper-affiliation,
+.paper-published {
+  font-size: 1rem;
+  color: #bbb;
+  margin: 4px 0;
+}
+
+/* Buttons for links */
+.paper-links {
+  margin-top: 15px;
+}
+
+.paper-btn {
+  color: var(--bg-color);
+  background-color: var(--accent-color);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.paper-btn:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Main image */
+.paper-visual img {
+  width: 80%;
+  max-width: 700px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.figure-label {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Abstract */
+.paper-abstract {
+  margin: 40px 0;
+  text-align: justify;
+}
+
+.paper-abstract h2 {
+  color: var(--accent-color);
+  text-align: center;
+}
+
+/* Slideshow / gallery */
+.paper-gallery h2 {
+  color: var(--accent-color);
+  margin-bottom: 10px;
+}
+
+.slideshow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.slideshow img {
+  width: 30%;
+  min-width: 200px;
+  border-radius: 8px;
+}
+
+/* BibTeX */
+.paper-bibtex {
+  margin-top: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.paper-bibtex pre {
+  color: var(--accent-color);
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 20px;
+  color: #aaa;
+  font-size: 0.9rem;
+  position: relative;
+}
