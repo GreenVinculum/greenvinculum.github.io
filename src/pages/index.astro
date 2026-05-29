@@ -746,12 +746,14 @@ const personJsonLd = {
       const showLiveCanvas = () => {
         wireframeCanvas.classList.remove("hidden");
         wireframeLoop?.classList.add("hidden");
+        wireframeFallback?.classList.add("hidden");
         wireframeRunning = true;
       };
       const showPrebakedLoop = () => {
         if (!wireframeLoop || !loopUrl) return;
         wireframeLoop.classList.remove("hidden");
         wireframeCanvas.classList.add("hidden");
+        wireframeFallback?.classList.add("hidden");
         if (prefersReducedMotion) {
           wireframeLoop.pause();
           wireframeLoop.removeAttribute("src");
