@@ -1256,13 +1256,14 @@
 
 .wireframe-portrait .wireframe-poster {
     grid-area: 1 / 1;
+    z-index: 0;
     pointer-events: none;
 }
 
 .wireframe-portrait canvas {
     grid-area: 1 / 1;
     position: relative;
-    z-index: 1;
+    z-index: 2;
     cursor: grab;
     touch-action: none;
     user-select: none;
@@ -1270,7 +1271,12 @@
 
 .wireframe-portrait .wireframe-loop {
     grid-area: 1 / 1;
+    z-index: 1;
     pointer-events: none;
+}
+
+.wireframe-portrait .wireframe-loop.hidden {
+    z-index: 0;
 }
 
 .wireframe-bake-panel {

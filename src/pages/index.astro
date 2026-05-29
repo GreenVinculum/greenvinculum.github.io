@@ -735,7 +735,7 @@ const personJsonLd = {
           return;
         }
         if (wireframeRunning) return;
-        if (loopUrl) showPrebakedLoop();
+        if (loopUrl && canPlayWebmLoop()) showPrebakedLoop();
         else showPoster();
       };
       if (wireframeBakeMode) {
@@ -760,36 +760,54 @@ const personJsonLd = {
       const showPoster = () => {
         wireframePoster?.classList.remove("hidden");
       };
-      const hidePoster = () => {
-        wireframePoster?.classList.add("hidden");
-      };
       const showLiveCanvas = () => {
         wireframeCanvas.classList.remove("hidden");
         wireframeLoop?.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
-        hidePoster();
         wireframeRunning = true;
       };
+      const canPlayWebmLoop = () => {
+        if (!wireframeLoop) return false;
+        return Boolean(
+          wireframeLoop.canPlayType('video/webm; codecs="vp9"') ||
+          wireframeLoop.canPlayType('video/webm; codecs="vp8"') ||
+          wireframeLoop.canPlayType("video/webm")
+        );
+      };
       const showPrebakedLoop = () => {
-        if (!wireframeLoop || !loopUrl) {
+        if (!wireframeLoop || !loopUrl || !canPlayWebmLoop()) {
           showPoster();
           return;
         }
-        wireframeLoop.classList.remove("hidden");
         wireframeCanvas.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
         showPoster();
+        wireframeLoop.classList.add("hidden");
         if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
         if (prefersReducedMotion) {
           wireframeLoop.pause();
           wireframeLoop.removeAttribute("src");
           return;
         }
+        const revealVideo = () => {
+          if (wireframeLoop.videoWidth > 0 && wireframeLoop.readyState >= 2) {
+            wireframeLoop.classList.remove("hidden");
+          } else {
+            wireframeLoop.classList.add("hidden");
+            showPoster();
+          }
+        };
+        wireframeLoop.onloadeddata = revealVideo;
+        wireframeLoop.onerror = () => {
+          wireframeLoop.classList.add("hidden");
+          showPoster();
+        };
         wireframeLoop.src = loopUrl;
         wireframeLoop.load();
-        wireframeLoop.onplaying = () => hidePoster();
-        wireframeLoop.onerror = () => showPoster();
-        wireframeLoop.play().catch(() => showPoster());
+        wireframeLoop.play().catch(() => {
+          wireframeLoop.classList.add("hidden");
+          showPoster();
+        });
       };
       const downloadBlob = (blob, filename) => {
         const a = document.createElement("a");
@@ -1771,8 +1789,13 @@ const personJsonLd = {
             window.__wireframeOverlayReady = true;
           }
         } else {
+          let publishedLiveCanvas = false;
           const runFrameLoop = () => {
             stepFrame();
+            if (!wireframeBakeMode && !publishedLiveCanvas) {
+              publishedLiveCanvas = true;
+              showLiveCanvas();
+            }
             requestAnimationFrame(runFrameLoop);
           };
           runFrameLoop();
@@ -1791,7 +1814,6 @@ const personJsonLd = {
         if (cachedMesh) {
           if (isLightTheme()) loadPortraitLayer();
           beginWireframeAnimation(cachedMesh.points, cachedMesh.neighbors, cachedMesh.layout);
-          if (!wireframeBakeMode) showLiveCanvas();
           return;
         }
         const portrait = rasterPortraitForMesh(img);
@@ -3133,7 +3155,6 @@ const personJsonLd = {
         if (!wireframeBakeMode) saveMeshCache(src, w, h, points, neighbors, layout);
         if (isLightTheme()) loadPortraitLayer();
         beginWireframeAnimation(points, neighbors, layout);
-        if (!wireframeBakeMode) showLiveCanvas();
       };
 
       const hasKnownExt = /\.(png|jpe?g|webp|gif)$/i.test(src);
@@ -3143,7 +3164,7 @@ const personJsonLd = {
 
       const tryLoad = (idx) => {
         if (idx >= candidates.length) {
-          if (loopUrl && !isLightTheme()) showPrebakedLoop();
+          if (loopUrl && !isLightTheme() && canPlayWebmLoop()) showPrebakedLoop();
           else if (posterUrl) showPoster();
           else renderFallback();
           return;
@@ -3159,11 +3180,10 @@ const personJsonLd = {
         try {
           if (isLightTheme()) loadPortraitLayer();
           beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
-          showLiveCanvas();
           syncWireframePresentation();
         } catch (_) {
           showPoster();
-          if (!isLightTheme() && loopUrl) showPrebakedLoop();
+          if (!isLightTheme() && loopUrl && canPlayWebmLoop()) showPrebakedLoop();
           syncWireframePresentation();
         }
       };
@@ -3192,7 +3212,7 @@ const personJsonLd = {
           return;
         }
         if (!canRunLiveWireframe) {
-          if (!isLightTheme() && loopUrl) showPrebakedLoop();
+          if (!isLightTheme() && loopUrl && canPlayWebmLoop()) showPrebakedLoop();
           else showPoster();
           syncWireframePresentation();
           return;
@@ -3207,13 +3227,13 @@ const personJsonLd = {
           restoreCachedMesh(unpackMesh(idbRaw));
           return;
         }
-        if (!isLightTheme() && loopUrl) showPrebakedLoop();
-        else showPoster();
+        showPoster();
         const loaded = await loadPrebakedMesh();
         if (loaded) return;
         if (src) tryLoad(0);
         else if (!loopUrl) renderFallback();
-        else syncWireframePresentation();
+        else if (!isLightTheme() && canPlayWebmLoop()) showPrebakedLoop();
+        else showPoster();
       };
       const scheduleWireframeStart = () => {
         const kick = () => {
@@ -3244,7 +3264,6 @@ const personJsonLd = {
       } else if (!wireframeBakeMode) {
         showPoster();
         if (isLightTheme() && src) loadPortraitLayer();
-        if (!isLightTheme() && loopUrl) showPrebakedLoop();
         scheduleWireframeStart();
       } else {
         renderFallback();
