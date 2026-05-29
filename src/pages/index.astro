@@ -30,6 +30,16 @@ const personJsonLd = {
         data-poster-url="/media/wireframe-poster.png"
         aria-label="Wireframe profile portrait"
       >
+        <img
+          id="wireframePoster"
+          class="wireframe-poster"
+          src="/media/wireframe-poster.png"
+          alt=""
+          width="760"
+          height="1080"
+          decoding="async"
+          fetchpriority="high"
+        />
         <video
           id="wireframeLoop"
           class="wireframe-loop hidden"
@@ -39,7 +49,7 @@ const personJsonLd = {
           loop
           playsinline
           autoplay
-          preload="none"
+          preload="metadata"
         ></video>
         <canvas id="wireframeCanvas" class="wireframe-canvas-live hidden" width="760" height="1080"></canvas>
         <p id="wireframeFallback" class="wireframe-fallback hidden">
@@ -328,6 +338,7 @@ const personJsonLd = {
     const wireframeRoot = document.getElementById("wireframePortrait");
     const wireframeCanvas = document.getElementById("wireframeCanvas");
     const wireframeLoop = document.getElementById("wireframeLoop");
+    const wireframePoster = document.getElementById("wireframePoster");
     const wireframeFallback = document.getElementById("wireframeFallback");
     if (wireframeRoot && wireframeCanvas) {
       const ctx = wireframeCanvas.getContext("2d");
@@ -720,10 +731,12 @@ const personJsonLd = {
             wireframeLoop.pause();
           }
           if (wireframeRunning) showLiveCanvas();
+          else showPoster();
           return;
         }
         if (wireframeRunning) return;
         if (loopUrl) showPrebakedLoop();
+        else showPoster();
       };
       if (wireframeBakeMode) {
         let bakeSeed = 0x9e3779b9;
@@ -741,29 +754,42 @@ const personJsonLd = {
       const renderFallback = () => {
         wireframeCanvas.classList.add("hidden");
         wireframeLoop?.classList.add("hidden");
+        wireframePoster?.classList.add("hidden");
         wireframeFallback?.classList.remove("hidden");
+      };
+      const showPoster = () => {
+        wireframePoster?.classList.remove("hidden");
+      };
+      const hidePoster = () => {
+        wireframePoster?.classList.add("hidden");
       };
       const showLiveCanvas = () => {
         wireframeCanvas.classList.remove("hidden");
         wireframeLoop?.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
+        hidePoster();
         wireframeRunning = true;
       };
       const showPrebakedLoop = () => {
-        if (!wireframeLoop || !loopUrl) return;
+        if (!wireframeLoop || !loopUrl) {
+          showPoster();
+          return;
+        }
         wireframeLoop.classList.remove("hidden");
         wireframeCanvas.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
+        showPoster();
+        if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
         if (prefersReducedMotion) {
           wireframeLoop.pause();
           wireframeLoop.removeAttribute("src");
-          if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
           return;
         }
-        if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
         wireframeLoop.src = loopUrl;
         wireframeLoop.load();
-        wireframeLoop.play().catch(() => {});
+        wireframeLoop.onplaying = () => hidePoster();
+        wireframeLoop.onerror = () => showPoster();
+        wireframeLoop.play().catch(() => showPoster());
       };
       const downloadBlob = (blob, filename) => {
         const a = document.createElement("a");
@@ -3118,6 +3144,7 @@ const personJsonLd = {
       const tryLoad = (idx) => {
         if (idx >= candidates.length) {
           if (loopUrl && !isLightTheme()) showPrebakedLoop();
+          else if (posterUrl) showPoster();
           else renderFallback();
           return;
         }
@@ -3129,15 +3156,24 @@ const personJsonLd = {
       };
 
       const restoreCachedMesh = (mesh) => {
-        if (isLightTheme()) loadPortraitLayer();
-        beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
-        showLiveCanvas();
-        syncWireframePresentation();
+        try {
+          if (isLightTheme()) loadPortraitLayer();
+          beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
+          showLiveCanvas();
+          syncWireframePresentation();
+        } catch (_) {
+          showPoster();
+          if (!isLightTheme() && loopUrl) showPrebakedLoop();
+          syncWireframePresentation();
+        }
       };
       const loadPrebakedMesh = async () => {
         if (!meshUrl || wireframeBakeMode) return false;
         try {
-          const res = await fetch(meshUrl);
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 45000);
+          const res = await fetch(meshUrl, { signal: controller.signal });
+          clearTimeout(timeout);
           if (!res.ok) return false;
           const data = await res.json();
           if (data.v !== WIREFRAME_MESH_VERSION) return false;
@@ -3150,13 +3186,14 @@ const personJsonLd = {
       const startWireframePortrait = async () => {
         const w = wireframeCanvas.width;
         const h = wireframeCanvas.height;
+        showPoster();
         if (wireframeBakeMode && src) {
           tryLoad(0);
           return;
         }
         if (!canRunLiveWireframe) {
           if (!isLightTheme() && loopUrl) showPrebakedLoop();
-          else renderFallback();
+          else showPoster();
           syncWireframePresentation();
           return;
         }
@@ -3171,11 +3208,12 @@ const personJsonLd = {
           return;
         }
         if (!isLightTheme() && loopUrl) showPrebakedLoop();
+        else showPoster();
         const loaded = await loadPrebakedMesh();
         if (loaded) return;
         if (src) tryLoad(0);
         else if (!loopUrl) renderFallback();
-        syncWireframePresentation();
+        else syncWireframePresentation();
       };
       const scheduleWireframeStart = () => {
         const kick = () => {
@@ -3204,6 +3242,7 @@ const personJsonLd = {
       if (wireframeBakeMode && src) {
         tryLoad(0);
       } else if (!wireframeBakeMode) {
+        showPoster();
         if (isLightTheme() && src) loadPortraitLayer();
         if (!isLightTheme() && loopUrl) showPrebakedLoop();
         scheduleWireframeStart();
