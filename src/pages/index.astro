@@ -954,11 +954,13 @@ const personJsonLd = {
         return { points, neighbors, layout: raw.layout };
       };
       const saveMeshCache = (src, w, h, points, neighbors, layout) => {
+        const packed = packMesh(points, neighbors, layout);
         try {
-          localStorage.setItem(meshCacheKey(src, w, h), JSON.stringify(packMesh(points, neighbors, layout)));
+          localStorage.setItem(meshCacheKey(src, w, h), JSON.stringify(packed));
         } catch (_) {
-          // Ignore quota errors; mesh still renders, just won't cache.
+          // localStorage quota is often too small for the full mesh.
         }
+        saveMeshIdb(meshCacheKey(src, w, h), packed);
       };
       const loadMeshCache = (src, w, h) => {
         try {
@@ -969,6 +971,71 @@ const personJsonLd = {
           return unpackMesh(data);
         } catch (_) {
           return null;
+        }
+      };
+      const MESH_IDB_NAME = "wireframeMeshCache";
+      const MESH_IDB_STORE = "meshes";
+      const openMeshIdb = () =>
+        new Promise((resolve) => {
+          if (typeof indexedDB === "undefined") {
+            resolve(null);
+            return;
+          }
+          const req = indexedDB.open(MESH_IDB_NAME, 1);
+          req.onupgradeneeded = () => {
+            if (!req.result.objectStoreNames.contains(MESH_IDB_STORE)) {
+              req.result.createObjectStore(MESH_IDB_STORE);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+      const saveMeshIdb = async (key, packed) => {
+        const db = await openMeshIdb();
+        if (!db) return;
+        await new Promise((resolve) => {
+          const tx = db.transaction(MESH_IDB_STORE, "readwrite");
+          tx.objectStore(MESH_IDB_STORE).put(packed, key);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        });
+        db.close();
+      };
+      const loadMeshIdb = async (key) => {
+        const db = await openMeshIdb();
+        if (!db) return null;
+        const data = await new Promise((resolve) => {
+          const tx = db.transaction(MESH_IDB_STORE, "readonly");
+          const req = tx.objectStore(MESH_IDB_STORE).get(key);
+          req.onsuccess = () => resolve(req.result ?? null);
+          req.onerror = () => resolve(null);
+        });
+        db.close();
+        return data;
+      };
+      const buildPointSpatialGrid = (pts, cellSize) => {
+        const grid = new Map();
+        const keyOf = (x, y) => `${Math.floor(x / cellSize)},${Math.floor(y / cellSize)}`;
+        for (let i = 0; i < pts.length; i++) {
+          const k = keyOf(pts[i].x, pts[i].y);
+          let bucket = grid.get(k);
+          if (!bucket) {
+            bucket = [];
+            grid.set(k, bucket);
+          }
+          bucket.push(i);
+        }
+        return { grid, keyOf, cellSize };
+      };
+      const forEachNearbyPointIndex = (spatial, x, y, cb) => {
+        const cx = Math.floor(x / spatial.cellSize);
+        const cy = Math.floor(y / spatial.cellSize);
+        for (let gx = cx - 1; gx <= cx + 1; gx++) {
+          for (let gy = cy - 1; gy <= cy + 1; gy++) {
+            const bucket = spatial.grid.get(`${gx},${gy}`);
+            if (!bucket) continue;
+            for (const j of bucket) cb(j);
+          }
         }
       };
 
@@ -1692,10 +1759,6 @@ const personJsonLd = {
           portraitDrawRect = null;
           portraitData = null;
         }
-        const portrait = rasterPortraitForMesh(img);
-        if (!portrait) return;
-        const { drawX, drawY, drawW, drawH, data } = portrait;
-
         const cachedMesh = !wireframeBakeMode ? loadMeshCache(src, w, h) : null;
         if (cachedMesh) {
           if (isLightTheme()) loadPortraitLayer();
@@ -1703,6 +1766,9 @@ const personJsonLd = {
           if (!wireframeBakeMode) showLiveCanvas();
           return;
         }
+        const portrait = rasterPortraitForMesh(img);
+        if (!portrait) return;
+        const { drawX, drawY, drawW, drawH, data } = portrait;
         const offscreen = document.createElement("canvas");
         offscreen.width = w;
         offscreen.height = h;
@@ -2867,6 +2933,7 @@ const personJsonLd = {
 
         // Remove isolated outliers on structure points only.
         const isolateRadiusSq = 8 * 8;
+        const isolateSpatial = buildPointSpatialGrid(points, 8);
         const kept = [];
         for (let i = 0; i < points.length; i++) {
           if (points[i].kind === "ambient") {
@@ -2874,15 +2941,12 @@ const personJsonLd = {
             continue;
           }
           let nearCount = 0;
-          for (let j = 0; j < points.length; j++) {
-            if (i === j) continue;
+          forEachNearbyPointIndex(isolateSpatial, points[i].x, points[i].y, (j) => {
+            if (i === j || nearCount >= 2) return;
             const dx = points[i].x - points[j].x;
             const dy = points[i].y - points[j].y;
-            if (dx * dx + dy * dy <= isolateRadiusSq) {
-              nearCount++;
-              if (nearCount >= 2) break;
-            }
-          }
+            if (dx * dx + dy * dy <= isolateRadiusSq) nearCount++;
+          });
           if (nearCount >= 2 || points[i].strategic || (points[i].edge + points[i].feature) > 0.55) kept.push(points[i]);
         }
         points.length = 0;
@@ -2928,9 +2992,11 @@ const personJsonLd = {
         const armMeshRadiusSq = armMeshRadius * armMeshRadius;
         const ambientRadius = 34;
         const ambientRadiusSq = ambientRadius * ambientRadius;
+        const linkSpatial = buildPointSpatialGrid(points, ambientRadius);
         for (let i = 0; i < points.length; i++) {
-          for (let j = i + 1; j < points.length; j++) {
-            const pi = points[i];
+          const pi = points[i];
+          forEachNearbyPointIndex(linkSpatial, pi.x, pi.y, (j) => {
+            if (j <= i) return;
             const pj = points[j];
             const dx = pi.x - pj.x;
             const dy = pi.y - pj.y;
@@ -2942,52 +3008,51 @@ const personJsonLd = {
               : armPairEarly
                 ? armMeshRadiusSq
                 : meshRadiusSq;
-            if (d2 > maxR) continue;
+            if (d2 > maxR) return;
             if (armPairEarly) {
               neighbors[i].push({ j, d2, ambient: false });
               neighbors[j].push({ j: i, d2, ambient: false });
-              continue;
+              return;
             }
             if (eitherAmbient) {
-              if (Math.random() > 0.42) continue;
+              if (Math.random() > 0.42) return;
               neighbors[i].push({ j, d2, ambient: true });
               neighbors[j].push({ j: i, d2, ambient: true });
-              continue;
+              return;
             }
             const edgeDelta = Math.abs(pi.edge - pj.edge);
             const lumDelta = Math.abs(pi.lum - pj.lum);
             const featureMix = (pi.feature + pj.feature) * 0.5;
             const maxAllowedLumDelta = featureMix > 0.42 ? 0.58 : featureMix > 0.28 ? 0.48 : 0.38;
-            if (edgeDelta < 0.48 && lumDelta < maxAllowedLumDelta) {
-              // Remove lingering hat-top horizontal artifact links.
-              const topHatBandStart = minY + (maxY - minY) * 0.08;
-              const topHatBandEnd = minY + (maxY - minY) * 0.2;
-              const isTopHatBand = pi.baseY >= topHatBandStart && pi.baseY <= topHatBandEnd
-                && pj.baseY >= topHatBandStart && pj.baseY <= topHatBandEnd;
-              const nearHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.35 && Math.abs(pi.baseX - pj.baseX) > 9;
-              if (isTopHatBand && nearHorizontal) continue;
-              // Hard-remove image-top edge artifacts (horizontal line on hat top).
-              const nearImageTopEdge = pi.baseY <= drawY + 4 && pj.baseY <= drawY + 4;
-              const topHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.6 && Math.abs(pi.baseX - pj.baseX) > 7;
-              if (nearImageTopEdge && topHorizontal) continue;
-              // Extra suppression for long horizontal links in upper hat crown.
-              const hatTopHardBand = minY + (maxY - minY) * 0.17;
-              const inHardHatTop = pi.baseY <= hatTopHardBand && pj.baseY <= hatTopHardBand;
-              const longHorizontal = Math.abs(pi.baseY - pj.baseY) < 2.0 && Math.abs(pi.baseX - pj.baseX) > 16;
-              if (inHardHatTop && longHorizontal) continue;
-              const sameZone = pi.zone === pj.zone;
-              const toneNear = Math.abs(pi.toneBand - pj.toneBand) <= 1;
-              const shirtPair = pi.zone === "shirt" && pj.zone === "shirt";
-              const similarRegion = (sameZone && toneNear) || featureMix > 0.56;
-              if (!similarRegion) continue;
-              if (shirtPair) {
-                if (Math.random() > 0.68) continue;
-                if (edgeDelta > 0.38 && featureMix < 0.38) continue;
-              }
-              neighbors[i].push({ j, d2, ambient: false });
-              neighbors[j].push({ j: i, d2, ambient: false });
+            if (edgeDelta >= 0.48 || lumDelta >= maxAllowedLumDelta) return;
+            // Remove lingering hat-top horizontal artifact links.
+            const topHatBandStart = minY + (maxY - minY) * 0.08;
+            const topHatBandEnd = minY + (maxY - minY) * 0.2;
+            const isTopHatBand = pi.baseY >= topHatBandStart && pi.baseY <= topHatBandEnd
+              && pj.baseY >= topHatBandStart && pj.baseY <= topHatBandEnd;
+            const nearHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.35 && Math.abs(pi.baseX - pj.baseX) > 9;
+            if (isTopHatBand && nearHorizontal) return;
+            // Hard-remove image-top edge artifacts (horizontal line on hat top).
+            const nearImageTopEdge = pi.baseY <= drawY + 4 && pj.baseY <= drawY + 4;
+            const topHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.6 && Math.abs(pi.baseX - pj.baseX) > 7;
+            if (nearImageTopEdge && topHorizontal) return;
+            // Extra suppression for long horizontal links in upper hat crown.
+            const hatTopHardBand = minY + (maxY - minY) * 0.17;
+            const inHardHatTop = pi.baseY <= hatTopHardBand && pj.baseY <= hatTopHardBand;
+            const longHorizontal = Math.abs(pi.baseY - pj.baseY) < 2.0 && Math.abs(pi.baseX - pj.baseX) > 16;
+            if (inHardHatTop && longHorizontal) return;
+            const sameZone = pi.zone === pj.zone;
+            const toneNear = Math.abs(pi.toneBand - pj.toneBand) <= 1;
+            const shirtPair = pi.zone === "shirt" && pj.zone === "shirt";
+            const similarRegion = (sameZone && toneNear) || featureMix > 0.56;
+            if (!similarRegion) return;
+            if (shirtPair) {
+              if (Math.random() > 0.68) return;
+              if (edgeDelta > 0.38 && featureMix < 0.38) return;
             }
-          }
+            neighbors[i].push({ j, d2, ambient: false });
+            neighbors[j].push({ j: i, d2, ambient: false });
+          });
           neighbors[i].sort((a, b) => a.d2 - b.d2);
           const maxLinks = points[i].kind === "ambient"
             ? 3
@@ -3061,6 +3126,12 @@ const personJsonLd = {
         img.src = candidates[idx];
       };
 
+      const restoreCachedMesh = (mesh) => {
+        if (isLightTheme()) loadPortraitLayer();
+        beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
+        showLiveCanvas();
+        syncWireframePresentation();
+      };
       const loadPrebakedMesh = async () => {
         if (!meshUrl || wireframeBakeMode || !canRunLiveWireframe) return false;
         try {
@@ -3068,14 +3139,46 @@ const personJsonLd = {
           if (!res.ok) return false;
           const data = await res.json();
           if (data.v !== WIREFRAME_MESH_VERSION) return false;
-          const mesh = unpackMesh(data);
-          beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
-          loadPortraitLayer();
-          showLiveCanvas();
-          syncWireframePresentation();
+          restoreCachedMesh(unpackMesh(data));
           return true;
         } catch (_) {
           return false;
+        }
+      };
+      const startWireframePortrait = async () => {
+        const w = wireframeCanvas.width;
+        const h = wireframeCanvas.height;
+        if (wireframeBakeMode && src) {
+          tryLoad(0);
+          return;
+        }
+        if (canRunLiveWireframe) {
+          const cached = loadMeshCache(src, w, h);
+          if (cached) {
+            restoreCachedMesh(cached);
+            return;
+          }
+          const idbRaw = await loadMeshIdb(meshCacheKey(src, w, h));
+          if (idbRaw?.v === WIREFRAME_MESH_VERSION) {
+            restoreCachedMesh(unpackMesh(idbRaw));
+            return;
+          }
+        }
+        if (!isLightTheme() && loopUrl) showPrebakedLoop();
+        const loaded = await loadPrebakedMesh();
+        if (loaded) return;
+        if (src) tryLoad(0);
+        else if (!loopUrl) renderFallback();
+        syncWireframePresentation();
+      };
+      const scheduleWireframeStart = () => {
+        const kick = () => {
+          startWireframePortrait();
+        };
+        if (typeof requestIdleCallback === "function") {
+          requestIdleCallback(kick, { timeout: 900 });
+        } else {
+          setTimeout(kick, 16);
         }
       };
 
@@ -3095,16 +3198,12 @@ const personJsonLd = {
       if (wireframeBakeMode && src) {
         tryLoad(0);
       } else if (!wireframeBakeMode) {
-        loadPrebakedMesh().then((loaded) => {
-          if (!loaded && src) tryLoad(0);
-          else if (!loaded && !loopUrl) renderFallback();
-          syncWireframePresentation();
-        });
         if (isLightTheme() && src) loadPortraitLayer();
+        if (!isLightTheme() && loopUrl) showPrebakedLoop();
+        scheduleWireframeStart();
       } else {
         renderFallback();
       }
-      syncWireframePresentation();
     }
   </script>
 </BaseLayout>
