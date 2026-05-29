@@ -49,7 +49,7 @@ const personJsonLd = {
           loop
           playsinline
           autoplay
-          preload="metadata"
+          preload="auto"
         ></video>
         <canvas id="wireframeCanvas" class="wireframe-canvas-live hidden" width="760" height="1080"></canvas>
         <p id="wireframeFallback" class="wireframe-fallback hidden">
@@ -735,7 +735,7 @@ const personJsonLd = {
           return;
         }
         if (wireframeRunning) return;
-        if (loopUrl && canPlayWebmLoop()) showPrebakedLoop();
+        if (loopUrl && canPlayWebmLoop() && !prefersReducedMotion) showPrebakedLoop();
         else showPoster();
       };
       if (wireframeBakeMode) {
@@ -746,25 +746,31 @@ const personJsonLd = {
         };
       }
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const canRunLiveWireframe =
-        !wireframeBakeMode &&
-        !prefersReducedMotion &&
-        (navigator.hardwareConcurrency ?? 2) >= 4 &&
-        (!(navigator).deviceMemory || (navigator).deviceMemory >= 4);
+      const canRunLiveWireframe = !wireframeBakeMode && !prefersReducedMotion;
+      let wireframeVideoActive = false;
       const renderFallback = () => {
         wireframeCanvas.classList.add("hidden");
         wireframeLoop?.classList.add("hidden");
-        wireframePoster?.classList.add("hidden");
+        wireframePoster?.classList.remove("hidden");
         wireframeFallback?.classList.remove("hidden");
+        wireframeRunning = false;
+        wireframeVideoActive = false;
       };
       const showPoster = () => {
-        wireframePoster?.classList.remove("hidden");
+        if (!wireframeRunning && !wireframeVideoActive) {
+          wireframePoster?.classList.remove("hidden");
+        }
+      };
+      const hidePoster = () => {
+        wireframePoster?.classList.add("hidden");
       };
       const showLiveCanvas = () => {
         wireframeCanvas.classList.remove("hidden");
         wireframeLoop?.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
+        hidePoster();
         wireframeRunning = true;
+        wireframeVideoActive = false;
       };
       const canPlayWebmLoop = () => {
         if (!wireframeLoop) return false;
@@ -775,39 +781,40 @@ const personJsonLd = {
         );
       };
       const showPrebakedLoop = () => {
-        if (!wireframeLoop || !loopUrl || !canPlayWebmLoop()) {
+        if (!wireframeLoop || !loopUrl || prefersReducedMotion) {
+          showPoster();
+          return;
+        }
+        if (!canPlayWebmLoop()) {
           showPoster();
           return;
         }
         wireframeCanvas.classList.add("hidden");
         wireframeFallback?.classList.add("hidden");
-        showPoster();
-        wireframeLoop.classList.add("hidden");
+        wireframeLoop.classList.remove("hidden");
+        wireframeLoop.muted = true;
+        wireframeLoop.playsInline = true;
+        wireframeLoop.loop = true;
         if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
-        if (prefersReducedMotion) {
-          wireframeLoop.pause();
-          wireframeLoop.removeAttribute("src");
-          return;
-        }
-        const revealVideo = () => {
-          if (wireframeLoop.videoWidth > 0 && wireframeLoop.readyState >= 2) {
-            wireframeLoop.classList.remove("hidden");
-          } else {
-            wireframeLoop.classList.add("hidden");
-            showPoster();
-          }
+        const markVideoPlaying = () => {
+          wireframeVideoActive = true;
+          hidePoster();
         };
-        wireframeLoop.onloadeddata = revealVideo;
-        wireframeLoop.onerror = () => {
+        const markVideoFailed = () => {
+          wireframeVideoActive = false;
           wireframeLoop.classList.add("hidden");
-          showPoster();
+          if (!wireframeRunning) showPoster();
         };
-        wireframeLoop.src = loopUrl;
+        const tryPlay = () => {
+          wireframeLoop.play().then(markVideoPlaying).catch(markVideoFailed);
+        };
+        wireframeLoop.onloadeddata = tryPlay;
+        wireframeLoop.onplaying = markVideoPlaying;
+        wireframeLoop.onerror = markVideoFailed;
+        if (wireframeLoop.src !== loopUrl) wireframeLoop.src = loopUrl;
         wireframeLoop.load();
-        wireframeLoop.play().catch(() => {
-          wireframeLoop.classList.add("hidden");
-          showPoster();
-        });
+        if (wireframeLoop.readyState >= 2) tryPlay();
+        else tryPlay();
       };
       const downloadBlob = (blob, filename) => {
         const a = document.createElement("a");
@@ -991,11 +998,13 @@ const personJsonLd = {
           toneBand: Math.max(0, Math.min(3, Math.floor(row[2] * 4))),
         }));
         const neighbors = raw.nbrs.map((list, i) =>
-          list.map(([j, amb]) => {
-            const dx = points[i].baseX - points[j].baseX;
-            const dy = points[i].baseY - points[j].baseY;
-            return { j, d2: dx * dx + dy * dy, ambient: !!amb };
-          })
+          list
+            .filter(([j]) => Number.isInteger(j) && j >= 0 && j < points.length && j !== i)
+            .map(([j, amb]) => {
+              const dx = points[i].baseX - points[j].baseX;
+              const dy = points[i].baseY - points[j].baseY;
+              return { j, d2: dx * dx + dy * dy, ambient: !!amb };
+            })
         );
         return { points, neighbors, layout: raw.layout };
       };
@@ -1290,22 +1299,27 @@ const personJsonLd = {
             scale: depthScale,
           };
         };
-        const restProjected = points.map((p) => {
-          const savedDriftX = p.driftX;
-          const savedDriftY = p.driftY;
-          const savedRepulseX = p.repulseX;
-          const savedRepulseY = p.repulseY;
-          p.driftX = 0;
-          p.driftY = 0;
-          p.repulseX = 0;
-          p.repulseY = 0;
-          const proj = rotateAndProject(p, 0, 286, 0, 0, 0);
-          p.driftX = savedDriftX;
-          p.driftY = savedDriftY;
-          p.repulseX = savedRepulseX;
-          p.repulseY = savedRepulseY;
-          return proj;
-        });
+        let restProjected = null;
+        const getRestProjected = () => {
+          if (restProjected) return restProjected;
+          restProjected = points.map((p) => {
+            const savedDriftX = p.driftX;
+            const savedDriftY = p.driftY;
+            const savedRepulseX = p.repulseX;
+            const savedRepulseY = p.repulseY;
+            p.driftX = 0;
+            p.driftY = 0;
+            p.repulseX = 0;
+            p.repulseY = 0;
+            const proj = rotateAndProject(p, 0, 286, 0, 0, 0);
+            p.driftX = savedDriftX;
+            p.driftY = savedDriftY;
+            p.repulseX = savedRepulseX;
+            p.repulseY = savedRepulseY;
+            return proj;
+          });
+          return restProjected;
+        };
         const getCanvasPoint = (event) => {
           const rect = wireframeCanvas.getBoundingClientRect();
           const x = ((event.clientX - rect.left) / rect.width) * w;
@@ -1677,7 +1691,7 @@ const personJsonLd = {
               buildPortraitWarpGrid(warpRect),
               points,
               projected,
-              restProjected
+              getRestProjected()
             );
           }
 
@@ -1789,13 +1803,9 @@ const personJsonLd = {
             window.__wireframeOverlayReady = true;
           }
         } else {
-          let publishedLiveCanvas = false;
+          showLiveCanvas();
           const runFrameLoop = () => {
             stepFrame();
-            if (!wireframeBakeMode && !publishedLiveCanvas) {
-              publishedLiveCanvas = true;
-              showLiveCanvas();
-            }
             requestAnimationFrame(runFrameLoop);
           };
           runFrameLoop();
@@ -3182,21 +3192,25 @@ const personJsonLd = {
           beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
           syncWireframePresentation();
         } catch (_) {
-          showPoster();
-          if (!isLightTheme() && loopUrl && canPlayWebmLoop()) showPrebakedLoop();
-          syncWireframePresentation();
+          wireframeRunning = false;
+          wireframeCanvas.classList.add("hidden");
+          if (!isLightTheme() && loopUrl) showPrebakedLoop();
+          else showPoster();
         }
       };
       const loadPrebakedMesh = async () => {
-        if (!meshUrl || wireframeBakeMode) return false;
+        if (!meshUrl || wireframeBakeMode || !canRunLiveWireframe) return false;
         try {
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 45000);
+          const timeout = setTimeout(() => controller.abort(), 90000);
           const res = await fetch(meshUrl, { signal: controller.signal });
           clearTimeout(timeout);
           if (!res.ok) return false;
-          const data = await res.json();
+          const text = await res.text();
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          const data = JSON.parse(text);
           if (data.v !== WIREFRAME_MESH_VERSION) return false;
+          await new Promise((resolve) => requestAnimationFrame(resolve));
           restoreCachedMesh(unpackMesh(data));
           return true;
         } catch (_) {
@@ -3207,16 +3221,14 @@ const personJsonLd = {
         const w = wireframeCanvas.width;
         const h = wireframeCanvas.height;
         showPoster();
+        if (!isLightTheme() && loopUrl && !prefersReducedMotion) {
+          showPrebakedLoop();
+        }
         if (wireframeBakeMode && src) {
           tryLoad(0);
           return;
         }
-        if (!canRunLiveWireframe) {
-          if (!isLightTheme() && loopUrl && canPlayWebmLoop()) showPrebakedLoop();
-          else showPoster();
-          syncWireframePresentation();
-          return;
-        }
+        if (!canRunLiveWireframe) return;
         const cached = loadMeshCache(src, w, h);
         if (cached) {
           restoreCachedMesh(cached);
@@ -3227,23 +3239,13 @@ const personJsonLd = {
           restoreCachedMesh(unpackMesh(idbRaw));
           return;
         }
-        showPoster();
         const loaded = await loadPrebakedMesh();
         if (loaded) return;
         if (src) tryLoad(0);
-        else if (!loopUrl) renderFallback();
-        else if (!isLightTheme() && canPlayWebmLoop()) showPrebakedLoop();
-        else showPoster();
+        else if (!wireframeVideoActive && !loopUrl) renderFallback();
       };
       const scheduleWireframeStart = () => {
-        const kick = () => {
-          startWireframePortrait();
-        };
-        if (typeof requestIdleCallback === "function") {
-          requestIdleCallback(kick, { timeout: 900 });
-        } else {
-          setTimeout(kick, 16);
-        }
+        startWireframePortrait();
       };
 
       window.addEventListener("theme:changed", async () => {
@@ -3264,6 +3266,7 @@ const personJsonLd = {
       } else if (!wireframeBakeMode) {
         showPoster();
         if (isLightTheme() && src) loadPortraitLayer();
+        if (!isLightTheme() && loopUrl && !prefersReducedMotion) showPrebakedLoop();
         scheduleWireframeStart();
       } else {
         renderFallback();

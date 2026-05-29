@@ -1,34 +1,208 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { galleryImages } from "../data/gallery";
+
+/** Scatter poses — cycles when there are more photos than entries. */
+const polaroidPoses = [
+  { rot: -9, left: "4%", top: "0", z: 2 },
+  { rot: 7, left: "50%", top: "1.5rem", z: 3 },
+  { rot: -5, left: "18%", top: "21rem", z: 1 },
+  { rot: 11, left: "54%", top: "19rem", z: 4 },
+  { rot: -12, left: "32%", top: "9rem", z: 2 },
+  { rot: 4, left: "8%", top: "16rem", z: 3 },
+];
 ---
 
 <BaseLayout title="Gallery" sideBarActiveItemID="gallery">
-  <div class="mb-8">
+  <div class="mb-6">
     <h1 class="text-3xl font-bold mb-2">Gallery</h1>
-    <p class="text-base-content/75 max-w-2xl">Photos and image work. Add files to <code class="text-sm">public/gallery/</code> and update <code class="text-sm">src/data/gallery.ts</code>.</p>
+    <p class="text-base-content/75 max-w-2xl">Photos from events and demos. Add images to <code class="text-sm">public/gallery/</code>; optional captions in <code class="text-sm">public/gallery/gallery.json</code>.</p>
   </div>
 
-  <ul class="gallery-grid">
-    {
-      galleryImages.map((item) => (
-        <li class:list={["gallery-grid__item", item.wide && "gallery-grid__item--wide"]}>
-          <figure class="gallery-card">
-            <a class="gallery-card__link" href={item.src} target="_blank" rel="noopener noreferrer">
-              <img
-                class="gallery-card__img"
-                src={item.src}
-                alt={item.alt}
-                loading="lazy"
-                decoding="async"
-                width={item.wide ? 900 : 480}
-                height={item.wide ? 520 : 480}
-              />
-            </a>
-            {item.caption && <figcaption class="gallery-card__caption">{item.caption}</figcaption>}
+  {galleryImages.length === 0 ? (
+    <p class="text-base-content/70">No images yet — add files to <code class="text-sm">public/gallery/</code>.</p>
+  ) : (
+    <>
+      <div class="gallery-scatter" id="galleryScatter">
+        <ul class="gallery-scatter__pile" aria-label="Photo gallery">
+          {
+            galleryImages.map((item, index) => {
+              const pose = polaroidPoses[index % polaroidPoses.length];
+              return (
+                <li
+                  class="gallery-polaroid"
+                  style={`--pol-rot: ${pose.rot}deg; --pol-left: ${pose.left}; --pol-top: ${pose.top}; --pol-z: ${pose.z};`}
+                >
+                  <figure class="gallery-polaroid__frame">
+                    <button
+                      type="button"
+                      class="gallery-polaroid__link"
+                      data-gallery-open
+                      data-gallery-index={index}
+                      data-src={item.src}
+                      data-alt={item.alt}
+                      data-caption={item.caption ?? ""}
+                      aria-label={`View ${item.alt}`}
+                    >
+                      <img
+                        class="gallery-polaroid__photo"
+                        src={item.src}
+                        alt={item.alt}
+                        loading="lazy"
+                        decoding="async"
+                        width={320}
+                        height={320}
+                      />
+                    </button>
+                    {item.caption && (
+                      <figcaption class="gallery-polaroid__caption">{item.caption}</figcaption>
+                    )}
+                  </figure>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+
+      <div class="gallery-lightbox" id="galleryLightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo preview">
+        <button type="button" class="gallery-lightbox__backdrop" data-gallery-close aria-label="Close preview"></button>
+        {galleryImages.length > 1 && (
+          <>
+            <button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--prev" data-gallery-prev aria-label="Previous photo">‹</button>
+            <button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--next" data-gallery-next aria-label="Next photo">›</button>
+          </>
+        )}
+        <div class="gallery-lightbox__stage" id="galleryLightboxStage">
+          <button type="button" class="gallery-lightbox__close" data-gallery-close aria-label="Close preview">×</button>
+          <figure class="gallery-polaroid__frame gallery-lightbox__frame">
+            <img class="gallery-polaroid__photo gallery-lightbox__photo" id="galleryLightboxImg" alt="" />
+            <figcaption class="gallery-polaroid__caption gallery-lightbox__caption" id="galleryLightboxCaption"></figcaption>
           </figure>
-        </li>
-      ))
-    }
-  </ul>
+          {galleryImages.length > 1 && (
+            <p class="gallery-lightbox__counter" id="galleryLightboxCounter" aria-live="polite"></p>
+          )}
+        </div>
+      </div>
+    </>
+  )}
+
+  {galleryImages.length > 0 && (
+    <script define:vars={{ galleryItems: galleryImages.map((item) => ({ src: item.src, alt: item.alt, caption: item.caption ?? "" })) }}>
+      const scatter = document.getElementById("galleryScatter");
+      const lightbox = document.getElementById("galleryLightbox");
+      const lightboxStage = document.getElementById("galleryLightboxStage");
+      const lightboxImg = document.getElementById("galleryLightboxImg");
+      const lightboxCaption = document.getElementById("galleryLightboxCaption");
+      const lightboxCounter = document.getElementById("galleryLightboxCounter");
+      if (scatter && lightbox && lightboxStage && lightboxImg && lightboxCaption) {
+        let lastTrigger = null;
+        let selectedPolaroid = null;
+        let currentIndex = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const SWIPE_THRESHOLD = 50;
+
+        const polaroids = () => scatter.querySelectorAll(".gallery-polaroid");
+
+        const applySlide = (index, animDir = 0) => {
+          if (!galleryItems.length) return;
+          currentIndex = (index + galleryItems.length) % galleryItems.length;
+          const item = galleryItems[currentIndex];
+          lightboxStage.classList.remove("is-slide-left", "is-slide-right");
+          if (animDir !== 0) {
+            void lightboxStage.offsetWidth;
+            lightboxStage.classList.add(animDir > 0 ? "is-slide-left" : "is-slide-right");
+          }
+          lightboxImg.src = item.src;
+          lightboxImg.alt = item.alt;
+          lightboxCaption.textContent = item.caption;
+          lightboxCaption.hidden = !item.caption;
+          if (lightboxCounter) {
+            lightboxCounter.textContent = `${currentIndex + 1} / ${galleryItems.length}`;
+          }
+          polaroids().forEach((node) => node.classList.remove("is-selected"));
+          const activePolaroid = polaroids()[currentIndex];
+          activePolaroid?.classList.add("is-selected");
+          selectedPolaroid = activePolaroid;
+          lastTrigger = scatter.querySelector(`[data-gallery-index="${currentIndex}"]`);
+        };
+
+        const goNext = () => applySlide(currentIndex + 1, 1);
+        const goPrev = () => applySlide(currentIndex - 1, -1);
+
+        const openLightbox = (trigger) => {
+          const index = Number(trigger.getAttribute("data-gallery-index"));
+          if (Number.isNaN(index)) return;
+          applySlide(index, 0);
+          scatter.classList.add("is-dimmed");
+          lightbox.hidden = false;
+          lightbox.setAttribute("aria-hidden", "false");
+          document.body.classList.add("gallery-lightbox-open");
+          requestAnimationFrame(() => lightbox.classList.add("is-open"));
+          lightbox.querySelector(".gallery-lightbox__close")?.focus();
+        };
+
+        const closeLightbox = () => {
+          lightbox.classList.remove("is-open");
+          scatter.classList.remove("is-dimmed");
+          selectedPolaroid?.classList.remove("is-selected");
+          selectedPolaroid = null;
+          document.body.classList.remove("gallery-lightbox-open");
+          window.setTimeout(() => {
+            if (!lightbox.classList.contains("is-open")) {
+              lightbox.hidden = true;
+              lightbox.setAttribute("aria-hidden", "true");
+              lightboxImg.removeAttribute("src");
+              lastTrigger?.focus();
+            }
+          }, 380);
+        };
+
+        scatter.querySelectorAll("[data-gallery-open]").forEach((btn) => {
+          btn.addEventListener("click", () => openLightbox(btn));
+        });
+        lightbox.querySelectorAll("[data-gallery-close]").forEach((el) => {
+          el.addEventListener("click", closeLightbox);
+        });
+        lightbox.querySelector("[data-gallery-prev]")?.addEventListener("click", (event) => {
+          event.stopPropagation();
+          goPrev();
+        });
+        lightbox.querySelector("[data-gallery-next]")?.addEventListener("click", (event) => {
+          event.stopPropagation();
+          goNext();
+        });
+
+        lightboxStage.addEventListener(
+          "touchstart",
+          (event) => {
+            touchStartX = event.changedTouches[0].clientX;
+            touchStartY = event.changedTouches[0].clientY;
+          },
+          { passive: true }
+        );
+        lightboxStage.addEventListener(
+          "touchend",
+          (event) => {
+            if (galleryItems.length < 2) return;
+            const dx = event.changedTouches[0].clientX - touchStartX;
+            const dy = event.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+            if (dx < 0) goNext();
+            else goPrev();
+          },
+          { passive: true }
+        );
+
+        document.addEventListener("keydown", (event) => {
+          if (!lightbox.classList.contains("is-open")) return;
+          if (event.key === "Escape") closeLightbox();
+          if (galleryItems.length < 2) return;
+          if (event.key === "ArrowRight") goNext();
+          if (event.key === "ArrowLeft") goPrev();
+        });
+      }
+    </script>
+  )}
 </BaseLayout>
