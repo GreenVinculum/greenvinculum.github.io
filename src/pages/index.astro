@@ -1,25 +1,89 @@
----
+﻿---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HorizontalCard from "../components/HorizontalCard.astro";
-import { getCollection } from "astro:content";
-import createSlug from "../lib/createSlug"
-
-const posts = (await getCollection("blog")).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const last_posts = posts.slice(0, 3);
+import NerveTimeline from "../components/NerveTimeline.astro";
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Charles Ahn",
+  url: "https://greenvinculum.github.io/",
+  jobTitle: "PhD Student in Computer Science",
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "George Mason University"
+  },
+  sameAs: [
+    "https://twitter.com/"
+  ]
+};
 ---
 
-<BaseLayout sideBarActiveItemID="home">
+<BaseLayout sideBarActiveItemID="home" jsonLd={personJsonLd}>
   <div class="pb-12 mt-5">
-    <div class="text-xl py-1">Hey there 👋</div>
-    <!-- Gradient effect --> 
-    <div class="text-5xl font-bold bg-gradient-to-r from-lime-500 to-purple-700 bg-clip-text text-transparent">I'm Charles Ahn</div>
+    <div class="landing-photo-block">
+      <div
+        class="wireframe-portrait"
+        id="wireframePortrait"
+        data-source="/images/profile"
+        data-light-portrait="/images/profile-inverted"
+        data-mesh-url="/data/wireframe-mesh.json"
+        data-loop-url="/media/wireframe-loop.webm"
+        data-poster-url="/media/wireframe-poster.png"
+        aria-label="Wireframe profile portrait"
+      >
+        <video
+          id="wireframeLoop"
+          class="wireframe-loop hidden"
+          width="760"
+          height="1080"
+          muted
+          loop
+          playsinline
+          autoplay
+          preload="none"
+        ></video>
+        <canvas id="wireframeCanvas" class="wireframe-canvas-live hidden" width="760" height="1080"></canvas>
+        <p id="wireframeFallback" class="wireframe-fallback hidden">
+          Add your portrait to <code>/public/images/profile.png</code> or <code>/public/images/profile.jpg</code>
+        </p>
+      </div>
+    </div>
+    <div class="text-xl py-1">Hey there</div>
+    <div class="font-bold leading-tight">
+      <span class="text-3xl md:text-4xl text-base-content align-middle">I'm </span>
+      <span class="glitch-name-wrap align-middle">
+      <span class="glitch-name hero-name align-middle" data-text="Charles Ahn">
+        <span class="glitch-char glitch-char-delay-c" data-char="C" style="--char-i:0">C</span><span class="glitch-char glitch-char-delay-h glitch-char-aggressive" data-char="h" style="--char-i:1">h<span aria-hidden="true" class="glitch-char-third">h</span></span><span class="glitch-char" data-char="a" style="--char-i:2">a</span><span class="glitch-char glitch-char-aggressive" data-char="r" style="--char-i:3">r<span aria-hidden="true" class="glitch-char-third">r</span></span><span class="glitch-char" data-char="l" style="--char-i:4">l</span><span class="glitch-char" data-char="e" style="--char-i:5">e</span><span class="glitch-char" data-char="s" style="--char-i:6">s</span><span class="glitch-char" data-char=" " style="--char-i:7">&nbsp;</span><span class="glitch-char glitch-char-survivor-a" data-char="A" style="--char-i:8">A</span><span class="glitch-char glitch-char-aggressive" data-char="h" style="--char-i:9">h<span aria-hidden="true" class="glitch-char-third">h</span></span><span class="glitch-char glitch-char-delay-n" data-char="n" style="--char-i:10">n</span>
+        <span aria-hidden="true" class="glitch-tape-smear">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-pixel-noise">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-static-lines">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-vhs-scanlines">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-film-grain">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-film-dirt">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-static-run glitch-static-run-a">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-static-run glitch-static-run-b">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-static-run glitch-static-run-dark glitch-static-run-dark-a">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-static-run glitch-static-run-dark glitch-static-run-dark-b">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-ghost">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-ghost glitch-name-ghost-2">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-ghost glitch-name-ghost-3">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-rgb-a">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-rgb-b">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-slice glitch-name-slice-a">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-slice glitch-name-slice-b">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-slice glitch-name-slice-c">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-slice glitch-name-slice-d">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-shadow">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-line glitch-name-line-a">Charles Ahn</span>
+        <span aria-hidden="true" class="glitch-name-line glitch-name-line-b">Charles Ahn</span>
+      </span>
+      </span>
+    </div>
     <div class="text-3xl py-3 font-bold">PhD Student in Computer Science and a Tinker</div>
     <div class="py-2">
       <text class="text-lg">
         <p>I'm a first year PhD student in Computer Science at George Mason University. My research sits at the intersection between people and computing. That means whether I'm exploring new interaction paradigms, studying the complex interfaces between human and robot partnership, or finding ways to make technology more accessible to everyone. 
         
-        <p>Over the past four years, I've had the opportunity to work with <a href="https://craigyuyu.github.io/home/index.html" target="_blank"><b>Prof. Craig Yu</b></a> at the Design Computing and Extended Reality Group(DCXR), where I've embraced just about everything that's come my way. From designing 3D and VR experiences in Unity, to engineering mechanical parts and bringing them to life with 3D printing, to implementing IoT devices to be deployed in the field. My work lives at the crossroads of the digital and the physical. 
+        <p>Over the past four years, I've had the opportunity to work with <a href="https://craigyuyu.github.io/home/index.html" target="_blank"><b>Prof. Craig Yu</b></a> at the <strong>Design Computing and Extended Reality Group (DCXR)</strong>, where I've embraced just about everything that's come my way. From designing 3D and VR experiences in Unity, to engineering mechanical parts and bringing them to life with 3D printing, to implementing IoT devices to be deployed in the field. My work lives at the crossroads of the digital and the physical. 
 
         <p>Outside the lab, you can find me camping on Shenandoah mountain range, fishing and swimming, reading, as well as playing video games on my Steam Deck and Switch. I'm always happy to chat about research, design and cutting edge technologies, or anything in between really. So don't hesitate to reach out! 
         
@@ -33,50 +97,3014 @@ const last_posts = posts.slice(0, 3);
     </div>
   </div>
 
-  <div>
-    <div class="text-3xl w-full font-bold mb-2">My Latest Research Projects {"</>"}</div>
-  </div>
+  <section class="mt-4">
+    <h2 class="text-2xl font-bold mb-3">News</h2>
+    <NerveTimeline idPrefix="newsTimeline" syncGlitch={true}>
+      <article class="news-item timeline-reveal is-faded">
+        <div class="news-node" aria-hidden="true"></div>
+        <div class="news-item__body">
+          <p class="text-xs uppercase tracking-wide opacity-70">May 2026</p>
+          <p>Rolled out portfolio redesign with structured schema metadata and timeline enhancements.</p>
+        </div>
+      </article>
+      <article class="news-item timeline-reveal is-faded">
+        <div class="news-node" aria-hidden="true"></div>
+        <div class="news-item__body">
+          <p class="text-xs uppercase tracking-wide opacity-70">Jan 2026</p>
+          <p>Joined DCXR Lab at George Mason University and started PhD research full-time.</p>
+        </div>
+      </article>
+      <article class="news-item timeline-reveal is-faded">
+        <div class="news-node" aria-hidden="true"></div>
+        <div class="news-item__body">
+          <p class="text-xs uppercase tracking-wide opacity-70">May 2025</p>
+          <p>Completed B.S. in Computer Science while continuing immersive systems projects.</p>
+        </div>
+      </article>
+    </NerveTimeline>
+  </section>
 
-  <HorizontalCard
-    title="Teleoperated 360 Video Capture of Beehives for Scientific Visualization in VR"
-    img="/portfolio/research-projects/vrst25beevr/assets/images/teasruser.webp"
-    desc="This project provides a framework for capturing and analyzing bee activity using commercially available 360◦ cameras and hardware to create an immersive VR experience."
-    url="/portfolio/research-projects/vrst25beevr/index.html"
-    badge="NEW"
-  />
-  <div class="divider my-0"></div>
-  <HorizontalCard
-    title="Demo Project 2"
-    img="/post_img.webp"
-    desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    url="#"
-  />
-  <div class="divider my-0"></div>
-  <HorizontalCard
-    title="Demo Project 3"
-    img="/post_img.webp"
-    desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    url="#"
-    badge="FOSS"
-  />
+  <section class="visit-widget mt-8">
+    <h2 class="text-xl font-bold mb-2">Site Activity</h2>
+    <p class="opacity-80">Total visits from this browser: <span id="visitCountValue">-</span></p>
+    <p class="opacity-70 text-sm">Last visit: <span id="visitLastValue">First time visitor</span></p>
+  </section>
 
-  <div>
-    <div class="text-3xl w-full font-bold mb-5 mt-10">My Latest Personal Projects</div>
-  </div>
+  <script is:inline>
+    const countEl = document.getElementById("visitCountValue");
+    const lastEl = document.getElementById("visitLastValue");
+    const countKey = "siteVisitCount";
+    const lastKey = "siteVisitLastAt";
+    const previousLastVisit = localStorage.getItem(lastKey);
+    const count = Number(localStorage.getItem(countKey) || "0") + 1;
 
-  {
-    last_posts.map((post) => (
-      <>
-        <HorizontalCard
-          title={post.data.title}
-          img={post.data.heroImage}
-          desc={post.data.description}
-          url={"/blog/" + createSlug(post.data.title, post.slug)}
-          target="_self"
-          badge={post.data.badge}
-        />
-        <div class="divider my-0" />
-      </>
-    ))
-  }
+    localStorage.setItem(countKey, String(count));
+    localStorage.setItem(lastKey, new Date().toISOString());
+
+    if (countEl) countEl.textContent = String(count);
+    if (lastEl && previousLastVisit) {
+      const date = new Date(previousLastVisit);
+      lastEl.textContent = date.toLocaleString();
+    }
+
+    const glitchWrap = document.querySelector(".glitch-name-wrap");
+    if (glitchWrap) {
+      const glitchChars = Array.from(document.querySelectorAll(".glitch-char"));
+      const glowEligibleChars = glitchChars.filter((charEl) => charEl.dataset.char !== " ");
+      const staticRuns = Array.from(document.querySelectorAll(".glitch-static-run"));
+      const randomSigned = (min, max) => {
+        const value = min + Math.random() * (max - min);
+        return (Math.random() > 0.5 ? 1 : -1) * value;
+      };
+      const randomInt = (min, max) => Math.floor(min + Math.random() * (max - min + 1));
+
+      const schedulePullShift = () => {
+        glitchWrap.style.setProperty("--pull-a", `${randomSigned(10, 20).toFixed(1)}px`);
+        glitchWrap.style.setProperty("--pull-b", `${randomSigned(10, 20).toFixed(1)}px`);
+        glitchWrap.style.setProperty("--pull-c", `${randomSigned(12, 22).toFixed(1)}px`);
+        glitchWrap.style.setProperty("--pull-d", `${randomSigned(12, 22).toFixed(1)}px`);
+        glitchWrap.style.setProperty("--pull-char-a", `${randomSigned(0.5, 1.1).toFixed(2)}ch`);
+        glitchWrap.style.setProperty("--pull-char-b", `${randomSigned(0.5, 1.1).toFixed(2)}ch`);
+
+        glitchChars.forEach((charEl) => {
+          const outRange = [8, 20];
+          const jumbleRange = [0.4, 0.95];
+          const stretchRange = [1.01, 1.1];
+          charEl.style.setProperty("--char-out-x", `${randomSigned(outRange[0], outRange[1]).toFixed(1)}px`);
+          charEl.style.setProperty("--char-jumble-x", `${randomSigned(jumbleRange[0], jumbleRange[1]).toFixed(2)}ch`);
+          charEl.style.setProperty("--char-stretch", `${(stretchRange[0] + Math.random() * (stretchRange[1] - stretchRange[0])).toFixed(2)}`);
+          charEl.style.setProperty("--letter-pull-top", `${randomSigned(1, 5).toFixed(1)}px`);
+          charEl.style.setProperty("--letter-pull-bottom", `${randomSigned(1, 5).toFixed(1)}px`);
+        });
+
+        const nextPullMs = 1400 + Math.random() * 2800;
+        setTimeout(schedulePullShift, nextPullMs);
+      };
+
+      const scheduleSpeedShift = () => {
+        const nextSpeed = 4.5 + Math.random() * 2.5;
+        glitchWrap.style.setProperty("--glitch-speed", `${nextSpeed.toFixed(2)}s`);
+        const nextShiftMs = Math.max(2800, nextSpeed * 1000 + Math.random() * 1200);
+        setTimeout(scheduleSpeedShift, nextShiftMs);
+      };
+
+      const scheduleLetterGlowPulse = () => {
+        const pulseCount = Math.min(glowEligibleChars.length, randomInt(2, 4));
+        const chosen = [...glowEligibleChars]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, pulseCount);
+
+        chosen.forEach((charEl, idx) => {
+          const phaseOffset = idx * randomInt(35, 80);
+          setTimeout(() => {
+            charEl.classList.add("is-glow-up");
+            setTimeout(() => {
+              charEl.classList.remove("is-glow-up");
+              charEl.classList.add("is-glow-dim");
+              setTimeout(() => {
+                charEl.classList.remove("is-glow-dim");
+              }, randomInt(130, 190));
+            }, randomInt(170, 250));
+          }, phaseOffset);
+        });
+
+        const nextGlowMs = 1900 + Math.random() * 3300;
+        setTimeout(scheduleLetterGlowPulse, nextGlowMs);
+      };
+
+      const triggerStaticRun = (runEl) => {
+        const top = randomInt(8, 80);
+        const isDarkRun = runEl.classList.contains("glitch-static-run-dark");
+        let thickness = isDarkRun ? randomInt(7, 14) : randomInt(3, 8);
+        let durationMin = isDarkRun ? 220 : 180;
+        let durationMax = isDarkRun ? 420 : 320;
+        const modeRoll = Math.random();
+        let modeClass = "is-mode-normal";
+
+        if (isDarkRun) {
+          if (modeRoll < 0.33) {
+            thickness = randomInt(12, 20); // thick/heavy pass
+            durationMin = 260;
+            durationMax = 480;
+            modeClass = "is-mode-heavy";
+          } else if (modeRoll < 0.66) {
+            thickness = randomInt(9, 16); // hard cut band
+            durationMin = 120;
+            durationMax = 230;
+            modeClass = "is-mode-hardcut";
+          }
+        }
+
+        const bottom = Math.max(0, 100 - top - thickness);
+        runEl.style.setProperty("--static-top", `${top}%`);
+        runEl.style.setProperty("--static-bottom", `${bottom}%`);
+        runEl.style.setProperty("--static-shift", `${randomSigned(isDarkRun ? 0.5 : 0.4, isDarkRun ? 2.4 : 1.8).toFixed(2)}px`);
+        runEl.classList.remove("is-mode-normal", "is-mode-heavy", "is-mode-hardcut");
+        runEl.classList.add(modeClass);
+        runEl.classList.add("is-active");
+        setTimeout(() => {
+          runEl.classList.remove("is-active");
+          runEl.classList.remove("is-mode-normal", "is-mode-heavy", "is-mode-hardcut");
+        }, randomInt(durationMin, durationMax));
+      };
+
+      const scheduleStaticSweep = () => {
+        if (staticRuns.length > 0) {
+          triggerStaticRun(staticRuns[randomInt(0, staticRuns.length - 1)]);
+          if (Math.random() < 0.82) {
+            setTimeout(() => {
+              triggerStaticRun(staticRuns[randomInt(0, staticRuns.length - 1)]);
+            }, randomInt(70, 170));
+          }
+          if (Math.random() < 0.55) {
+            setTimeout(() => {
+              triggerStaticRun(staticRuns[randomInt(0, staticRuns.length - 1)]);
+            }, randomInt(190, 320));
+          }
+          if (Math.random() < 0.38) {
+            const darkRuns = staticRuns.filter((run) => run.classList.contains("glitch-static-run-dark"));
+            if (darkRuns.length > 0) {
+              setTimeout(() => {
+                triggerStaticRun(darkRuns[randomInt(0, darkRuns.length - 1)]);
+              }, randomInt(90, 260));
+            }
+          }
+        }
+
+        const nextStaticMs = 120 + Math.random() * 520;
+        setTimeout(scheduleStaticSweep, nextStaticMs);
+      };
+
+      const scheduleRandomDrop = () => {
+        const waitMs = 5200 + Math.random() * 9000;
+        setTimeout(() => {
+          const visibleChars = glitchChars.filter((charEl) => charEl.dataset.char !== " ");
+          const dropRoll = Math.random();
+          const offMs = 54 + Math.random() * 72;
+          const clearDropClasses = () => {
+            glitchWrap.classList.remove("is-full-off");
+            glitchWrap.classList.remove("is-random-off");
+            glitchWrap.classList.remove("is-partial-drop");
+            glitchChars.forEach((charEl) => charEl.classList.remove("is-drop-off"));
+          };
+
+          const applyRecoveryShift = () => {
+            const recoverClass = Math.random() < 0.5 ? "is-recover-dim" : "is-recover-bright";
+            glitchWrap.classList.add(recoverClass);
+            setTimeout(() => glitchWrap.classList.remove(recoverClass), 380 + Math.random() * 260);
+          };
+
+          if (dropRoll < 0.08) {
+            glitchWrap.classList.add("is-random-off", "is-full-off");
+          } else {
+            let dropCount = 2;
+            if (dropRoll < 0.45) {
+              dropCount = Math.min(visibleChars.length, randomInt(1, 2));
+            } else if (dropRoll < 0.8) {
+              dropCount = Math.min(visibleChars.length, randomInt(3, 4));
+            } else {
+              dropCount = Math.min(visibleChars.length, randomInt(5, 6));
+            }
+            glitchWrap.classList.add("is-partial-drop");
+            const picked = [...visibleChars].sort(() => Math.random() - 0.5).slice(0, dropCount);
+            picked.forEach((charEl) => charEl.classList.add("is-drop-off"));
+          }
+
+          setTimeout(() => {
+            clearDropClasses();
+            applyRecoveryShift();
+            scheduleRandomDrop();
+          }, offMs);
+        }, waitMs);
+      };
+
+      schedulePullShift();
+      scheduleSpeedShift();
+      scheduleRandomDrop();
+      scheduleLetterGlowPulse();
+      scheduleStaticSweep();
+    }
+
+    const wireframeRoot = document.getElementById("wireframePortrait");
+    const wireframeCanvas = document.getElementById("wireframeCanvas");
+    const wireframeLoop = document.getElementById("wireframeLoop");
+    const wireframeFallback = document.getElementById("wireframeFallback");
+    if (wireframeRoot && wireframeCanvas) {
+      const ctx = wireframeCanvas.getContext("2d");
+      const src = wireframeRoot.getAttribute("data-source") || "";
+      const meshUrl = wireframeRoot.getAttribute("data-mesh-url") || "";
+      const loopUrl = wireframeRoot.getAttribute("data-loop-url") || "";
+      const posterUrl = wireframeRoot.getAttribute("data-poster-url") || "";
+      const wireframeQuery = new URLSearchParams(window.location.search);
+      const wireframeOverlayMode = wireframeQuery.has("wireframeOverlay");
+      const wireframeBakeMode = wireframeQuery.has("wireframeBake") || wireframeOverlayMode;
+      if (wireframeOverlayMode) {
+        document.documentElement.setAttribute("data-theme", "winter");
+      }
+      const meshOnlyDraw = () => wireframeOverlayMode || window.__wireframeMeshOnly === true;
+      const isLightTheme = () => document.documentElement.getAttribute("data-theme") === "winter";
+      let wireframeRunning = false;
+      let portraitData = null;
+      let portraitLayer = null;
+      let portraitDrawRect = null;
+      let portraitW = 0;
+      let portraitH = 0;
+      let faceSectionPatches = [];
+      let facePatchLayoutKey = "";
+
+      const hash2 = (x, y) => {
+        const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+        return s - Math.floor(s);
+      };
+
+      const smoothNoise = (x, y) => {
+        const x0 = Math.floor(x);
+        const y0 = Math.floor(y);
+        const fx = x - x0;
+        const fy = y - y0;
+        const sx = fx * fx * (3 - 2 * fx);
+        const sy = fy * fy * (3 - 2 * fy);
+        const n00 = hash2(x0, y0);
+        const n10 = hash2(x0 + 1, y0);
+        const n01 = hash2(x0, y0 + 1);
+        const n11 = hash2(x0 + 1, y0 + 1);
+        const nx0 = n00 + (n10 - n00) * sx;
+        const nx1 = n01 + (n11 - n01) * sx;
+        return nx0 + (nx1 - nx0) * sy;
+      };
+
+      const fbm = (x, y) => {
+        let value = 0;
+        let amp = 0.55;
+        let freq = 1;
+        for (let i = 0; i < 4; i++) {
+          value += amp * smoothNoise(x * freq, y * freq);
+          amp *= 0.5;
+          freq *= 2.05;
+        }
+        return value;
+      };
+
+      const samplePortraitPixel = (x, y) => {
+        if (!portraitData) return null;
+        const px = Math.min(portraitW - 1, Math.max(0, Math.floor(x)));
+        const py = Math.min(portraitH - 1, Math.max(0, Math.floor(y)));
+        const i = (py * portraitW + px) * 4;
+        const alpha = portraitData[i + 3];
+        if (alpha < 20) return null;
+        return {
+          r: portraitData[i],
+          g: portraitData[i + 1],
+          b: portraitData[i + 2],
+          a: alpha / 255,
+        };
+      };
+
+      const isLikelyHatPixel = (x, y, layout) => {
+        const pixel = samplePortraitPixel(x, y);
+        if (!pixel) return true;
+        const { minY, maxY, cx, rx } = layout;
+        const subjectH = Math.max(1, maxY - minY);
+        const relY = (y - minY) / subjectH;
+        const nx = Math.abs((x - cx) / Math.max(1, rx));
+        const lum = (0.2126 * pixel.r + 0.7152 * pixel.g + 0.0722 * pixel.b) / 255;
+        const chroma = (Math.max(pixel.r, pixel.g, pixel.b) - Math.min(pixel.r, pixel.g, pixel.b)) / 255;
+        if (relY < 0.32) return true;
+        if (relY < 0.39 && nx > 0.22) return true;
+        if (relY < 0.45 && nx > 0.38) return true;
+        if (relY < 0.5 && nx > 0.58) return true;
+        if (lum < 0.42 && chroma < 0.24) return true;
+        return false;
+      };
+
+      const faceRegionWeight = (x, y, layout) => {
+        const { minY, maxY, cx, rx, pivotY } = layout;
+        const subjectH = Math.max(1, maxY - minY);
+        const relY = (y - minY) / subjectH;
+        if (relY < 0.32 || relY > 0.77) return 0;
+        if (isLikelyHatPixel(x, y, layout)) return 0;
+
+        const nx = Math.abs((x - cx) / Math.max(1, rx));
+        let maxNx;
+        if (relY < 0.4) {
+          maxNx = 0.22 + ((relY - 0.32) / 0.08) * 0.2;
+        } else if (relY < 0.58) {
+          maxNx = 0.42 + ((relY - 0.4) / 0.18) * 0.16;
+        } else {
+          maxNx = 0.58 - ((relY - 0.58) / 0.19) * 0.1;
+        }
+        if (nx > maxNx) return 0;
+
+        const faceCy = pivotY ?? minY + subjectH * 0.48;
+        const ry = subjectH * 0.27;
+        const vertWeight = Math.exp(-Math.pow((y - faceCy) / ry, 2) * 0.55);
+        const horizWeight = Math.exp(-Math.pow(nx / Math.max(0.2, maxNx), 2) * 0.8);
+        return vertWeight * horizWeight;
+      };
+
+      const isInFaceRegion = (x, y, layout) => faceRegionWeight(x, y, layout) > 0.1;
+
+      const photoBlotchAt = (x, y, pulseOffset) => {
+        const n = fbm(x * 0.012, y * 0.015);
+        const speck = hash2(x * 0.19 + pulseOffset * 0.1, y * 0.23);
+        return n * 0.62 + speck * 0.38 > 0.48;
+      };
+
+      const facePatchOpacity = (patch) =>
+        0.2 + hash2(patch.baseX * 0.19 + patch.fadeSeed, patch.baseY * 0.23) * 0.68;
+
+      const isShirtMeshPoint = (p, minY, maxY) => {
+        if (p.kind === "ambient" || p.zone === "hat" || p.zone === "face") return false;
+        const relY = (p.baseY - minY) / Math.max(1, maxY - minY);
+        if (relY < 0.78) return false;
+        return p.zone === "shirt" || p.zone === "arm";
+      };
+      const buildFaceSectionPatches = (layout) => {
+        const { minX, maxX, minY, maxY, cx, rx } = layout;
+        const subjectH = Math.max(1, maxY - minY);
+        const patches = [];
+
+        const patchFitsFace = (x, y, hs, layout) => {
+          const samples = [
+            [0, 0],
+            [-hs, 0],
+            [hs, 0],
+            [0, -hs],
+            [0, hs],
+            [-hs * 0.65, -hs * 0.65],
+            [hs * 0.65, -hs * 0.65],
+            [-hs * 0.65, hs * 0.65],
+            [hs * 0.65, hs * 0.65],
+          ];
+          for (const [dx, dy] of samples) {
+            const sx = x + dx;
+            const sy = y + dy;
+            if (!isInFaceRegion(sx, sy, layout)) return false;
+            if (isLikelyHatPixel(sx, sy, layout)) return false;
+          }
+          return true;
+        };
+
+        const addPatch = (x, y, halfSize, pickLimit, layout) => {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          if (!isInFaceRegion(px, py, layout)) return;
+          if (isLikelyHatPixel(px, py, layout)) return;
+          if (hash2(px * 0.15, py * 0.17) > pickLimit) return;
+          const hs = Math.floor(halfSize);
+          if (!patchFitsFace(x, y, hs, layout)) return;
+          let opaque = 0;
+          let samples = 0;
+          for (let dy = -hs; dy <= hs; dy += 2) {
+            for (let dx = -hs; dx <= hs; dx += 2) {
+              if (!isInFaceRegion(px + dx, py + dy, layout)) continue;
+              if (isLikelyHatPixel(px + dx, py + dy, layout)) continue;
+              samples++;
+              if (samplePortraitPixel(px + dx, py + dy)) opaque++;
+            }
+          }
+          if (samples < 4 || opaque / samples < 0.35) return;
+          patches.push({
+            baseX: x,
+            baseY: y,
+            halfSize: hs,
+            fadeSeed: hash2(px * 0.41, py * 0.37) * Math.PI * 2,
+          });
+        };
+
+        const faceMinY = minY + subjectH * 0.32;
+        const faceMaxY = minY + subjectH * 0.74;
+        for (let y = faceMinY; y < faceMaxY; y += 9) {
+          for (let x = minX + 14; x < maxX - 14; x += 9) {
+            const jitterX = (hash2(x * 0.07, y * 0.05) - 0.5) * 4;
+            const jitterY = (hash2(x * 0.05, y * 0.07) - 0.5) * 4;
+            const px = x + jitterX;
+            const py = y + jitterY;
+            if (faceRegionWeight(px, py, layout) < 0.14) continue;
+            const halfSize = 20 + hash2(px * 0.23, py * 0.19) * 28;
+            addPatch(px, py, halfSize, 0.55, layout);
+          }
+        }
+
+        const midFaceMinY = minY + subjectH * 0.38;
+        const midFaceMaxY = minY + subjectH * 0.72;
+        for (let y = midFaceMinY; y < midFaceMaxY; y += 7) {
+          for (let x = minX + 16; x < maxX - 16; x += 7) {
+            const px = x + (hash2(x * 0.11, y * 0.09) - 0.5) * 3;
+            const py = y + (hash2(x * 0.09, y * 0.11) - 0.5) * 3;
+            if (faceRegionWeight(px, py, layout) < 0.16) continue;
+            const halfSize = 16 + hash2(px * 0.31, py * 0.27) * 24;
+            addPatch(px, py, halfSize, 0.5, layout);
+          }
+        }
+
+        return patches;
+      };
+
+      const applyFacePatchSoftEdge = (ctx, patch, dx, dy, sw, sh) => {
+        ctx.globalCompositeOperation = "destination-in";
+        const cx = patch.baseX;
+        const cy = patch.baseY;
+        const fadeR = Math.max(sw, sh) * 0.62;
+        const edge = ctx.createRadialGradient(cx, cy, fadeR * 0.25, cx, cy, fadeR);
+        edge.addColorStop(0, "rgba(0, 0, 0, 1)");
+        edge.addColorStop(0.78, "rgba(0, 0, 0, 0.7)");
+        edge.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = edge;
+        ctx.fillRect(dx - fadeR, dy - fadeR, sw + fadeR * 2, sh + fadeR * 2);
+      };
+
+      const ensureFaceSectionPatches = (layout) => {
+        if (!portraitData || !portraitLayer) {
+          faceSectionPatches = [];
+          return;
+        }
+        const key = `${layout.minX}|${layout.maxX}|${layout.minY}|${layout.maxY}|${layout.cx}|${layout.pivotY}|gimp1`;
+        if (facePatchLayoutKey === key && faceSectionPatches.length) return;
+        facePatchLayoutKey = key;
+        faceSectionPatches = buildFaceSectionPatches(layout);
+      };
+
+      const drawFaceSectionPatch = (ctx, patch) => {
+        if (!portraitLayer) return;
+
+        const opacity = facePatchOpacity(patch);
+        const hs = patch.halfSize;
+        const sx = Math.max(0, Math.floor(patch.baseX - hs));
+        const sy = Math.max(0, Math.floor(patch.baseY - hs));
+        const sw = Math.min(portraitW - sx, Math.ceil(hs * 2));
+        const sh = Math.min(portraitH - sy, Math.ceil(hs * 2));
+        if (sw < 5 || sh < 5) return;
+
+        const dx = patch.baseX - sw / 2;
+        const dy = patch.baseY - sh / 2;
+        const radius = Math.min(sw, sh) * 0.28;
+
+        ctx.save();
+        ctx.filter = "none";
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === "function") {
+          ctx.roundRect(dx, dy, sw, sh, radius);
+        } else {
+          ctx.rect(dx, dy, sw, sh);
+        }
+        ctx.clip();
+        ctx.drawImage(portraitLayer, sx, sy, sw, sh, dx, dy, sw, sh);
+        applyFacePatchSoftEdge(ctx, patch, dx, dy, sw, sh);
+        ctx.restore();
+      };
+
+      const drawShirtMeshPixel = (ctx, proj, x, y, p, pulse) => {
+        ctx.save();
+        ctx.filter = "none";
+        ctx.globalCompositeOperation = "source-over";
+        if (!photoBlotchAt(x, y, pulse)) return;
+        const pixel = samplePortraitPixel(x, y);
+        if (!pixel) return;
+        const darkness = 1 - (p.lum ?? 0.5);
+        const depthSize = Math.max(-0.1, proj.z * 0.0055);
+        const levelScale = p.level === "large" ? 1.2 : p.level === "medium" ? 1.0 : 0.82;
+        const dotR = (
+          (0.2 + p.edge * 0.55 + p.feature * 0.32 + darkness * 0.28 + depthSize) *
+          (p.sizeJitter ?? 1) *
+          levelScale
+        );
+        const alpha = 0.32 + hash2(x * 0.27 + pulse * 0.05, y * 0.31) * 0.42;
+        ctx.fillStyle = `rgba(${pixel.r}, ${pixel.g}, ${pixel.b}, ${alpha.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, Math.max(0.28, dotR), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      };
+
+      const computePortraitDrawRect = (img, w, h) => {
+        const scale = Math.min(w / img.width, h / img.height);
+        const drawW = img.width * scale;
+        const drawH = img.height * scale;
+        const drawX = (w - drawW) / 2;
+        const drawY = (h - drawH) / 2;
+        return { drawX, drawY, drawW, drawH };
+      };
+
+      const removePortraitBackground = (imageData, w, h) => {
+        const d = imageData.data;
+        const visited = new Uint8Array(w * h);
+        const queue = [];
+        const idx = (x, y) => (y * w + x) * 4;
+        const isBg = (x, y) => {
+          const i = idx(x, y);
+          const r = d[i];
+          const g = d[i + 1];
+          const b = d[i + 2];
+          const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+          const chroma = (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+          return lum > 0.76 && chroma < 0.12;
+        };
+        for (let x = 0; x < w; x++) {
+          queue.push([x, 0], [x, h - 1]);
+        }
+        for (let y = 0; y < h; y++) {
+          queue.push([0, y], [w - 1, y]);
+        }
+        while (queue.length) {
+          const [x, y] = queue.pop();
+          if (x < 0 || y < 0 || x >= w || y >= h) continue;
+          const vi = y * w + x;
+          if (visited[vi] || !isBg(x, y)) continue;
+          visited[vi] = 1;
+          d[idx(x, y) + 3] = 0;
+          queue.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+        }
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const i = idx(x, y);
+            if (d[i + 3] === 0) continue;
+            let transparentNeighbors = 0;
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+              if (d[idx(x + dx, y + dy) + 3] === 0) transparentNeighbors++;
+            }
+            if (transparentNeighbors > 0) {
+              d[i + 3] = Math.min(d[i + 3], Math.round(255 * (1 - transparentNeighbors * 0.24)));
+            }
+          }
+        }
+      };
+
+      const rasterPortraitForMesh = (img) => {
+        const w = wireframeCanvas.width;
+        const h = wireframeCanvas.height;
+        const { drawX, drawY, drawW, drawH } = computePortraitDrawRect(img, w, h);
+        const layer = document.createElement("canvas");
+        layer.width = w;
+        layer.height = h;
+        const layerCtx = layer.getContext("2d");
+        if (!layerCtx) return null;
+        layerCtx.clearRect(0, 0, w, h);
+        layerCtx.drawImage(img, drawX, drawY, drawW, drawH);
+        const imageData = layerCtx.getImageData(0, 0, w, h);
+        removePortraitBackground(imageData, w, h);
+        return { drawX, drawY, drawW, drawH, data: imageData.data };
+      };
+
+      const setLightPortraitLayer = (img) => {
+        const w = wireframeCanvas.width;
+        const h = wireframeCanvas.height;
+        const layer = document.createElement("canvas");
+        layer.width = w;
+        layer.height = h;
+        const layerCtx = layer.getContext("2d");
+        if (!layerCtx) return null;
+        layerCtx.clearRect(0, 0, w, h);
+        if (img.width === w && img.height === h) {
+          layerCtx.drawImage(img, 0, 0, w, h);
+          portraitDrawRect = { drawX: 0, drawY: 0, drawW: w, drawH: h };
+        } else {
+          const rect = computePortraitDrawRect(img, w, h);
+          layerCtx.drawImage(img, rect.drawX, rect.drawY, rect.drawW, rect.drawH);
+          portraitDrawRect = rect;
+        }
+        portraitLayer = layer;
+        portraitW = w;
+        portraitH = h;
+        facePatchLayoutKey = "";
+      };
+
+      const syncWireframePresentation = () => {
+        if (wireframeBakeMode) return;
+        if (isLightTheme()) {
+          wireframeLoop?.classList.add("hidden");
+          if (wireframeLoop) {
+            wireframeLoop.removeAttribute("poster");
+            wireframeLoop.pause();
+          }
+          if (wireframeRunning) showLiveCanvas();
+          return;
+        }
+        if (wireframeRunning) return;
+        if (loopUrl) showPrebakedLoop();
+      };
+      if (wireframeBakeMode) {
+        let bakeSeed = 0x9e3779b9;
+        Math.random = () => {
+          bakeSeed = (bakeSeed * 1664525 + 1013904223) >>> 0;
+          return bakeSeed / 4294967296;
+        };
+      }
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canRunLiveWireframe =
+        !wireframeBakeMode &&
+        !prefersReducedMotion &&
+        (navigator.hardwareConcurrency ?? 2) >= 4 &&
+        (!(navigator).deviceMemory || (navigator).deviceMemory >= 4);
+      const renderFallback = () => {
+        wireframeCanvas.classList.add("hidden");
+        wireframeLoop?.classList.add("hidden");
+        wireframeFallback?.classList.remove("hidden");
+      };
+      const showLiveCanvas = () => {
+        wireframeCanvas.classList.remove("hidden");
+        wireframeLoop?.classList.add("hidden");
+        wireframeRunning = true;
+      };
+      const showPrebakedLoop = () => {
+        if (!wireframeLoop || !loopUrl) return;
+        wireframeLoop.classList.remove("hidden");
+        wireframeCanvas.classList.add("hidden");
+        if (prefersReducedMotion) {
+          wireframeLoop.pause();
+          wireframeLoop.removeAttribute("src");
+          if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
+          return;
+        }
+        if (posterUrl) wireframeLoop.setAttribute("poster", posterUrl);
+        wireframeLoop.src = loopUrl;
+        wireframeLoop.load();
+        wireframeLoop.play().catch(() => {});
+      };
+      const downloadBlob = (blob, filename) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      };
+      const captureGimpOverlay = async (bakeApi) => {
+        window.__wireframeMeshOnly = true;
+        try {
+          for (let i = 0; i < 6; i++) bakeApi.stepFrame();
+          const blob = await new Promise((resolve, reject) => {
+            wireframeCanvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Overlay capture failed"))), "image/png");
+          });
+          downloadBlob(blob, "wireframe-mesh-overlay.png");
+        } finally {
+          window.__wireframeMeshOnly = false;
+        }
+      };
+      const setupWireframeOverlayPanel = (bakeApi) => {
+        const panel = document.createElement("div");
+        panel.className = "wireframe-bake-panel";
+        panel.innerHTML = `
+          <p class="wireframe-bake-title"><strong>GIMP overlay</strong></p>
+          <p class="wireframe-bake-hint">760×1080 transparent wireframe mesh. Open <code>profile.png</code> in GIMP, add this as a layer on top, set blend mode to Multiply or similar, then edit the face beneath.</p>
+          <div class="wireframe-bake-actions">
+            <button type="button" data-bake="gimp-overlay">Download wireframe-mesh-overlay.png</button>
+          </div>
+          <p class="wireframe-bake-status" id="wireframeOverlayStatus" aria-live="polite"></p>
+        `;
+        wireframeRoot.appendChild(panel);
+        const status = panel.querySelector("#wireframeOverlayStatus");
+        panel.querySelector('[data-bake="gimp-overlay"]')?.addEventListener("click", async () => {
+          const btn = panel.querySelector('[data-bake="gimp-overlay"]');
+          if (btn) btn.disabled = true;
+          if (status) status.textContent = "Capturing wireframe-only overlay…";
+          try {
+            await captureGimpOverlay(bakeApi);
+            if (status) status.textContent = "Downloaded wireframe-mesh-overlay.png";
+          } catch (err) {
+            if (status) status.textContent = err instanceof Error ? err.message : "Capture failed";
+          } finally {
+            if (btn) btn.disabled = false;
+          }
+        });
+      };
+      const setupWireframeBakePanel = (bakeApi) => {
+        const panel = document.createElement("div");
+        panel.className = "wireframe-bake-panel";
+        panel.innerHTML = `
+          <p class="wireframe-bake-title"><strong>Wireframe bake</strong></p>
+          <p class="wireframe-bake-hint">Save downloads into <code>public/data/</code> and <code>public/media/</code>, then commit. Works in Firefox, Safari, or Edge â€” no Chrome required.</p>
+          <div class="wireframe-bake-actions">
+            <button type="button" data-bake="mesh">Download mesh JSON</button>
+            <button type="button" data-bake="loop">Record loop WebM (~4s)</button>
+            <button type="button" data-bake="gimp-overlay">Download GIMP overlay PNG</button>
+            <button type="button" data-bake="poster">Download poster PNG</button>
+            <button type="button" data-bake="frames">Download frame PNGs (zip)</button>
+          </div>
+          <p class="wireframe-bake-status" id="wireframeBakeStatus" aria-live="polite"></p>
+        `;
+        wireframeRoot.appendChild(panel);
+        const status = panel.querySelector("#wireframeBakeStatus");
+        const setStatus = (msg) => {
+          if (status) status.textContent = msg;
+        };
+        panel.querySelector('[data-bake="mesh"]')?.addEventListener("click", async () => {
+          setStatus("Preparing mesh JSONâ€¦");
+          const mesh = bakeApi.exportMesh();
+          const blob = new Blob([JSON.stringify(mesh)], { type: "application/json" });
+          downloadBlob(blob, "wireframe-mesh.json");
+          setStatus("Downloaded wireframe-mesh.json â†’ public/data/");
+        });
+        panel.querySelector('[data-bake="gimp-overlay"]')?.addEventListener("click", async () => {
+          setStatus("Capturing wireframe-only overlay…");
+          try {
+            await captureGimpOverlay(bakeApi);
+            setStatus("Downloaded wireframe-mesh-overlay.png — transparent mesh for GIMP");
+          } catch (err) {
+            setStatus(err instanceof Error ? err.message : "Capture failed");
+          }
+        });
+        panel.querySelector('[data-bake="poster"]')?.addEventListener("click", async () => {
+          setStatus("Capturing posterâ€¦");
+          bakeApi.stepFrame();
+          const blob = await new Promise((resolve, reject) => {
+            wireframeCanvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Poster capture failed"))), "image/png");
+          });
+          downloadBlob(blob, "wireframe-poster.png");
+          setStatus("Downloaded wireframe-poster.png â†’ public/media/");
+        });
+        panel.querySelector('[data-bake="loop"]')?.addEventListener("click", async () => {
+          const btn = panel.querySelector('[data-bake="loop"]');
+          if (btn) btn.disabled = true;
+          try {
+            setStatus("Recording WebM (about 4 seconds)â€¦");
+            await bakeApi.recordLoopWebm();
+            setStatus("Downloaded wireframe-loop.webm â†’ public/media/");
+          } catch (err) {
+            setStatus(err instanceof Error ? err.message : "Recording failed");
+          } finally {
+            if (btn) btn.disabled = false;
+          }
+        });
+        panel.querySelector('[data-bake="frames"]')?.addEventListener("click", async () => {
+          const btn = panel.querySelector('[data-bake="frames"]');
+          if (btn) btn.disabled = true;
+          try {
+            setStatus("Capturing framesâ€¦");
+            await bakeApi.downloadFrameZip();
+            setStatus("Downloaded wireframe-frames.zip â€” extract to scripts/bake-output/frames/, then npm run encode:wireframe-loop");
+          } catch (err) {
+            setStatus(err instanceof Error ? err.message : "Frame export failed");
+          } finally {
+            if (btn) btn.disabled = false;
+          }
+        });
+      };
+
+      const loadPortraitLayer = () => {
+        if (!isLightTheme()) return;
+        const lightPortraitSrc =
+          wireframeRoot.getAttribute("data-light-portrait") || "/images/profile-inverted";
+        const hasKnownExt = /\.(png|jpe?g|webp|gif)$/i.test(lightPortraitSrc);
+        const photoCandidates = hasKnownExt
+          ? [lightPortraitSrc]
+          : [`${lightPortraitSrc}.png`, `${lightPortraitSrc}.jpg`, `${lightPortraitSrc}.jpeg`];
+        const tryPhoto = (idx) => {
+          if (idx >= photoCandidates.length) return;
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => setLightPortraitLayer(img);
+          img.onerror = () => tryPhoto(idx + 1);
+          img.src = photoCandidates[idx];
+        };
+        tryPhoto(0);
+      };
+
+      const WIREFRAME_MESH_VERSION = 5;
+      const meshCacheKey = (src, w, h) => `wireframeMesh:v${WIREFRAME_MESH_VERSION}:${src}:${w}x${h}`;
+      const packMesh = (points, neighbors, layout) => ({
+        v: WIREFRAME_MESH_VERSION,
+        layout,
+        pts: points.map((p) => [
+          p.baseX, p.baseY, p.lum, p.edge, p.feature, p.z, p.kind,
+          p.strategic ? 1 : 0, p.keepScore, p.groupId, p.zone, p.level,
+          p.depthJitter, p.sizeJitter, p.pulseOffset, p.driftPhase, p.driftSpeed, p.driftAmp,
+          p.zoneOverride || "", p.levelOverride || "",
+        ]),
+        nbrs: neighbors.map((list) => list.map((n) => [n.j, n.ambient ? 1 : 0])),
+      });
+      const unpackMesh = (raw) => {
+        const points = raw.pts.map((row) => ({
+          baseX: row[0],
+          baseY: row[1],
+          x: row[0],
+          y: row[1],
+          lum: row[2],
+          edge: row[3],
+          feature: row[4],
+          z: row[5],
+          kind: row[6],
+          strategic: !!row[7],
+          keepScore: row[8],
+          groupId: row[9],
+          zone: row[10],
+          level: row[11],
+          depthJitter: row[12],
+          sizeJitter: row[13],
+          pulseOffset: row[14],
+          driftPhase: row[15],
+          driftSpeed: row[16],
+          driftAmp: row[17],
+          zoneOverride: row[18] || null,
+          levelOverride: row[19] || null,
+          repulseX: 0,
+          repulseY: 0,
+          driftX: 0,
+          driftY: 0,
+          toneBand: Math.max(0, Math.min(3, Math.floor(row[2] * 4))),
+        }));
+        const neighbors = raw.nbrs.map((list, i) =>
+          list.map(([j, amb]) => {
+            const dx = points[i].baseX - points[j].baseX;
+            const dy = points[i].baseY - points[j].baseY;
+            return { j, d2: dx * dx + dy * dy, ambient: !!amb };
+          })
+        );
+        return { points, neighbors, layout: raw.layout };
+      };
+      const saveMeshCache = (src, w, h, points, neighbors, layout) => {
+        try {
+          localStorage.setItem(meshCacheKey(src, w, h), JSON.stringify(packMesh(points, neighbors, layout)));
+        } catch (_) {
+          // Ignore quota errors; mesh still renders, just won't cache.
+        }
+      };
+      const loadMeshCache = (src, w, h) => {
+        try {
+          const raw = localStorage.getItem(meshCacheKey(src, w, h));
+          if (!raw) return null;
+          const data = JSON.parse(raw);
+          if (data.v !== WIREFRAME_MESH_VERSION) return null;
+          return unpackMesh(data);
+        } catch (_) {
+          return null;
+        }
+      };
+
+      const drawImageTriangle = (
+        ctx,
+        img,
+        sx0,
+        sy0,
+        sx1,
+        sy1,
+        sx2,
+        sy2,
+        dx0,
+        dy0,
+        dx1,
+        dy1,
+        dx2,
+        dy2
+      ) => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(dx0, dy0);
+        ctx.lineTo(dx1, dy1);
+        ctx.lineTo(dx2, dy2);
+        ctx.closePath();
+        ctx.clip();
+        const denom = sx0 * (sy2 - sy1) + sx1 * (sy0 - sy2) + sx2 * (sy1 - sy0);
+        if (Math.abs(denom) < 0.001) {
+          ctx.restore();
+          return;
+        }
+        const m11 = (dx0 * (sy2 - sy1) + dx1 * (sy0 - sy2) + dx2 * (sy1 - sy0)) / denom;
+        const m12 = (dy0 * (sy2 - sy1) + dy1 * (sy0 - sy2) + dy2 * (sy1 - sy0)) / denom;
+        const m21 = (dx0 * (sx1 - sx2) + dx1 * (sx2 - sx0) + dx2 * (sx0 - sx1)) / denom;
+        const m22 = (dy0 * (sx1 - sx2) + dy1 * (sx2 - sx0) + dy2 * (sx0 - sx1)) / denom;
+        const dx = dx0 - m11 * sx0 - m21 * sy0;
+        const dy = dy0 - m12 * sx0 - m22 * sy0;
+        ctx.transform(m11, m12, m21, m22, dx, dy);
+        ctx.drawImage(img, 0, 0);
+        ctx.restore();
+      };
+
+      const samplePortraitDisplacement = (bx, by, points, projected, restProjected) => {
+        let sumDx = 0;
+        let sumDy = 0;
+        let sumW = 0;
+        const influenceRSq = 64 * 64;
+        for (let i = 0; i < points.length; i++) {
+          const p = points[i];
+          if (p.kind === "ambient") continue;
+          const dx = p.baseX - bx;
+          const dy = p.baseY - by;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > influenceRSq) continue;
+          const weight = 1 / (1 + d2 * 0.0014);
+          sumDx += (projected[i].x - restProjected[i].x) * weight;
+          sumDy += (projected[i].y - restProjected[i].y) * weight;
+          sumW += weight;
+        }
+        if (sumW < 0.001) return { dx: 0, dy: 0 };
+        return { dx: sumDx / sumW, dy: sumDy / sumW };
+      };
+
+      const drawWarpedPortrait = (ctx, layer, grid, points, projected, restProjected) => {
+        const rows = grid.length - 1;
+        const cols = grid[0].length - 1;
+        const warped = grid.map((row) =>
+          row.map((cell) => {
+            const d = samplePortraitDisplacement(cell.baseX, cell.baseY, points, projected, restProjected);
+            return { x: cell.baseX + d.dx, y: cell.baseY + d.dy };
+          })
+        );
+        ctx.save();
+        ctx.filter = "none";
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const a = grid[row][col];
+            const b = grid[row][col + 1];
+            const c = grid[row + 1][col];
+            const d = grid[row + 1][col + 1];
+            const aw = warped[row][col];
+            const bw = warped[row][col + 1];
+            const cw = warped[row + 1][col];
+            const dw = warped[row + 1][col + 1];
+            drawImageTriangle(
+              ctx,
+              layer,
+              a.baseX,
+              a.baseY,
+              b.baseX,
+              b.baseY,
+              c.baseX,
+              c.baseY,
+              aw.x,
+              aw.y,
+              bw.x,
+              bw.y,
+              cw.x,
+              cw.y
+            );
+            drawImageTriangle(
+              ctx,
+              layer,
+              b.baseX,
+              b.baseY,
+              d.baseX,
+              d.baseY,
+              c.baseX,
+              c.baseY,
+              bw.x,
+              bw.y,
+              dw.x,
+              dw.y,
+              cw.x,
+              cw.y
+            );
+          }
+        }
+        ctx.restore();
+      };
+
+      const buildPortraitWarpGrid = (rect) => {
+        const { drawX, drawY, drawW, drawH } = rect;
+        const cols = 22;
+        const rows = 32;
+        const grid = [];
+        for (let row = 0; row <= rows; row++) {
+          const rowPts = [];
+          for (let col = 0; col <= cols; col++) {
+            rowPts.push({
+              baseX: drawX + (col / cols) * drawW,
+              baseY: drawY + (row / rows) * drawH,
+            });
+          }
+          grid.push(rowPts);
+        }
+        return grid;
+      };
+
+      const beginWireframeAnimation = (points, neighbors, layout) => {
+        const {
+          w,
+          h,
+          cx,
+          cy,
+          minX,
+          maxX,
+          minY,
+          maxY,
+          rx,
+          pivotX,
+          pivotY,
+          drawX = 0,
+          drawY = 0,
+          drawW = w,
+          drawH = h,
+        } = layout;
+        const random = (min, max) => min + Math.random() * (max - min);
+        const meshRadiusSq = 14.5 * 14.5;
+        const armMeshRadiusSq = 24 * 24;
+        const ambientRadiusSq = 34 * 34;
+
+        let t = 0;
+        let yaw = 0;
+        let yawVelocity = 0;
+        let pointerActive = false;
+        let pointerX = 0;
+        let pointerY = 0;
+        let dragActive = false;
+        let lastDragX = 0;
+        const yawLimit = Math.PI * 0.14;
+        const driftGroups = Array.from({ length: 9 }, (_, idx) => ({
+          idx,
+          ox: 0,
+          oy: 0,
+          oz: 0,
+          tx: random(-1, 1),
+          ty: random(-1, 1),
+          tz: random(-1, 1),
+        }));
+        const driftPulses = Array.from({ length: 5 }, () => ({
+          x: random(minX, maxX),
+          y: random(minY, maxY),
+          tx: random(minX, maxX),
+          ty: random(minY, maxY),
+          radius: random(112, 188),
+          strength: random(0.1, 0.2),
+        }));
+        wireframeCanvas.style.cursor = "grab";
+        const rotateAndProject = (p, currentYaw, focal, groupFlowX, groupFlowY, groupFlowZ) => {
+          const relX = (p.baseX - pivotX) + p.driftX + p.repulseX + groupFlowX;
+          const relY = (p.baseY - pivotY) + p.driftY + p.repulseY + groupFlowY;
+          const relZ = p.z + p.depthJitter + groupFlowZ;
+          const cosY = Math.cos(currentYaw);
+          const sinY = Math.sin(currentYaw);
+          const x1 = relX * cosY + relZ * sinY;
+          const z2 = -relX * sinY + relZ * cosY;
+          const depthScale = focal / Math.max(95, focal + z2);
+          const yScale = 0.96 + depthScale * 0.04;
+          return {
+            x: pivotX + x1 * depthScale,
+            y: pivotY + relY * yScale,
+            z: z2,
+            scale: depthScale,
+          };
+        };
+        const restProjected = points.map((p) => {
+          const savedDriftX = p.driftX;
+          const savedDriftY = p.driftY;
+          const savedRepulseX = p.repulseX;
+          const savedRepulseY = p.repulseY;
+          p.driftX = 0;
+          p.driftY = 0;
+          p.repulseX = 0;
+          p.repulseY = 0;
+          const proj = rotateAndProject(p, 0, 286, 0, 0, 0);
+          p.driftX = savedDriftX;
+          p.driftY = savedDriftY;
+          p.repulseX = savedRepulseX;
+          p.repulseY = savedRepulseY;
+          return proj;
+        });
+        const getCanvasPoint = (event) => {
+          const rect = wireframeCanvas.getBoundingClientRect();
+          const x = ((event.clientX - rect.left) / rect.width) * w;
+          const y = ((event.clientY - rect.top) / rect.height) * h;
+          return { x, y };
+        };
+        wireframeCanvas.addEventListener("pointerdown", (event) => {
+          const pos = getCanvasPoint(event);
+          pointerX = pos.x;
+          pointerY = pos.y;
+          pointerActive = true;
+          dragActive = true;
+          lastDragX = event.clientX;
+          wireframeCanvas.style.cursor = "grabbing";
+          wireframeCanvas.setPointerCapture(event.pointerId);
+        });
+        wireframeCanvas.addEventListener("pointermove", (event) => {
+          const pos = getCanvasPoint(event);
+          pointerX = pos.x;
+          pointerY = pos.y;
+          pointerActive = true;
+          if (!dragActive) return;
+          const dx = event.clientX - lastDragX;
+          lastDragX = event.clientX;
+          yaw += dx * 0.0038;
+          yaw = Math.max(-yawLimit, Math.min(yawLimit, yaw));
+          yawVelocity = dx * 0.00072;
+        });
+        const stopDragging = () => {
+          dragActive = false;
+          wireframeCanvas.style.cursor = "grab";
+        };
+        wireframeCanvas.addEventListener("pointerup", stopDragging);
+        wireframeCanvas.addEventListener("pointercancel", stopDragging);
+        wireframeCanvas.addEventListener("pointerleave", () => {
+          pointerActive = false;
+          if (!dragActive) wireframeCanvas.style.cursor = "grab";
+        });
+
+        const readWireframePalette = () => {
+          const style = getComputedStyle(document.documentElement);
+          const readRgb = (prop, fallback) => {
+            const value = style.getPropertyValue(prop).trim();
+            return value || fallback;
+          };
+          if (isLightTheme()) {
+            return {
+              lineBack: readRgb("--wireframe-line-back", "16, 46, 34"),
+              nodeBack: readRgb("--wireframe-node-back", "28, 58, 44"),
+              lineMid: readRgb("--wireframe-line-mid", "72, 80, 76"),
+              nodeMid: readRgb("--wireframe-node-mid", "92, 100, 96"),
+              lineFront: readRgb("--wireframe-line-front", "128, 168, 152"),
+              nodeFront: readRgb("--wireframe-node-front", "178, 198, 188"),
+            };
+          }
+          const line = readRgb("--wireframe-line", "174, 255, 214");
+          const node = readRgb("--wireframe-node", "225, 255, 240");
+          return {
+            lineBack: line,
+            nodeBack: node,
+            lineMid: line,
+            nodeMid: node,
+            lineFront: line,
+            nodeFront: node,
+          };
+        };
+
+        const wireLayerLine = (palette, layer) => {
+          if (layer === "back") return palette.lineBack;
+          if (layer === "front") return palette.lineFront;
+          return palette.lineMid;
+        };
+
+        const wireLayerNode = (palette, layer) => {
+          if (layer === "back") return palette.nodeBack;
+          if (layer === "front") return palette.nodeFront;
+          return palette.nodeMid;
+        };
+
+        const pickBlendLayer = (x, y, weights) => {
+          const t = hash2(x * 0.19, y * 0.23);
+          const back = weights.back;
+          const mid = weights.mid;
+          if (t < back) return "back";
+          if (t < back + mid) return "mid";
+          return "front";
+        };
+
+        const linkZone = (p, q) => {
+          if (p.zone === q.zone) return p.zone;
+          if (p.zone === "hat" || q.zone === "hat") return "hat";
+          if (p.zone === "shirt" || q.zone === "shirt") return "shirt";
+          if (p.zone === "arm" || q.zone === "arm") return "arm";
+          return "blend";
+        };
+
+        const classifyLinkLayer = (p, q, pProj, qProj, isAmbientLink, featureMix, edgeMix) => {
+          if (isAmbientLink) return "back";
+          const avgZ = (pProj.z + qProj.z) * 0.5;
+          const highlight = featureMix * 0.55 + edgeMix * 0.45;
+          const zone = linkZone(p, q);
+          const bx = (p.baseX + q.baseX) * 0.5;
+          const by = (p.baseY + q.baseY) * 0.5;
+
+          if (zone === "hat") {
+            const weights = {
+              back: 0.6,
+              mid: 0.37,
+              front: highlight > 0.86 && avgZ > 26 ? 0.03 : 0,
+            };
+            const sum = weights.back + weights.mid + weights.front;
+            return pickBlendLayer(bx, by, {
+              back: weights.back / sum,
+              mid: weights.mid / sum,
+              front: weights.front / sum,
+            });
+          }
+
+          if (zone === "shirt" || zone === "arm") {
+            const weights = {
+              back: 0.5,
+              mid: 0.49,
+              front: highlight > 0.9 && avgZ > 32 ? 0.01 : 0,
+            };
+            const sum = weights.back + weights.mid + weights.front;
+            return pickBlendLayer(bx, by, {
+              back: weights.back / sum,
+              mid: weights.mid / sum,
+              front: weights.front / sum,
+            });
+          }
+
+          if (avgZ < 6 || highlight < 0.42) return "back";
+          if (avgZ > 32 && highlight > 0.8) return "front";
+          if (highlight > 0.86) return "front";
+          return "mid";
+        };
+
+        const classifyNodeLayer = (p, proj) => {
+          if (p.kind === "ambient") return "back";
+          const highlight =
+            p.feature * 0.48 + p.edge * 0.42 + Math.max(0, proj.scale - 1) * 0.35 + (p.level === "large" ? 0.08 : 0);
+
+          if (p.zone === "hat") {
+            const weights = {
+              back: 0.62,
+              mid: 0.37,
+              front: highlight > 0.84 ? 0.03 : 0,
+            };
+            const sum = weights.back + weights.mid + weights.front;
+            return pickBlendLayer(p.baseX, p.baseY, {
+              back: weights.back / sum,
+              mid: weights.mid / sum,
+              front: weights.front / sum,
+            });
+          }
+
+          if (p.zone === "shirt" || p.zone === "arm") {
+            const weights = {
+              back: 0.52,
+              mid: 0.48,
+              front: highlight > 0.88 ? 0.01 : 0,
+            };
+            const sum = weights.back + weights.mid + weights.front;
+            return pickBlendLayer(p.baseX, p.baseY, {
+              back: weights.back / sum,
+              mid: weights.mid / sum,
+              front: weights.front / sum,
+            });
+          }
+
+          if (proj.z < 4 || highlight < 0.38) return "back";
+          if (proj.z > 30 && highlight > 0.74 && p.level === "large") return "front";
+          if (highlight > 0.84) return "front";
+          return "mid";
+        };
+
+        const wireLayerAlphaScale = (layer) => {
+          if (layer === "back") return 0.86;
+          if (layer === "front") return 0.48;
+          return 0.84;
+        };
+
+        const stepFrame = () => {
+          const wirePalette = readWireframePalette();
+          t += 0.018;
+          yaw += yawVelocity;
+          yaw = Math.max(-yawLimit, Math.min(yawLimit, yaw));
+          yawVelocity *= dragActive ? 0.82 : 0.94;
+          if ((yaw >= yawLimit && yawVelocity > 0) || (yaw <= -yawLimit && yawVelocity < 0)) {
+            yawVelocity *= 0.55;
+          }
+          if (!dragActive) {
+            yaw += Math.sin(t * 0.16) * 0.00058 + Math.sin(t * 0.09 + 1.2) * 0.00022;
+            yaw = Math.max(-yawLimit, Math.min(yawLimit, yaw));
+          }
+          const focal = dragActive ? 222 : 286;
+          ctx.clearRect(0, 0, w, h);
+          const swirl = t * 0.14;
+          const groupFlowX = Math.sin(t * 0.11) * 0.92 + Math.sin(t * 0.07 + 1.1) * 0.38 + Math.cos(swirl) * 0.22;
+          const groupFlowY = Math.cos(t * 0.1 + 0.7) * 0.78 + Math.sin(t * 0.08) * 0.28 + Math.sin(swirl * 0.85) * 0.18;
+          const groupFlowZ = Math.sin(t * 0.09 + 0.5) * 1.02 + Math.sin(swirl * 1.1 + 0.6) * 0.28;
+          const shimmerPhase = Math.sin(t * 0.82) * 0.7 + Math.sin(t * 0.43 + 1.4) * 0.45;
+          const rippleCx = pivotX + Math.cos(t * 0.36) * rx * 0.68;
+          const rippleCy = pivotY + Math.sin(t * 0.28) * h * 0.14;
+          const rippleR = 118 + Math.sin(t * 0.72) * 32;
+          const rippleBand = 72;
+          const rippleCx2 = pivotX + Math.cos(t * 0.26 + 2.1) * rx * 0.64;
+          const rippleCy2 = pivotY + Math.sin(t * 0.22 + 1.4) * h * 0.14;
+          const rippleR2 = 102 + Math.sin(t * 0.55 + 0.8) * 28;
+          const rippleCx3 = pivotX + Math.cos(t * 0.19 + 4.2) * rx * 0.56;
+          const rippleCy3 = pivotY + Math.sin(t * 0.31 + 2.8) * h * 0.11;
+          const rippleR3 = 86 + Math.sin(t * 0.41 + 1.6) * 24;
+
+          for (const g of driftGroups) {
+            if (Math.random() < 0.008) g.tx = random(-0.85, 0.85);
+            if (Math.random() < 0.008) g.ty = random(-0.85, 0.85);
+            if (Math.random() < 0.006) g.tz = random(-0.85, 0.85);
+            g.ox += (g.tx - g.ox) * 0.014;
+            g.oy += (g.ty - g.oy) * 0.014;
+            g.oz += (g.tz - g.oz) * 0.012;
+          }
+          for (const pulse of driftPulses) {
+            if (Math.random() < 0.01) {
+              pulse.tx = random(minX, maxX);
+              pulse.ty = random(minY, maxY);
+              pulse.radius = random(112, 188);
+              pulse.strength = random(0.1, 0.2);
+            }
+            pulse.x += (pulse.tx - pulse.x) * 0.016;
+            pulse.y += (pulse.ty - pulse.y) * 0.016;
+          }
+
+          const projected = new Array(points.length);
+          const pointerRadius = dragActive ? 148 : 132;
+          const pointerRadiusSq = pointerRadius * pointerRadius;
+          const applyRipple = (proj, p, cxR, cyR, rRing, band, gain) => {
+            const rdx = proj.x - cxR;
+            const rdy = proj.y - cyR;
+            const rd = Math.sqrt(rdx * rdx + rdy * rdy);
+            const ringDist = Math.abs(rd - rRing);
+            if (ringDist >= band) return;
+            const ringSoft = 1 - ringDist / band;
+            const strength = ringSoft * ringSoft * gain * (0.9 + p.feature * 0.5);
+            p.repulseX += (rdx / Math.max(1, rd)) * strength;
+            p.repulseY += (rdy / Math.max(1, rd)) * strength;
+          };
+
+          for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            const dg = driftGroups[p.groupId] || driftGroups[0];
+            const wander = p.driftAmp * (p.kind === "ambient" ? 0.5 : 0.34);
+            const swirlWander = p.kind === "ambient" ? Math.sin(swirl + p.driftPhase) * 0.0024 : 0;
+            p.driftX += Math.sin(t * (p.driftSpeed * 0.48) + p.driftPhase) * 0.0058 * wander + swirlWander;
+            p.driftY += Math.cos(t * (p.driftSpeed * 0.4) + p.driftPhase * 1.2) * 0.0054 * wander - swirlWander * 0.85;
+            if (Math.random() < 0.0012) {
+              p.driftX += random(-0.11, 0.11) * wander;
+              p.driftY += random(-0.11, 0.11) * wander;
+            }
+            const spring = p.kind === "ambient" ? 0.994 : 0.99;
+            p.driftX *= spring;
+            p.driftY *= spring;
+            const groupJitterX = dg.ox * (p.kind === "ambient" ? 1.35 : 0.92);
+            const groupJitterY = dg.oy * (p.kind === "ambient" ? 1.28 : 0.88);
+            const groupJitterZ = dg.oz * (p.kind === "ambient" ? 1.18 : 0.82);
+            const proj = rotateAndProject(
+              p,
+              yaw,
+              focal,
+              groupFlowX + groupJitterX,
+              groupFlowY + groupJitterY,
+              groupFlowZ + groupJitterZ
+            );
+            projected[i] = proj;
+            applyRipple(proj, p, rippleCx, rippleCy, rippleR, rippleBand, 0.96);
+            applyRipple(proj, p, rippleCx2, rippleCy2, rippleR2, rippleBand * 0.92, 0.8);
+            applyRipple(proj, p, rippleCx3, rippleCy3, rippleR3, rippleBand * 0.8, 0.66);
+            for (const pulse of driftPulses) {
+              const pdx = proj.x - pulse.x;
+              const pdy = proj.y - pulse.y;
+              const pd2 = pdx * pdx + pdy * pdy;
+              const pulseR2 = pulse.radius * pulse.radius;
+              if (pd2 >= pulseR2) continue;
+              const pd = Math.sqrt(Math.max(1, pd2));
+              const falloff = 1 - pd / pulse.radius;
+              const f = falloff * pulse.strength * (p.kind === "ambient" ? 0.85 : 0.7);
+              p.repulseX += (pdx / pd) * f;
+              p.repulseY += (pdy / pd) * f;
+            }
+            let pointerInfluence = 0;
+            if (pointerActive) {
+              const dx = proj.x - pointerX;
+              const dy = proj.y - pointerY;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < pointerRadiusSq) {
+                const d = Math.sqrt(Math.max(1, d2));
+                const falloff = 1 - d / pointerRadius;
+                const pushBase = dragActive ? 5.1 : 3.85;
+                const strength = falloff * falloff * (pushBase + p.feature * 1.55) * (p.kind === "ambient" ? 1.22 : 1.05);
+                p.repulseX += (dx / d) * strength;
+                p.repulseY += (dy / d) * strength;
+                pointerInfluence = falloff;
+              }
+            }
+            const repulseDecay = pointerInfluence > 0.08 ? 0.8 : 0.9;
+            p.repulseX *= repulseDecay;
+            p.repulseY *= repulseDecay;
+          }
+
+          const drawLinks = (ambientPass) => {
+            for (let i = 0; i < points.length; i++) {
+              const p = points[i];
+              const pProj = projected[i];
+              for (const n of neighbors[i]) {
+                if (n.j < i) continue;
+                const isAmbientLink = n.ambient || p.kind === "ambient" || points[n.j].kind === "ambient";
+                if (ambientPass !== isAmbientLink) continue;
+                const q = points[n.j];
+                const qProj = projected[n.j];
+                const edgeMix = (p.edge + q.edge) * 0.5;
+                const featureMix = (p.feature + q.feature) * 0.5;
+                const avgZ = (pProj.z + qProj.z) * 0.5;
+                const depthBoost = Math.max(-0.06, avgZ * 0.0028);
+                const distNorm = n.d2 / (isAmbientLink ? ambientRadiusSq : meshRadiusSq);
+                const shimmer = 0.86 + (Math.sin(shimmerPhase + (p.pulseOffset + q.pulseOffset) * 0.35) * 0.5 + 0.5) * 0.28;
+                const regionBoost = (p.zone === q.zone ? 1.08 : 0.94) * (Math.abs(p.toneBand - q.toneBand) <= 1 ? 1.04 : 0.96);
+                let alpha = Math.max(
+                  0.02,
+                  (isAmbientLink ? 0.07 : 0.18) - distNorm * 0.1 + edgeMix * 0.22 + featureMix * 0.3 + depthBoost
+                );
+                const shirtLink = p.zone === "shirt" && q.zone === "shirt";
+                const armLink = p.zone === "arm" && q.zone === "arm";
+                alpha *= shimmer * regionBoost;
+                if (shirtLink) alpha *= 0.68;
+                if (armLink) alpha = Math.max(alpha, 0.22);
+                if (avgZ < -20) alpha *= 0.55;
+                const linkLayer = isLightTheme()
+                  ? classifyLinkLayer(p, q, pProj, qProj, isAmbientLink, featureMix, edgeMix)
+                  : "front";
+                alpha *= wireLayerAlphaScale(linkLayer);
+                ctx.strokeStyle = `rgba(${wireLayerLine(wirePalette, linkLayer)}, ${alpha.toFixed(3)})`;
+                let lineWidth = isAmbientLink
+                  ? 0.32
+                  : featureMix > 0.45
+                    ? 1.08
+                    : edgeMix > 0.22
+                      ? 0.88
+                      : 0.58;
+                if (shirtLink) lineWidth *= 0.78;
+                if (armLink) lineWidth = Math.max(lineWidth, 0.82);
+                ctx.lineWidth = lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(pProj.x, pProj.y);
+                ctx.lineTo(qProj.x, qProj.y);
+                ctx.stroke();
+              }
+            }
+          };
+
+          const sortedIndices = projected
+            .map((proj, idx) => ({ idx, z: proj.z }))
+            .sort((a, b) => a.z - b.z);
+
+          if (isLightTheme() && portraitLayer && !meshOnlyDraw()) {
+            const warpRect = portraitDrawRect || { drawX, drawY, drawW, drawH };
+            drawWarpedPortrait(
+              ctx,
+              portraitLayer,
+              buildPortraitWarpGrid(warpRect),
+              points,
+              projected,
+              restProjected
+            );
+          }
+
+          drawLinks(true);
+          drawLinks(false);
+
+          for (const { idx } of sortedIndices) {
+            const p = points[idx];
+            const proj = projected[idx];
+            const px = proj.x;
+            const py = proj.y;
+            const darkness = 1 - p.lum;
+            const depthSize = Math.max(-0.1, proj.z * 0.0055);
+            const isAmbient = p.kind === "ambient";
+            const levelScale = p.level === "large" ? 1.26 : p.level === "medium" ? 1.0 : 0.78;
+            const dotR = (
+              (isAmbient ? 0.14 : 0.22) +
+              p.edge * 0.68 +
+              p.feature * 0.4 +
+              darkness * 0.4 +
+              depthSize
+            ) * p.sizeJitter * levelScale;
+            const glow = (
+              (isAmbient ? 0.06 : 0.14) +
+              p.edge * 0.34 +
+              p.feature * 0.22 +
+              Math.max(0, proj.scale - 1) * 0.28
+            );
+            const shimmerDot = 0.9 + (Math.sin(shimmerPhase + p.pulseOffset * 0.9) * 0.5 + 0.5) * 0.24;
+            if (proj.z < -30) continue;
+            const nodeLayer = isLightTheme() ? classifyNodeLayer(p, proj) : "front";
+            let dotAlpha = Math.min(isAmbient ? 0.42 : 0.95, glow * shimmerDot) * wireLayerAlphaScale(nodeLayer);
+            ctx.fillStyle = `rgba(${wireLayerNode(wirePalette, nodeLayer)}, ${dotAlpha.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.arc(px, py, Math.max(0.12, dotR), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+        };
+        if (wireframeBakeMode) {
+          for (let i = 0; i < 4; i++) stepFrame();
+          const bakeApi = {
+            ready: true,
+            stepFrame,
+            exportMesh: () => packMesh(points, neighbors, layout),
+            async recordLoopWebm(durationMs = 4000, fps = 24) {
+              const frameCount = Math.ceil((durationMs / 1000) * fps);
+              const mimeTypes = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+              const mimeType = mimeTypes.find((m) => MediaRecorder.isTypeSupported(m));
+              if (!mimeType) throw new Error("WebM recording is not supported in this browser.");
+              const stream = wireframeCanvas.captureStream(fps);
+              const recorder = new MediaRecorder(stream, {
+                mimeType,
+                videoBitsPerSecond: 2_500_000,
+              });
+              const chunks = [];
+              recorder.ondataavailable = (e) => {
+                if (e.data.size) chunks.push(e.data);
+              };
+              const stopped = new Promise((resolve) => {
+                recorder.onstop = resolve;
+              });
+              recorder.start(100);
+              const frameDelay = 1000 / fps;
+              for (let f = 0; f < frameCount; f++) {
+                stepFrame();
+                await new Promise((r) => setTimeout(r, frameDelay));
+              }
+              recorder.stop();
+              stream.getTracks().forEach((t) => t.stop());
+              await stopped;
+              downloadBlob(new Blob(chunks, { type: mimeType.split(";")[0] }), "wireframe-loop.webm");
+            },
+            async downloadFrameZip(frameCount = 96) {
+              if (!window.JSZip) {
+                await new Promise((resolve, reject) => {
+                  const s = document.createElement("script");
+                  s.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+                  s.onload = resolve;
+                  s.onerror = () => reject(new Error("Could not load JSZip for frame export"));
+                  document.head.appendChild(s);
+                });
+              }
+              const zip = new window.JSZip();
+              const folder = zip.folder("frames");
+              for (let f = 0; f < frameCount; f++) {
+                stepFrame();
+                const blob = await new Promise((resolve, reject) => {
+                  wireframeCanvas.toBlob(
+                    (b) => (b ? resolve(b) : reject(new Error("Frame capture failed"))),
+                    "image/png"
+                  );
+                });
+                const buf = await blob.arrayBuffer();
+                folder.file(`frame-${String(f).padStart(3, "0")}.png`, buf);
+              }
+              const zipBlob = await zip.generateAsync({ type: "blob" });
+              downloadBlob(zipBlob, "wireframe-frames.zip");
+            },
+          };
+          window.__wireframeBake = bakeApi;
+          if (wireframeOverlayMode && !wireframeQuery.has("wireframeBake")) {
+            setupWireframeOverlayPanel(bakeApi);
+          } else if (!document.querySelector(".wireframe-bake-panel")) {
+            setupWireframeBakePanel(bakeApi);
+          }
+          if (wireframeOverlayMode) {
+            for (let i = 0; i < 6; i++) stepFrame();
+            window.__wireframeOverlayReady = true;
+          }
+        } else {
+          const runFrameLoop = () => {
+            stepFrame();
+            requestAnimationFrame(runFrameLoop);
+          };
+          runFrameLoop();
+        }
+      };
+
+      const renderFromImage = (img) => {
+        const w = wireframeCanvas.width;
+        const h = wireframeCanvas.height;
+        if (isLightTheme()) {
+          portraitLayer = null;
+          portraitDrawRect = null;
+          portraitData = null;
+        }
+        const portrait = rasterPortraitForMesh(img);
+        if (!portrait) return;
+        const { drawX, drawY, drawW, drawH, data } = portrait;
+
+        const cachedMesh = !wireframeBakeMode ? loadMeshCache(src, w, h) : null;
+        if (cachedMesh) {
+          if (isLightTheme()) loadPortraitLayer();
+          beginWireframeAnimation(cachedMesh.points, cachedMesh.neighbors, cachedMesh.layout);
+          if (!wireframeBakeMode) showLiveCanvas();
+          return;
+        }
+        const offscreen = document.createElement("canvas");
+        offscreen.width = w;
+        offscreen.height = h;
+        const octx = offscreen.getContext("2d");
+        if (!octx || !ctx) return;
+
+        octx.putImageData(
+          new ImageData(new Uint8ClampedArray(data), w, h),
+          0,
+          0
+        );
+        const points = [];
+        const pointKeys = new Set();
+        const random = (min, max) => min + Math.random() * (max - min);
+        const clamp01 = (v) => Math.min(1, Math.max(0, v));
+        const addPoint = (x, y, lum, edge, feature, zJitter, kind = "structure", meta = {}) => {
+          // Drop points exactly on the source image top edge (prevents hat-top artifact line).
+          if (y <= drawY + 3) return;
+          if (alphaAt(x, y) < 0.14) return;
+          const key = `${Math.round(x * 2) / 2},${Math.round(y * 2) / 2},${kind}`;
+          if (pointKeys.has(key)) return;
+          pointKeys.add(key);
+          const isAmbient = kind === "ambient";
+          const isFill = kind === "fill";
+          const depthFromTone = (0.52 - lum) * (isFill ? 38 : 28) + feature * (isFill ? 26 : 14);
+          const groupSeed = Math.abs(Math.floor(x * 0.11) + Math.floor(y * 0.09) + Math.floor((lum + feature) * 17));
+          const keepScore = meta.keepScore ?? edge + feature;
+          points.push({
+            x,
+            y,
+            lum,
+            edge,
+            feature,
+            kind,
+            strategic: !!meta.strategic,
+            zoneOverride: meta.zoneOverride || null,
+            levelOverride: meta.levelOverride || null,
+            keepScore,
+            groupId: groupSeed % 9,
+            z: depthFromTone + zJitter + (isAmbient ? random(-8, 8) : 0),
+            baseX: x,
+            baseY: y,
+            repulseX: 0,
+            repulseY: 0,
+            driftX: 0,
+            driftY: 0,
+            depthJitter: random(-3.5, 3.5),
+            sizeJitter: random(isAmbient ? 0.55 : 0.72, isAmbient ? 1.05 : 1.28),
+            pulseOffset: random(0, Math.PI * 2),
+            driftPhase: random(0, Math.PI * 2),
+            driftSpeed: random(0.35, 1.35),
+            driftAmp: isAmbient ? random(1.4, 4.2) : isFill ? random(0.55, 1.6) : random(0.85, 2.4),
+          });
+        };
+        const luminanceAt = (x, y) => {
+          const xx = Math.min(w - 1, Math.max(0, x));
+          const yy = Math.min(h - 1, Math.max(0, y));
+          const idx = (yy * w + xx) * 4;
+          return (0.2126 * data[idx] + 0.7152 * data[idx + 1] + 0.0722 * data[idx + 2]) / 255;
+        };
+        const rgbAt = (x, y) => {
+          const xx = Math.min(w - 1, Math.max(0, x));
+          const yy = Math.min(h - 1, Math.max(0, y));
+          const idx = (yy * w + xx) * 4;
+          return {
+            r: data[idx] / 255,
+            g: data[idx + 1] / 255,
+            b: data[idx + 2] / 255,
+          };
+        };
+        const chromaAt = (x, y) => {
+          const { r, g, b } = rgbAt(x, y);
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          return max - min;
+        };
+        const alphaAt = (x, y) => {
+          const xx = Math.min(w - 1, Math.max(0, x));
+          const yy = Math.min(h - 1, Math.max(0, y));
+          const idx = (yy * w + xx) * 4;
+          return data[idx + 3] / 255;
+        };
+
+        // Estimate subject region from edge energy to avoid random background blobs.
+        const edgeColumns = new Array(w).fill(0);
+        const edgeRows = new Array(h).fill(0);
+        let alphaMinX = w - 1;
+        let alphaMaxX = 0;
+        let alphaMinY = h - 1;
+        let alphaMaxY = 0;
+        let hasAlphaMask = false;
+        for (let y = 2; y < h - 2; y += 2) {
+          for (let x = 2; x < w - 2; x += 2) {
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const e = gx + gy;
+            edgeColumns[x] += e;
+            edgeRows[y] += e;
+            if (alphaAt(x, y) > 0.04) {
+              hasAlphaMask = true;
+              alphaMinX = Math.min(alphaMinX, x);
+              alphaMaxX = Math.max(alphaMaxX, x);
+              alphaMinY = Math.min(alphaMinY, y);
+              alphaMaxY = Math.max(alphaMaxY, y);
+            }
+          }
+        }
+        const colMax = Math.max(...edgeColumns, 0.0001);
+        const rowMax = Math.max(...edgeRows, 0.0001);
+        const colThreshold = colMax * 0.2;
+        const rowThreshold = rowMax * 0.2;
+        let minX = 0; let maxX = w - 1; let minY = 0; let maxY = h - 1;
+        for (let x = 0; x < w; x++) if (edgeColumns[x] > colThreshold) { minX = x; break; }
+        for (let x = w - 1; x >= 0; x--) if (edgeColumns[x] > colThreshold) { maxX = x; break; }
+        for (let y = 0; y < h; y++) if (edgeRows[y] > rowThreshold) { minY = y; break; }
+        for (let y = h - 1; y >= 0; y--) if (edgeRows[y] > rowThreshold) { maxY = y; break; }
+        const padX = Math.max(26, Math.round((maxX - minX) * 0.18));
+        const padY = Math.max(34, Math.round((maxY - minY) * 0.24));
+        minX = Math.max(0, minX - padX);
+        maxX = Math.min(w - 1, maxX + padX);
+        minY = Math.max(0, minY - padY);
+        maxY = Math.min(h - 1, maxY + padY);
+
+        // If image has transparency, union in full alpha bounds (keeps hat/brim).
+        if (hasAlphaMask) {
+          minX = Math.max(0, Math.min(minX, alphaMinX - 8));
+          maxX = Math.min(w - 1, Math.max(maxX, alphaMaxX + 8));
+          minY = Math.max(0, Math.min(minY, alphaMinY - 10));
+          maxY = Math.min(h - 1, Math.max(maxY, alphaMaxY + 12));
+        }
+
+        // Never shrink below the drawn portrait area so hat/shirt stay in frame.
+        minX = Math.max(0, Math.floor(Math.min(minX, drawX)));
+        minY = Math.max(0, Math.floor(Math.min(minY, drawY)));
+        maxX = Math.min(w - 1, Math.ceil(Math.max(maxX, drawX + drawW)));
+        maxY = Math.min(h - 1, Math.ceil(Math.max(maxY, drawY + drawH)));
+
+        const cx = (minX + maxX) * 0.5;
+        const cy = (minY + maxY) * 0.5;
+        const rx = Math.max(28, (maxX - minX) * 0.52);
+        const ry = Math.max(40, (maxY - minY) * 0.6);
+
+        const facialPriority = (x, y) => {
+          const nx = (x - cx) / rx;
+          const ny = (y - cy) / ry;
+          const ellipse = clamp01(1 - (nx * nx + ny * ny));
+          const eyeBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.37)) / (h * 0.055), 2));
+          const noseBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.52)) / (h * 0.075), 2));
+          const mouthBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.66)) / (h * 0.055), 2));
+          const jawBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.78)) / (h * 0.07), 2));
+          const hatBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.16)) / (h * 0.09), 2));
+          const hatRimBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.25)) / (h * 0.04), 2));
+          const sideFromCenter = Math.abs(x - cx) / Math.max(1, rx);
+          const brimTipBoost = Math.exp(-Math.pow((sideFromCenter - 0.98) / 0.2, 2)) * hatRimBand;
+          const crownEdgeBoost = Math.exp(-Math.pow((sideFromCenter - 0.84) / 0.2, 2)) * hatBand;
+          return clamp01(
+            ellipse * 0.76 +
+            eyeBand * 0.28 +
+            noseBand * 0.2 +
+            mouthBand * 0.12 +
+            jawBand * 0.16 +
+            hatBand * 0.24 +
+            hatRimBand * 0.2 +
+            brimTipBoost * 0.22 +
+            crownEdgeBoost * 0.12
+          );
+        };
+        const regionSparse = (x, y) => {
+          const relY = (y - minY) / Math.max(1, maxY - minY);
+          const hatInterior = relY < 0.2;
+          const shirtZone = relY > 0.86;
+          const hatRimOnly = relY >= 0.2 && relY < 0.3;
+          if (shirtZone) return 0.3;
+          if (hatInterior) return 0.08;
+          if (hatRimOnly) return 0.45;
+          return 1;
+        };
+        const faceVolumePriority = (x, y) => {
+          const feature = facialPriority(x, y);
+          const relY = (y - minY) / Math.max(1, maxY - minY);
+          const cheekBand = Math.exp(-Math.pow((relY - 0.52) / 0.11, 2));
+          const chinBand = Math.exp(-Math.pow((relY - 0.74) / 0.09, 2));
+          const noseBand = Math.exp(-Math.pow((relY - 0.48) / 0.08, 2));
+          const nx = Math.abs((x - cx) / Math.max(1, rx));
+          const cheekSide = Math.exp(-Math.pow((nx - 0.55) / 0.28, 2));
+          return clamp01(feature * 1.1 + cheekBand * 0.42 + chinBand * 0.38 + noseBand * 0.22 + cheekSide * 0.28);
+        };
+
+        for (let y = minY + 1; y < maxY - 1; y += 2) {
+          for (let x = minX + 1; x < maxX - 1; x += 2) {
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+            const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+            const agx = Math.abs(alphaAt(x + 1, y) - alphaAt(x - 1, y));
+            const agy = Math.abs(alphaAt(x, y + 1) - alphaAt(x, y - 1));
+            const silhouette = clamp01((agx + agy) * 2.6);
+            const edge = clamp01((gx + gy + 0.72 * (g45 + g135)) * 2.8 + silhouette * 1.5);
+            const localVar = Math.abs(luminanceAt(x + 2, y) - lum)
+              + Math.abs(luminanceAt(x - 2, y) - lum)
+              + Math.abs(luminanceAt(x, y + 2) - lum)
+              + Math.abs(luminanceAt(x, y - 2) - lum);
+            const feature = facialPriority(x, y);
+            const toneDepth = 1 - Math.abs(lum - 0.52) * 1.5;
+            const mouthCenterY = minY + (maxY - minY) * 0.665;
+            const inMouthBand = Math.abs(y - mouthCenterY) < h * 0.045;
+            const brightTeethLike = inMouthBand && lum > 0.76;
+            const alpha = alphaAt(x, y);
+
+            // Dense where feature structure/contours exist, sparse on hat/shirt interiors.
+            let pickChance = clamp01(edge * 1.14 + feature * 1.02 + toneDepth * 0.24 + silhouette * 0.82 + localVar * 0.42 - 0.04);
+            pickChance *= regionSparse(x, y);
+            if (brightTeethLike) pickChance *= 0.38;
+            if (alpha > 0.02 && silhouette > 0.08) pickChance += 0.22;
+            if (alpha < 0.02 && feature < 0.28 && edge < 0.18) pickChance *= 0.2;
+            const isCoreFeature = ((edge > 0.11 && feature > 0.2) || (edge > 0.2)) && !brightTeethLike;
+            if (Math.random() < pickChance || isCoreFeature) {
+              addPoint(
+                x + random(-0.28, 0.28),
+                y + random(-0.28, 0.28),
+                lum,
+                edge,
+                feature,
+                random(-0.65, 0.65)
+              );
+            }
+          }
+        }
+
+        // Extra fine pass over face features for better eyes/nose/mouth detail.
+        const faceMinY = minY + (maxY - minY) * 0.28;
+        const faceMaxY = minY + (maxY - minY) * 0.78;
+        for (let y = Math.floor(faceMinY); y < Math.ceil(faceMaxY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edgeFine = clamp01((gx + gy) * 3.2);
+            const feature = facialPriority(x, y);
+            const mouthCenterY = minY + (maxY - minY) * 0.665;
+            const inMouthBand = Math.abs(y - mouthCenterY) < h * 0.04;
+            const brightTeethLike = inMouthBand && lum > 0.76;
+            if (brightTeethLike) continue;
+
+            const finePick = clamp01((edgeFine * 1.85 + feature * 1.28 - 0.12) * regionSparse(x, y));
+            if (Math.random() < finePick) {
+              addPoint(
+                x + random(-0.12, 0.12),
+                y + random(-0.12, 0.12),
+                lum,
+                clamp01(edgeFine * 0.9 + feature * 0.1),
+                feature,
+                random(-0.3, 0.3)
+              );
+            }
+          }
+        }
+
+        // Ultra-fine contour pass (eyes, nose bridge, lips, hat rim, jawline).
+        const contourBands = [
+          { y: minY + (maxY - minY) * 0.24, zone: "hat-rim" },
+          { y: minY + (maxY - minY) * 0.37, zone: "eyes" },
+          { y: minY + (maxY - minY) * 0.52, zone: "nose" },
+          { y: minY + (maxY - minY) * 0.66, zone: "mouth" },
+          { y: minY + (maxY - minY) * 0.79, zone: "jaw" },
+        ];
+        for (const band of contourBands) {
+          const bandY = band.y;
+          const yStart = Math.max(minY + 1, Math.floor(bandY - h * 0.018));
+          const yEnd = Math.min(maxY - 1, Math.ceil(bandY + h * 0.018));
+          for (let y = yStart; y <= yEnd; y += 1) {
+            for (let x = minX + 1; x < maxX - 1; x += 1) {
+              const lum = luminanceAt(x, y);
+              const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+              const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+              const agx = Math.abs(alphaAt(x + 1, y) - alphaAt(x - 1, y));
+              const agy = Math.abs(alphaAt(x, y + 1) - alphaAt(x, y - 1));
+              const contourEdge = clamp01((gx + gy) * 2.8 + (agx + agy) * 2.4);
+              const feature = facialPriority(x, y);
+              // Break up rigid horizontal streaks in hat zones.
+              if (band.zone === "hat-rim" && contourEdge < 0.2) continue;
+              const stripeBreaker = band.zone.startsWith("hat")
+                ? clamp01((Math.sin((x - cx) * 0.23 + y * 0.05) * 0.5 + 0.5) - 0.3)
+                : 1;
+              const hatPenalty = band.zone.startsWith("hat") ? 0.14 : 0;
+              const pick = clamp01(contourEdge * 1.45 + feature * 0.95 - 0.22 - hatPenalty) * stripeBreaker;
+              if (Math.random() < pick) {
+                addPoint(
+                  x + random(-0.08, 0.08),
+                  y + random(-0.08, 0.08),
+                  lum,
+                  contourEdge,
+                  feature,
+                  random(-0.22, 0.22)
+                );
+              }
+            }
+          }
+        }
+
+        // Face volume fill (cheeks, chin, mid-face) â€” points between wireframe edges.
+        for (let y = Math.floor(faceMinY); y < Math.ceil(faceMaxY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const vol = faceVolumePriority(x, y);
+            if (vol < 0.32) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edgeSoft = clamp01((gx + gy) * 2.2);
+            const fillPick = clamp01(vol * 0.98 + (1 - edgeSoft) * 0.28 - 0.04);
+            if (Math.random() < fillPick) {
+              addPoint(
+                x + random(-0.22, 0.22),
+                y + random(-0.22, 0.22),
+                lum,
+                edgeSoft * 0.42,
+                vol,
+                random(-2.3, 2.3),
+                "fill"
+              );
+            }
+          }
+        }
+
+        // Targeted dense fill for cheeks/chin so the face reads as a filled volume.
+        const cheekCenterY = minY + (maxY - minY) * 0.56;
+        const chinCenterY = minY + (maxY - minY) * 0.76;
+        for (let y = Math.floor(faceMinY); y < Math.ceil(faceMaxY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const relY = (y - minY) / Math.max(1, maxY - minY);
+            const cheekBand = Math.exp(-Math.pow((y - cheekCenterY) / (h * 0.1), 2));
+            const cheekSide = Math.exp(-Math.pow((nx - 0.52) / 0.24, 2));
+            const chinBand = Math.exp(-Math.pow((y - chinCenterY) / (h * 0.085), 2));
+            const chinCore = Math.exp(-Math.pow(nx / 0.58, 2));
+            const jawBand = Math.exp(-Math.pow((relY - 0.71) / 0.08, 2));
+            const regionWeight = clamp01(cheekBand * cheekSide * 1.2 + chinBand * chinCore * 1.15 + jawBand * 0.35);
+            if (regionWeight < 0.3) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edgeSoft = clamp01((gx + gy) * 1.8);
+            const pick = clamp01(regionWeight * 0.96 + (1 - edgeSoft) * 0.28 - 0.03);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.2, 0.2),
+                y + random(-0.2, 0.2),
+                lum,
+                edgeSoft * 0.26,
+                clamp01(regionWeight + faceVolumePriority(x, y) * 0.35),
+                random(-2.8, 2.8),
+                "fill"
+              );
+            }
+          }
+        }
+
+        // Facial feature reinforcement pass (eyes, nose bridge, cheeks, lips, jaw).
+        const faceBands = [
+          minY + (maxY - minY) * 0.36,
+          minY + (maxY - minY) * 0.45,
+          minY + (maxY - minY) * 0.54,
+          minY + (maxY - minY) * 0.66,
+          minY + (maxY - minY) * 0.77,
+        ];
+        for (const bandY of faceBands) {
+          const yStart = Math.max(minY + 1, Math.floor(bandY - h * 0.028));
+          const yEnd = Math.min(maxY - 1, Math.ceil(bandY + h * 0.028));
+          for (let y = yStart; y <= yEnd; y += 1) {
+            for (let x = minX + 1; x < maxX - 1; x += 1) {
+              const lum = luminanceAt(x, y);
+              const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+              const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+              const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+              const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+              const edge = clamp01((gx + gy + 0.7 * (g45 + g135)) * 3.1);
+              const feature = faceVolumePriority(x, y);
+              const pick = clamp01(edge * 1.42 + feature * 1.22 - 0.16);
+              if (Math.random() < pick) {
+                addPoint(
+                  x + random(-0.14, 0.14),
+                  y + random(-0.14, 0.14),
+                  lum,
+                  clamp01(edge * 0.86 + feature * 0.14),
+                  feature,
+                  random(-2.6, 2.6),
+                  "fill"
+                );
+              }
+            }
+          }
+        }
+
+        // Semantic face details: glasses/eyes/smile/cowboy-hat rim boosts.
+        const eyeY = minY + (maxY - minY) * 0.37;
+        const smileY = minY + (maxY - minY) * 0.67;
+        const noseY = minY + (maxY - minY) * 0.52;
+        const hatRimY = minY + (maxY - minY) * 0.24;
+        for (let y = Math.floor(minY + (maxY - minY) * 0.2); y <= Math.floor(minY + (maxY - minY) * 0.75); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const lum = luminanceAt(x, y);
+            const feature = facialPriority(x, y);
+            if (feature < 0.22) continue;
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+            const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+            const edge = clamp01((gx + gy + 0.62 * (g45 + g135)) * 3.1);
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const eyeBand = Math.exp(-Math.pow((y - eyeY) / (h * 0.045), 2));
+            const eyeSide = Math.exp(-Math.pow((nx - 0.35) / 0.2, 2));
+            const glassesLikely = eyeBand * eyeSide * clamp01((0.52 - lum) * 2.2 + edge * 0.9);
+            const smileBand = Math.exp(-Math.pow((y - smileY) / (h * 0.05), 2));
+            const smileSpan = Math.exp(-Math.pow(nx / 0.55, 2));
+            const smileLikely = smileBand * smileSpan * clamp01(edge * 1.2 + (0.68 - lum) * 1.4);
+            const noseBand = Math.exp(-Math.pow((y - noseY) / (h * 0.06), 2));
+            const noseCenter = Math.exp(-Math.pow(nx / 0.28, 2));
+            const noseLikely = noseBand * noseCenter * clamp01(edge * 1.15 + (0.56 - lum) * 1.1);
+            const hatBand = Math.exp(-Math.pow((y - hatRimY) / (h * 0.035), 2));
+            const hatSpan = Math.exp(-Math.pow((nx - 0.62) / 0.36, 2));
+            const hatLikely = hatBand * hatSpan * clamp01(edge * 1.2 + (0.62 - lum) * 0.85);
+            const semantic = clamp01(glassesLikely * 1.22 + smileLikely * 1.08 + noseLikely * 1.02 + hatLikely * 0.82);
+            if (semantic < 0.15) continue;
+            const pick = clamp01(edge * 1.04 + semantic * 1.42 + feature * 0.54 - 0.1);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.12, 0.12),
+                y + random(-0.12, 0.12),
+                lum,
+                clamp01(edge * 0.92 + semantic * 0.18),
+                clamp01(feature * 0.5 + semantic * 0.75),
+                random(-2.4, 2.4),
+                "fill",
+                { strategic: true, keepScore: semantic * 2.2 + feature + edge }
+              );
+            }
+          }
+        }
+
+        // Eyewear frame pass (glasses rails + bridge).
+        const glassesY = minY + (maxY - minY) * 0.37;
+        for (let y = Math.floor(glassesY - h * 0.05); y <= Math.ceil(glassesY + h * 0.05); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const eyeSide = Math.exp(-Math.pow((nx - 0.34) / 0.18, 2));
+            const bridge = Math.exp(-Math.pow(nx / 0.14, 2));
+            const zoneWeight = Math.max(eyeSide, bridge * 0.85);
+            if (zoneWeight < 0.2) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 3.4);
+            const pick = clamp01(zoneWeight * 1.1 + edge * 0.95 + (0.5 - lum) * 0.5 - 0.2);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.1, 0.1),
+                y + random(-0.1, 0.1),
+                lum,
+                edge,
+                clamp01(zoneWeight + 0.35),
+                random(-2.2, 2.2),
+                "fill",
+                { strategic: true, keepScore: zoneWeight * 2 + edge }
+              );
+            }
+          }
+        }
+
+        // Hybrid detail pass: combine raw pixel texture + line structure cues.
+        for (let y = minY + 1; y < maxY - 1; y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const relY = (y - minY) / Math.max(1, maxY - minY);
+            const inBust = relY <= 0.92;
+            if (!inBust) continue;
+            const lum = luminanceAt(x, y);
+            const feature = facialPriority(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+            const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+            const lineSignal = clamp01((gx + gy + 0.72 * (g45 + g135)) * 2.65);
+            const pixelSignal = clamp01((1 - Math.abs(lum - 0.5) * 1.72) * 0.66 + chromaAt(x, y) * 0.54);
+            const hybrid = clamp01(lineSignal * 0.63 + pixelSignal * 0.37 + feature * 0.24);
+            if (hybrid < 0.38) continue;
+            const faceBoost = relY > 0.28 && relY < 0.8 ? 0.08 : 0;
+            const pick = clamp01(hybrid * 0.86 + faceBoost - 0.22);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.11, 0.11),
+                y + random(-0.11, 0.11),
+                lum,
+                clamp01(lineSignal * 0.84 + hybrid * 0.12),
+                clamp01(feature * 0.55 + hybrid * 0.42),
+                random(-2.1, 2.1),
+                "fill",
+                { keepScore: hybrid * 1.8 + feature + lineSignal * 0.7 }
+              );
+            }
+          }
+        }
+
+        // Strategic Hawaiian shirt print points (sparse grid, strong color/texture peaks only).
+        const shirtPrintStartY = minY + (maxY - minY) * 0.8;
+        const shirtPrintEndY = maxY - 2;
+        for (let y = Math.floor(shirtPrintStartY); y <= Math.floor(shirtPrintEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 2) {
+            const lum = luminanceAt(x, y);
+            const chroma = chromaAt(x, y);
+            const cDx = Math.abs(chromaAt(x + 1, y) - chromaAt(x - 1, y));
+            const cDy = Math.abs(chromaAt(x, y + 1) - chromaAt(x, y - 1));
+            const colorEdge = clamp01((cDx + cDy) * 2.8);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const lumEdge = clamp01((gx + gy) * 2.2);
+            const printSignal = clamp01(chroma * 1.62 + colorEdge * 1.28 + lumEdge * 0.74);
+            if (printSignal < 0.31) continue;
+            const pick = clamp01(printSignal * 1.12 - 0.22);
+            if (Math.random() < pick || printSignal > 0.5) {
+              addPoint(
+                x + random(-0.16, 0.16),
+                y + random(-0.16, 0.16),
+                lum,
+                clamp01(lumEdge * 0.65 + colorEdge * 0.6),
+                clamp01(printSignal * 0.72),
+                random(-1.4, 1.4),
+                "fill",
+                { strategic: true, keepScore: printSignal * 2.1 + colorEdge }
+              );
+            }
+          }
+        }
+
+        // Face texture enrichment pass (skin/glasses/smile micro features from pixel+edge cues).
+        const faceTexStartY = minY + (maxY - minY) * 0.3;
+        const faceTexEndY = minY + (maxY - minY) * 0.8;
+        for (let y = Math.floor(faceTexStartY); y <= Math.floor(faceTexEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 2) {
+            const relY = (y - minY) / Math.max(1, maxY - minY);
+            const lum = luminanceAt(x, y);
+            const feature = facialPriority(x, y);
+            if (feature < 0.2) continue;
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.95);
+            const chroma = chromaAt(x, y);
+            const micro = clamp01(edge * 0.7 + chroma * 0.38 + feature * 0.42 + (1 - Math.abs(lum - 0.5) * 1.6) * 0.24);
+            const cheeksBoost = relY > 0.45 && relY < 0.72 ? 0.08 : 0;
+            const pick = clamp01(micro + cheeksBoost - 0.34);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.1, 0.1),
+                y + random(-0.1, 0.1),
+                lum,
+                clamp01(edge * 0.85 + micro * 0.12),
+                clamp01(feature * 0.55 + micro * 0.36),
+                random(-2.0, 2.0),
+                "fill",
+                { strategic: true, keepScore: micro * 1.9 + feature * 0.9 }
+              );
+            }
+          }
+        }
+
+        // Cheek/chin/jaw structural pass for stronger lower-face geometry.
+        const jawY = minY + (maxY - minY) * 0.78;
+        const cheekY = minY + (maxY - minY) * 0.58;
+        for (let y = Math.floor(minY + (maxY - minY) * 0.45); y <= Math.floor(minY + (maxY - minY) * 0.86); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const cheekBand = Math.exp(-Math.pow((y - cheekY) / (h * 0.11), 2)) * Math.exp(-Math.pow((nx - 0.5) / 0.24, 2));
+            const chinBand = Math.exp(-Math.pow((y - jawY) / (h * 0.08), 2)) * Math.exp(-Math.pow(nx / 0.56, 2));
+            const region = clamp01(cheekBand * 1.18 + chinBand * 1.22);
+            if (region < 0.24) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.7);
+            const feature = facialPriority(x, y);
+            const pick = clamp01(region * 0.96 + edge * 0.78 + feature * 0.45 - 0.2);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.09, 0.09),
+                y + random(-0.09, 0.09),
+                lum,
+                clamp01(edge * 0.84 + region * 0.16),
+                clamp01(feature * 0.52 + region * 0.5),
+                random(-2.4, 2.4),
+                "fill",
+                { strategic: true, keepScore: region * 2.2 + edge + feature * 0.6 }
+              );
+            }
+          }
+        }
+
+        // Shoulder/upper-arm reconstruction pass from lower-body silhouette + texture.
+        const shoulderStartY = minY + (maxY - minY) * 0.8;
+        const shoulderEndY = minY + (maxY - minY) * 0.98;
+        for (let y = Math.floor(shoulderStartY); y <= Math.floor(shoulderEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const sideShoulder = Math.exp(-Math.pow((nx - 0.78) / 0.35, 2));
+            const centerChest = Math.exp(-Math.pow(nx / 0.75, 2));
+            const shoulderMask = clamp01(sideShoulder * 0.96 + centerChest * 0.5);
+            if (shoulderMask < 0.18) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.45);
+            const chroma = chromaAt(x, y);
+            const alpha = alphaAt(x, y);
+            const shirtSignal = clamp01(edge * 0.72 + chroma * 0.62 + alpha * 0.26 + shoulderMask * 0.32);
+            if (shirtSignal < 0.27) continue;
+            const pick = clamp01(shirtSignal * 0.95 - 0.14);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.12, 0.12),
+                y + random(-0.12, 0.12),
+                lum,
+                clamp01(edge * 0.76 + shirtSignal * 0.18),
+                clamp01(shirtSignal * 0.62),
+                random(-1.9, 1.9),
+                "fill",
+                { strategic: true, keepScore: shirtSignal * 2.0 + edge + shoulderMask * 0.7 }
+              );
+            }
+          }
+        }
+
+        // Face landmark lock-in pass (eyes, nose, smile line, jaw corners).
+        const eyeLineY = minY + (maxY - minY) * 0.37;
+        const noseLineY = minY + (maxY - minY) * 0.52;
+        const mouthLineY = minY + (maxY - minY) * 0.67;
+        const jawLineY = minY + (maxY - minY) * 0.79;
+        for (let y = Math.floor(minY + (maxY - minY) * 0.3); y <= Math.floor(minY + (maxY - minY) * 0.84); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+            const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+            const edge = clamp01((gx + gy + 0.72 * (g45 + g135)) * 3.2);
+            const feature = facialPriority(x, y);
+            const eyeBand = Math.exp(-Math.pow((y - eyeLineY) / (h * 0.045), 2)) * Math.exp(-Math.pow((nx - 0.34) / 0.2, 2));
+            const noseBand = Math.exp(-Math.pow((y - noseLineY) / (h * 0.06), 2)) * Math.exp(-Math.pow(nx / 0.24, 2));
+            const smileBand = Math.exp(-Math.pow((y - mouthLineY) / (h * 0.05), 2)) * Math.exp(-Math.pow(nx / 0.58, 2));
+            const jawBand = Math.exp(-Math.pow((y - jawLineY) / (h * 0.06), 2)) * Math.exp(-Math.pow((nx - 0.56) / 0.32, 2));
+            const landmark = clamp01(eyeBand * 1.2 + noseBand * 1.02 + smileBand * 1.05 + jawBand * 0.9);
+            if (landmark < 0.16) continue;
+            const pick = clamp01(edge * 0.92 + feature * 0.48 + landmark * 1.25 - 0.17);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.09, 0.09),
+                y + random(-0.09, 0.09),
+                lum,
+                clamp01(edge * 0.88 + landmark * 0.14),
+                clamp01(feature * 0.56 + landmark * 0.5),
+                random(-2.3, 2.3),
+                "fill",
+                { strategic: true, keepScore: landmark * 2.4 + edge + feature * 0.8 }
+              );
+            }
+          }
+        }
+
+        // Eyebrow + cheekbone + chin contour lock pass (explicit landmarks).
+        const browY = minY + (maxY - minY) * 0.31;
+        const cheekboneY = minY + (maxY - minY) * 0.56;
+        const chinTipY = minY + (maxY - minY) * 0.82;
+        for (let y = Math.floor(minY + (maxY - minY) * 0.26); y <= Math.floor(minY + (maxY - minY) * 0.86); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const feature = facialPriority(x, y);
+            if (feature < 0.22) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 3.05);
+            const brow = Math.exp(-Math.pow((y - browY) / (h * 0.035), 2)) * Math.exp(-Math.pow((nx - 0.33) / 0.18, 2));
+            const cheek = Math.exp(-Math.pow((y - cheekboneY) / (h * 0.07), 2)) * Math.exp(-Math.pow((nx - 0.52) / 0.22, 2));
+            const chin = Math.exp(-Math.pow((y - chinTipY) / (h * 0.05), 2)) * Math.exp(-Math.pow(nx / 0.48, 2));
+            const contour = clamp01(brow * 1.35 + cheek * 1.15 + chin * 1.28);
+            if (contour < 0.2) continue;
+            const pick = clamp01(edge * 0.9 + contour * 1.28 + feature * 0.44 - 0.14);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.06, 0.06),
+                y + random(-0.06, 0.06),
+                lum,
+                clamp01(edge * 0.88 + contour * 0.14),
+                clamp01(feature * 0.5 + contour * 0.56),
+                random(-2.6, 2.6),
+                "fill",
+                { strategic: true, keepScore: contour * 2.8 + feature + edge * 0.9 }
+              );
+            }
+          }
+        }
+
+        // Deterministic face anchors so key landmarks are always present.
+        const faceAnchorBands = [
+          { y: browY, nxMin: 0.2, nxMax: 0.52, w: 0.95 },      // eyebrows
+          { y: eyeLineY, nxMin: 0.16, nxMax: 0.44, w: 0.86 },   // eyes
+          { y: noseLineY, nxMin: 0.0, nxMax: 0.24, w: 0.78 },   // nose bridge/tip
+          { y: mouthLineY, nxMin: 0.0, nxMax: 0.56, w: 0.84 },  // smile line
+          { y: cheekboneY, nxMin: 0.34, nxMax: 0.72, w: 0.82 }, // cheeks
+          { y: chinTipY, nxMin: 0.0, nxMax: 0.58, w: 0.9 },     // chin/jaw
+        ];
+        for (const band of faceAnchorBands) {
+          const yStart = Math.max(minY + 1, Math.floor(band.y - h * 0.014));
+          const yEnd = Math.min(maxY - 1, Math.ceil(band.y + h * 0.014));
+          for (let y = yStart; y <= yEnd; y += 1) {
+            for (let x = minX + 1; x < maxX - 1; x += 2) {
+              const nx = Math.abs((x - cx) / Math.max(1, rx));
+              if (nx < band.nxMin || nx > band.nxMax) continue;
+              const lum = luminanceAt(x, y);
+              const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+              const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+              const edge = clamp01((gx + gy) * 3.0);
+              const feature = facialPriority(x, y);
+              addPoint(
+                x + random(-0.05, 0.05),
+                y + random(-0.05, 0.05),
+                lum,
+                clamp01(edge * 0.88 + band.w * 0.12),
+                clamp01(feature * 0.52 + band.w * 0.44),
+                random(-2.3, 2.3),
+                "fill",
+                { strategic: true, keepScore: 4.6 + band.w + edge + feature }
+              );
+            }
+          }
+        }
+
+        // Torso/body weave pass: chest and sleeves with print-aware structure.
+        const torsoStartY = minY + (maxY - minY) * 0.78;
+        const torsoEndY = maxY - 2;
+        for (let y = Math.floor(torsoStartY); y <= Math.floor(torsoEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const chest = Math.exp(-Math.pow(nx / 0.72, 2));
+            const sleeve = Math.exp(-Math.pow((nx - 0.82) / 0.28, 2));
+            const bodyMask = clamp01(chest * 0.74 + sleeve * 1.05);
+            if (bodyMask < 0.18) continue;
+            const lum = luminanceAt(x, y);
+            const chroma = chromaAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.5);
+            const cDx = Math.abs(chromaAt(x + 1, y) - chromaAt(x - 1, y));
+            const cDy = Math.abs(chromaAt(x, y + 1) - chromaAt(x, y - 1));
+            const colorEdge = clamp01((cDx + cDy) * 2.9);
+            const weave = clamp01(edge * 0.62 + colorEdge * 0.76 + chroma * 0.55 + bodyMask * 0.28);
+            if (weave < 0.24) continue;
+            const pick = clamp01(weave * 0.98 - 0.11);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.11, 0.11),
+                y + random(-0.11, 0.11),
+                lum,
+                clamp01(edge * 0.7 + colorEdge * 0.34),
+                clamp01(weave * 0.7),
+                random(-2.0, 2.0),
+                "fill",
+                { strategic: true, keepScore: weave * 2.2 + bodyMask * 0.85 + colorEdge }
+              );
+            }
+          }
+        }
+
+        // Ultra face pass: high-frequency detail lock for eyes/nose/mouth/jaw.
+        const ultraFaceStartY = minY + (maxY - minY) * 0.3;
+        const ultraFaceEndY = minY + (maxY - minY) * 0.84;
+        for (let y = Math.floor(ultraFaceStartY); y <= Math.floor(ultraFaceEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nx = Math.abs((x - cx) / Math.max(1, rx));
+            const lum = luminanceAt(x, y);
+            const feature = facialPriority(x, y);
+            if (feature < 0.24) continue;
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const g45 = Math.abs(luminanceAt(x + 1, y + 1) - luminanceAt(x - 1, y - 1));
+            const g135 = Math.abs(luminanceAt(x + 1, y - 1) - luminanceAt(x - 1, y + 1));
+            const edge = clamp01((gx + gy + 0.78 * (g45 + g135)) * 3.45);
+            const chroma = chromaAt(x, y);
+            const eyes = Math.exp(-Math.pow((y - eyeLineY) / (h * 0.04), 2)) * Math.exp(-Math.pow((nx - 0.34) / 0.18, 2));
+            const nose = Math.exp(-Math.pow((y - noseLineY) / (h * 0.05), 2)) * Math.exp(-Math.pow(nx / 0.2, 2));
+            const mouth = Math.exp(-Math.pow((y - mouthLineY) / (h * 0.045), 2)) * Math.exp(-Math.pow(nx / 0.54, 2));
+            const jaw = Math.exp(-Math.pow((y - jawLineY) / (h * 0.055), 2)) * Math.exp(-Math.pow((nx - 0.5) / 0.28, 2));
+            const landmark = clamp01(eyes * 1.35 + nose * 1.08 + mouth * 1.18 + jaw * 1.02);
+            const micro = clamp01(edge * 0.74 + feature * 0.58 + chroma * 0.22 + landmark * 0.65);
+            if (micro < 0.38) continue;
+            const pick = clamp01(micro * 1.14 - 0.14);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.07, 0.07),
+                y + random(-0.07, 0.07),
+                lum,
+                clamp01(edge * 0.9 + micro * 0.1),
+                clamp01(feature * 0.55 + landmark * 0.34 + micro * 0.2),
+                random(-2.7, 2.7),
+                "fill",
+                { strategic: true, keepScore: micro * 2.8 + landmark * 1.8 + edge }
+              );
+            }
+          }
+        }
+
+        // Fine face micro-detail pass (small points only).
+        const faceFineStartY = minY + (maxY - minY) * 0.31;
+        const faceFineEndY = minY + (maxY - minY) * 0.83;
+        for (let y = Math.floor(faceFineStartY); y <= Math.floor(faceFineEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const feature = facialPriority(x, y);
+            if (feature < 0.26) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 3.05);
+            const micro = clamp01(edge * 0.76 + feature * 0.72 + chromaAt(x, y) * 0.24);
+            if (micro < 0.42) continue;
+            const pick = clamp01(micro * 1.06 - 0.16);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.06, 0.06),
+                y + random(-0.06, 0.06),
+                lum,
+                clamp01(edge * 0.86 + micro * 0.1),
+                clamp01(feature * 0.62 + micro * 0.26),
+                random(-2.4, 2.4),
+                "fill",
+                { strategic: true, keepScore: micro * 2.5 + feature * 1.1 + edge }
+              );
+            }
+          }
+        }
+
+        // Fine shirt print detail pass (small points to recover print texture).
+        const shirtFineStartY = minY + (maxY - minY) * 0.8;
+        const shirtFineEndY = maxY - 2;
+        for (let y = Math.floor(shirtFineStartY); y <= Math.floor(shirtFineEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const chroma = chromaAt(x, y);
+            const lum = luminanceAt(x, y);
+            const cDx = Math.abs(chromaAt(x + 1, y) - chromaAt(x - 1, y));
+            const cDy = Math.abs(chromaAt(x, y + 1) - chromaAt(x, y - 1));
+            const colorEdge = clamp01((cDx + cDy) * 3.1);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const lumEdge = clamp01((gx + gy) * 2.4);
+            const printMicro = clamp01(chroma * 1.42 + colorEdge * 1.2 + lumEdge * 0.64);
+            if (printMicro < 0.34) continue;
+            const pick = clamp01(printMicro * 0.9 - 0.21);
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.07, 0.07),
+                y + random(-0.07, 0.07),
+                lum,
+                clamp01(lumEdge * 0.6 + colorEdge * 0.55),
+                clamp01(printMicro * 0.66),
+                random(-1.6, 1.6),
+                "fill",
+                { strategic: true, keepScore: printMicro * 2.25 + colorEdge * 0.9 }
+              );
+            }
+          }
+        }
+
+        // Ultra arm reconstruction pass: extend sleeve/upper-arm silhouette outward.
+        const armStartY = minY + (maxY - minY) * 0.8;
+        const armEndY = minY + (maxY - minY) * 1.02;
+        for (let y = Math.floor(armStartY); y <= Math.floor(armEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 1) {
+            const nxSigned = (x - cx) / Math.max(1, rx);
+            const nx = Math.abs(nxSigned);
+            const sleeveBand = Math.exp(-Math.pow((nx - 0.86) / 0.24, 2));
+            const armCore = Math.exp(-Math.pow((nx - 0.97) / 0.22, 2));
+            const yBand = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.9)) / (h * 0.16), 2));
+            const armMask = clamp01((sleeveBand * 0.9 + armCore * 1.08) * yBand);
+            if (armMask < 0.18) continue;
+            const lum = luminanceAt(x, y);
+            const chroma = chromaAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.55);
+            const signal = clamp01(edge * 0.7 + chroma * 0.58 + armMask * 0.56);
+            if (signal < 0.26) continue;
+            const armOut = Math.sign(nxSigned || (Math.random() - 0.5)) * random(0.6, 2.4);
+            const pick = clamp01(signal - 0.12);
+            if (Math.random() < pick) {
+              addPoint(
+                x + armOut + random(-0.1, 0.1),
+                y + random(-0.1, 0.1),
+                lum,
+                clamp01(edge * 0.76 + signal * 0.18),
+                clamp01(signal * 0.68),
+                random(-2.2, 2.2),
+                "fill",
+                { strategic: true, keepScore: signal * 2.4 + armMask * 1.4 + edge, zoneOverride: "arm", levelOverride: "large" }
+              );
+            }
+          }
+        }
+
+        // Arm boundary extrusion pass from silhouette edges (forces visible arms).
+        for (let y = Math.floor(armStartY); y <= Math.floor(armEndY); y += 1) {
+          let leftEdge = -1;
+          let rightEdge = -1;
+          for (let x = minX; x <= maxX; x++) {
+            if (alphaAt(x, y) > 0.05 || luminanceAt(x, y) < 0.9) {
+              leftEdge = x;
+              break;
+            }
+          }
+          for (let x = maxX; x >= minX; x--) {
+            if (alphaAt(x, y) > 0.05 || luminanceAt(x, y) < 0.9) {
+              rightEdge = x;
+              break;
+            }
+          }
+          if (leftEdge < 0 || rightEdge < 0 || rightEdge - leftEdge < 24) continue;
+          const armSpan = Math.max(10, Math.round((rightEdge - leftEdge) * 0.12));
+          for (let k = 0; k < armSpan; k++) {
+            const lx = leftEdge - k;
+            const rx = rightEdge + k;
+            const yJitter = y + random(-0.08, 0.08);
+            const llum = luminanceAt(Math.max(minX, leftEdge), y);
+            const rlum = luminanceAt(Math.min(maxX, rightEdge), y);
+            addPoint(
+              lx + random(-0.08, 0.08),
+              yJitter,
+              llum,
+              0.68,
+              0.74,
+              random(-2.4, 2.4),
+              "fill",
+              { strategic: true, keepScore: 4.2, zoneOverride: "arm", levelOverride: "large" }
+            );
+            addPoint(
+              rx + random(-0.08, 0.08),
+              yJitter,
+              rlum,
+              0.68,
+              0.74,
+              random(-2.4, 2.4),
+              "fill",
+              { strategic: true, keepScore: 4.2, zoneOverride: "arm", levelOverride: "large" }
+            );
+          }
+        }
+
+        // Deterministic arm rails (guaranteed upper-arm presence).
+        const railStartY = minY + (maxY - minY) * 0.82;
+        const railEndY = minY + (maxY - minY) * 1.01;
+        for (let y = Math.floor(railStartY); y <= Math.floor(railEndY); y += 2) {
+          const lerp = (y - railStartY) / Math.max(1, railEndY - railStartY);
+          const leftX = cx - rx * (0.9 + lerp * 0.22);
+          const rightX = cx + rx * (0.9 + lerp * 0.22);
+          const llum = luminanceAt(Math.round(Math.max(minX + 1, leftX)), Math.round(y));
+          const rlum = luminanceAt(Math.round(Math.min(maxX - 1, rightX)), Math.round(y));
+          for (let s = -1; s <= 1; s++) {
+            addPoint(
+              leftX + s * 1.2 + random(-0.06, 0.06),
+              y + random(-0.08, 0.08),
+              llum,
+              0.72,
+              0.78,
+              random(-2.0, 2.0),
+              "fill",
+              { strategic: true, keepScore: 5.1, zoneOverride: "arm", levelOverride: "large" }
+            );
+            addPoint(
+              rightX + s * 1.2 + random(-0.06, 0.06),
+              y + random(-0.08, 0.08),
+              rlum,
+              0.72,
+              0.78,
+              random(-2.0, 2.0),
+              "fill",
+              { strategic: true, keepScore: 5.1, zoneOverride: "arm", levelOverride: "large" }
+            );
+          }
+        }
+
+        // Arm outline skeleton pass (explicit contour points and rail links).
+        const armOutlineAnchors = [];
+        const outlineStartY = minY + (maxY - minY) * 0.8;
+        const outlineEndY = minY + (maxY - minY) * 1.03;
+        for (let y = Math.floor(outlineStartY); y <= Math.floor(outlineEndY); y += 3) {
+          const tArm = (y - outlineStartY) / Math.max(1, outlineEndY - outlineStartY);
+          const spread = 0.9 + tArm * 0.34;
+          const leftOuter = cx - rx * spread;
+          const leftInner = cx - rx * (spread - 0.13);
+          const rightInner = cx + rx * (spread - 0.13);
+          const rightOuter = cx + rx * spread;
+          const yNoise = random(-0.06, 0.06);
+          const anchorSet = [
+            { x: leftOuter, side: "left" },
+            { x: leftInner, side: "left" },
+            { x: rightInner, side: "right" },
+            { x: rightOuter, side: "right" },
+          ];
+          for (const a of anchorSet) {
+            const px = a.x + random(-0.07, 0.07);
+            const py = y + yNoise;
+            const sampleX = Math.round(Math.max(minX + 1, Math.min(maxX - 1, a.x)));
+            const sampleY = Math.round(Math.max(minY + 1, Math.min(maxY - 1, y)));
+            const lum = luminanceAt(sampleX, sampleY);
+            const edge = 0.78;
+            const feature = 0.82;
+            addPoint(
+              px,
+              py,
+              lum,
+              edge,
+              feature,
+              random(-2.2, 2.2),
+              "fill",
+              { strategic: true, keepScore: 6.2, zoneOverride: "arm", levelOverride: "large" }
+            );
+            armOutlineAnchors.push({ x: px, y: py, side: a.side, lane: a === anchorSet[0] || a === anchorSet[3] ? "outer" : "inner" });
+          }
+        }
+
+        // Large-point arm mass pass to reinforce sleeve/upper-arm silhouette.
+        for (let y = Math.floor(armStartY); y <= Math.floor(armEndY); y += 1) {
+          for (let x = minX + 1; x < maxX - 1; x += 2) {
+            const nxSigned = (x - cx) / Math.max(1, rx);
+            const nx = Math.abs(nxSigned);
+            const armShell = Math.exp(-Math.pow((nx - 0.9) / 0.26, 2));
+            const yShell = Math.exp(-Math.pow((y - (minY + (maxY - minY) * 0.9)) / (h * 0.18), 2));
+            const mask = clamp01(armShell * yShell);
+            if (mask < 0.2) continue;
+            const lum = luminanceAt(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.35);
+            const pick = clamp01(mask * 0.92 + edge * 0.5 - 0.22);
+            if (Math.random() < pick) {
+              const out = Math.sign(nxSigned || (Math.random() - 0.5)) * random(1.2, 3.1);
+              addPoint(
+                x + out + random(-0.08, 0.08),
+                y + random(-0.08, 0.08),
+                lum,
+                clamp01(edge * 0.7 + mask * 0.25),
+                clamp01(mask * 0.86),
+                random(-2.6, 2.6),
+                "fill",
+                { strategic: true, keepScore: mask * 2.6 + edge * 0.7 + 1.4 }
+              );
+            }
+          }
+        }
+
+        // Multi-scale enrichment pass: add more fine/medium/large candidate points.
+        for (let y = minY + 1; y < maxY - 1; y += 2) {
+          for (let x = minX + 1; x < maxX - 1; x += 2) {
+            const relY = (y - minY) / Math.max(1, maxY - minY);
+            if (relY > 0.79) continue;
+            const lum = luminanceAt(x, y);
+            const feature = facialPriority(x, y);
+            const gx = Math.abs(luminanceAt(x + 1, y) - luminanceAt(x - 1, y));
+            const gy = Math.abs(luminanceAt(x, y + 1) - luminanceAt(x, y - 1));
+            const edge = clamp01((gx + gy) * 2.3);
+            const toneRichness = clamp01(1 - Math.abs(lum - 0.5) * 1.8);
+            const richness = clamp01(feature * 0.56 + edge * 0.34 + toneRichness * 0.2);
+            const pick = clamp01((richness * 0.45 - 0.08) * regionSparse(x, y));
+            if (Math.random() < pick) {
+              addPoint(
+                x + random(-0.24, 0.24),
+                y + random(-0.24, 0.24),
+                lum,
+                edge,
+                feature,
+                random(-2.1, 2.1),
+                "fill"
+              );
+            }
+          }
+        }
+
+        // Sparse ambient point cloud in surrounding space (not as dense as face mesh).
+        const ambPadX = (maxX - minX) * 0.28;
+        const ambPadY = (maxY - minY) * 0.22;
+        const ambMinX = Math.max(0, minX - ambPadX);
+        const ambMaxX = Math.min(w - 1, maxX + ambPadX);
+        const ambMinY = Math.max(0, minY - ambPadY);
+        const ambMaxY = Math.min(h - 1, maxY + ambPadY);
+        const ambientTarget = 1400;
+        let ambientAdded = 0;
+        let ambientAttempts = 0;
+        while (ambientAdded < ambientTarget && ambientAttempts < ambientTarget * 14) {
+          ambientAttempts++;
+          const x = random(ambMinX, ambMaxX);
+          const y = random(ambMinY, ambMaxY);
+          const lum = luminanceAt(x, y);
+          const alpha = alphaAt(x, y);
+          const feature = facialPriority(x, y);
+          const insidePortrait = alpha > 0.12 || feature > 0.32;
+          if (insidePortrait && Math.random() < 0.82) continue;
+          const holeRoll = Math.random();
+          if (holeRoll < 0.14) continue;
+          const density = insidePortrait ? 0.08 : 0.34;
+          if (Math.random() > density) continue;
+          addPoint(
+            x + random(-1.2, 1.2),
+            y + random(-1.2, 1.2),
+            lum,
+            0.04,
+            feature * 0.15,
+            random(-4, 4),
+            "ambient"
+          );
+          ambientAdded++;
+        }
+
+        const inferZoneFromY = (p) => {
+          if (p.zoneOverride) return p.zoneOverride;
+          const relY = (p.baseY - minY) / Math.max(1, maxY - minY);
+          if (relY < 0.3) return "hat";
+          if (relY < 0.8) return "face";
+          return "shirt";
+        };
+        const structurePoints = points.filter((p) => p.kind !== "ambient");
+        const ambientPoints = points.filter((p) => p.kind === "ambient");
+        if (structurePoints.length > 42000) {
+          const hatPts = [];
+          const facePts = [];
+          const shirtPts = [];
+          const armPts = [];
+          for (const p of structurePoints) {
+            const z = inferZoneFromY(p);
+            if (z === "hat") hatPts.push(p);
+            else if (z === "face") facePts.push(p);
+            else if (z === "arm") armPts.push(p);
+            else shirtPts.push(p);
+          }
+          const sorter = (a, b) => (b.keepScore || b.edge + b.feature) - (a.keepScore || a.edge + a.feature);
+          hatPts.sort(sorter);
+          facePts.sort(sorter);
+          shirtPts.sort(sorter);
+          armPts.sort(sorter);
+          const hatBudget = 3800;
+          const faceBudget = 26000;
+          const shirtBudget = 4000;
+          const armBudget = 9800;
+          const selected = [
+            ...hatPts.slice(0, hatBudget),
+            ...facePts.slice(0, faceBudget),
+            ...shirtPts.slice(0, shirtBudget),
+            ...armPts.slice(0, armBudget),
+          ];
+          structurePoints.length = 0;
+          structurePoints.push(...selected);
+        }
+        if (ambientPoints.length > 1400) {
+          ambientPoints.length = 1400;
+        }
+        points.length = 0;
+        points.push(...structurePoints, ...ambientPoints);
+
+        // Remove isolated outliers on structure points only.
+        const isolateRadiusSq = 8 * 8;
+        const kept = [];
+        for (let i = 0; i < points.length; i++) {
+          if (points[i].kind === "ambient") {
+            kept.push(points[i]);
+            continue;
+          }
+          let nearCount = 0;
+          for (let j = 0; j < points.length; j++) {
+            if (i === j) continue;
+            const dx = points[i].x - points[j].x;
+            const dy = points[i].y - points[j].y;
+            if (dx * dx + dy * dy <= isolateRadiusSq) {
+              nearCount++;
+              if (nearCount >= 2) break;
+            }
+          }
+          if (nearCount >= 2 || points[i].strategic || (points[i].edge + points[i].feature) > 0.55) kept.push(points[i]);
+        }
+        points.length = 0;
+        points.push(...kept);
+
+        // Add a coarse body-volume model so rotation reads as head + hat + torso.
+        const bodyDepth = (p) => {
+          const nx = (p.baseX - cx) / Math.max(1, (maxX - minX) * 0.58);
+          const relY = (p.baseY - minY) / Math.max(1, maxY - minY);
+          const head = Math.max(0, 1 - (nx * nx) * 1.42 - Math.pow((relY - 0.5) / 0.31, 2));
+          const torso = Math.max(0, 1 - (nx * nx) * 0.96 - Math.pow((relY - 0.9) / 0.31, 2));
+          const hatCrown = Math.max(0, 1 - (nx * nx) * 1.65 - Math.pow((relY - 0.14) / 0.15, 2));
+          const hatBrim = Math.max(0, 1 - Math.pow((Math.abs(nx) - 0.58) / 0.38, 2) - Math.pow((relY - 0.24) / 0.08, 2));
+          const shoulder = Math.max(0, 1 - Math.pow((Math.abs(nx) - 0.78) / 0.34, 2) - Math.pow((relY - 0.9) / 0.14, 2));
+          const featureBoost = p.feature * 0.35;
+          return head * 18 + torso * 15 + hatCrown * 10 + hatBrim * 8 + shoulder * 11 + featureBoost * 6.5;
+        };
+        for (const p of points) {
+          const sculpt = bodyDepth(p);
+          p.z += sculpt;
+          const relY = (p.baseY - minY) / Math.max(1, maxY - minY);
+          const darkness = 1 - p.lum;
+          const richness = p.feature * 0.58 + p.edge * 0.28 + darkness * 0.14;
+          p.level = richness > 0.72 ? "large" : richness > 0.44 ? "medium" : "fine";
+          p.zone = p.zoneOverride || (relY < 0.3 ? "hat" : relY < 0.8 ? "face" : "shirt");
+          if (p.zone === "face" && p.strategic) p.level = "medium";
+          if (p.zone === "shirt" && p.strategic) p.level = "fine";
+          if (p.zone === "shirt") {
+            const nx = Math.abs((p.baseX - cx) / Math.max(1, rx));
+            const sleeveLike = nx > 0.76;
+            if (sleeveLike && p.strategic && p.feature > 0.58) p.level = "large";
+          }
+          if (p.levelOverride) p.level = p.levelOverride;
+          p.toneBand = Math.max(0, Math.min(3, Math.floor(p.lum * 4)));
+        }
+
+        const pivotX = cx;
+        const pivotY = cy - h * 0.02;
+        const neighbors = points.map(() => []);
+        const meshRadius = 14.5;
+        const meshRadiusSq = meshRadius * meshRadius;
+        const armMeshRadius = 24;
+        const armMeshRadiusSq = armMeshRadius * armMeshRadius;
+        const ambientRadius = 34;
+        const ambientRadiusSq = ambientRadius * ambientRadius;
+        for (let i = 0; i < points.length; i++) {
+          for (let j = i + 1; j < points.length; j++) {
+            const pi = points[i];
+            const pj = points[j];
+            const dx = pi.x - pj.x;
+            const dy = pi.y - pj.y;
+            const d2 = dx * dx + dy * dy;
+            const eitherAmbient = pi.kind === "ambient" || pj.kind === "ambient";
+            const armPairEarly = pi.zone === "arm" && pj.zone === "arm";
+            const maxR = eitherAmbient
+              ? ambientRadiusSq
+              : armPairEarly
+                ? armMeshRadiusSq
+                : meshRadiusSq;
+            if (d2 > maxR) continue;
+            if (armPairEarly) {
+              neighbors[i].push({ j, d2, ambient: false });
+              neighbors[j].push({ j: i, d2, ambient: false });
+              continue;
+            }
+            if (eitherAmbient) {
+              if (Math.random() > 0.42) continue;
+              neighbors[i].push({ j, d2, ambient: true });
+              neighbors[j].push({ j: i, d2, ambient: true });
+              continue;
+            }
+            const edgeDelta = Math.abs(pi.edge - pj.edge);
+            const lumDelta = Math.abs(pi.lum - pj.lum);
+            const featureMix = (pi.feature + pj.feature) * 0.5;
+            const maxAllowedLumDelta = featureMix > 0.42 ? 0.58 : featureMix > 0.28 ? 0.48 : 0.38;
+            if (edgeDelta < 0.48 && lumDelta < maxAllowedLumDelta) {
+              // Remove lingering hat-top horizontal artifact links.
+              const topHatBandStart = minY + (maxY - minY) * 0.08;
+              const topHatBandEnd = minY + (maxY - minY) * 0.2;
+              const isTopHatBand = pi.baseY >= topHatBandStart && pi.baseY <= topHatBandEnd
+                && pj.baseY >= topHatBandStart && pj.baseY <= topHatBandEnd;
+              const nearHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.35 && Math.abs(pi.baseX - pj.baseX) > 9;
+              if (isTopHatBand && nearHorizontal) continue;
+              // Hard-remove image-top edge artifacts (horizontal line on hat top).
+              const nearImageTopEdge = pi.baseY <= drawY + 4 && pj.baseY <= drawY + 4;
+              const topHorizontal = Math.abs(pi.baseY - pj.baseY) < 1.6 && Math.abs(pi.baseX - pj.baseX) > 7;
+              if (nearImageTopEdge && topHorizontal) continue;
+              // Extra suppression for long horizontal links in upper hat crown.
+              const hatTopHardBand = minY + (maxY - minY) * 0.17;
+              const inHardHatTop = pi.baseY <= hatTopHardBand && pj.baseY <= hatTopHardBand;
+              const longHorizontal = Math.abs(pi.baseY - pj.baseY) < 2.0 && Math.abs(pi.baseX - pj.baseX) > 16;
+              if (inHardHatTop && longHorizontal) continue;
+              const sameZone = pi.zone === pj.zone;
+              const toneNear = Math.abs(pi.toneBand - pj.toneBand) <= 1;
+              const shirtPair = pi.zone === "shirt" && pj.zone === "shirt";
+              const similarRegion = (sameZone && toneNear) || featureMix > 0.56;
+              if (!similarRegion) continue;
+              if (shirtPair) {
+                if (Math.random() > 0.68) continue;
+                if (edgeDelta > 0.38 && featureMix < 0.38) continue;
+              }
+              neighbors[i].push({ j, d2, ambient: false });
+              neighbors[j].push({ j: i, d2, ambient: false });
+            }
+          }
+          neighbors[i].sort((a, b) => a.d2 - b.d2);
+          const maxLinks = points[i].kind === "ambient"
+            ? 3
+            : points[i].zone === "arm"
+              ? 20
+              : points[i].zone === "shirt"
+                ? 12
+                : points[i].kind === "fill"
+                  ? 20
+                  : 22;
+          neighbors[i] = neighbors[i].slice(0, maxLinks);
+        }
+
+        // Force arm outline chains (left/right rails) so sleeves always read as lines.
+        const armBySide = { left: [], right: [] };
+        for (let i = 0; i < points.length; i++) {
+          if (points[i].zone !== "arm") continue;
+          const side = points[i].baseX < pivotX ? "left" : "right";
+          armBySide[side].push(i);
+        }
+        const chainArmSide = (indices) => {
+          indices.sort((a, b) => {
+            const dy = points[a].baseY - points[b].baseY;
+            if (Math.abs(dy) > 0.4) return dy;
+            return points[a].baseX - points[b].baseX;
+          });
+          for (let k = 0; k < indices.length - 1; k++) {
+            const i = indices[k];
+            const j = indices[k + 1];
+            const dx = points[i].baseX - points[j].baseX;
+            const dy = points[i].baseY - points[j].baseY;
+            const d2 = dx * dx + dy * dy;
+            if (d2 > armMeshRadiusSq * 1.35) continue;
+            const hasLink = neighbors[i].some((n) => n.j === j);
+            if (!hasLink) {
+              neighbors[i].push({ j, d2, ambient: false });
+              neighbors[j].push({ j: i, d2, ambient: false });
+            }
+          }
+        };
+        chainArmSide(armBySide.left);
+        chainArmSide(armBySide.right);
+        for (let i = 0; i < points.length; i++) {
+          if (points[i].zone !== "arm") continue;
+          neighbors[i].sort((a, b) => a.d2 - b.d2);
+          neighbors[i] = neighbors[i].slice(0, 20);
+        }
+
+        const layout = { w, h, cx, cy, minX, maxX, minY, maxY, rx, pivotX, pivotY, drawX, drawY, drawW, drawH };
+        if (!wireframeBakeMode) saveMeshCache(src, w, h, points, neighbors, layout);
+        if (isLightTheme()) loadPortraitLayer();
+        beginWireframeAnimation(points, neighbors, layout);
+        if (!wireframeBakeMode) showLiveCanvas();
+      };
+
+      const hasKnownExt = /\.(png|jpe?g|webp|gif)$/i.test(src);
+      const candidates = hasKnownExt
+        ? [src]
+        : [`${src}.png`, `${src}.jpg`, `${src}.jpeg`];
+
+      const tryLoad = (idx) => {
+        if (idx >= candidates.length) {
+          if (loopUrl && !isLightTheme()) showPrebakedLoop();
+          else renderFallback();
+          return;
+        }
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => renderFromImage(img);
+        img.onerror = () => tryLoad(idx + 1);
+        img.src = candidates[idx];
+      };
+
+      const loadPrebakedMesh = async () => {
+        if (!meshUrl || wireframeBakeMode || !canRunLiveWireframe) return false;
+        try {
+          const res = await fetch(meshUrl);
+          if (!res.ok) return false;
+          const data = await res.json();
+          if (data.v !== WIREFRAME_MESH_VERSION) return false;
+          const mesh = unpackMesh(data);
+          beginWireframeAnimation(mesh.points, mesh.neighbors, mesh.layout);
+          loadPortraitLayer();
+          showLiveCanvas();
+          syncWireframePresentation();
+          return true;
+        } catch (_) {
+          return false;
+        }
+      };
+
+      window.addEventListener("theme:changed", async () => {
+        if (isLightTheme()) {
+          loadPortraitLayer();
+        } else {
+          portraitLayer = null;
+          portraitDrawRect = null;
+          portraitData = null;
+          faceSectionPatches = [];
+          facePatchLayoutKey = "";
+        }
+        syncWireframePresentation();
+      });
+
+      if (wireframeBakeMode && src) {
+        tryLoad(0);
+      } else if (!wireframeBakeMode) {
+        loadPrebakedMesh().then((loaded) => {
+          if (!loaded && src) tryLoad(0);
+          else if (!loaded && !loopUrl) renderFallback();
+          syncWireframePresentation();
+        });
+        if (isLightTheme() && src) loadPortraitLayer();
+      } else {
+        renderFallback();
+      }
+      syncWireframePresentation();
+    }
+  </script>
 </BaseLayout>

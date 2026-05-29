@@ -8,9 +8,12 @@ export interface Props {
 	description: string;
 	image?: string;
 	ogType?: string;
+	jsonLd?: Record<string, unknown> | string;
 }
 
-const { title, description, image = '/social_img.webp', ogType = 'website' } = Astro.props;
+const { title, description, image = '/social_img.webp', ogType = 'website', jsonLd } = Astro.props;
+const jsonLdString =
+	typeof jsonLd === 'string' ? jsonLd : jsonLd ? JSON.stringify(jsonLd) : null;
 ---
 
 <!-- Global Metadata -->
@@ -37,3 +40,5 @@ const { title, description, image = '/social_img.webp', ogType = 'website' } = A
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+{jsonLdString && <script type="application/ld+json" set:html={jsonLdString} />}

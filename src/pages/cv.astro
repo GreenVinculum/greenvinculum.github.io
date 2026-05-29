@@ -1,92 +1,133 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import NerveTimeline from "../components/NerveTimeline.astro";
 import TimeLineElement from "../components/cv/TimeLine.astro";
+import SkillTabs from "../components/cv/SkillTabs.astro";
+
+const skillGroups = [
+  {
+    id: "programming",
+    title: "Programming Languages",
+    tabLabel: "Programming",
+    skills: [
+      { name: "Python", target: 90 },
+      { name: "C", target: 99 },
+      { name: "C#", target: 80 },
+      { name: "MicroPython", target: 76 },
+    ],
+  },
+  {
+    id: "data",
+    title: "Data & Analysis",
+    tabLabel: "Data",
+    skills: [
+      { name: "SQL", target: 82 },
+      { name: "R", target: 72 },
+      { name: "Excel", target: 78 },
+    ],
+  },
+  {
+    id: "xr-hardware",
+    title: "XR, Robotics & Hardware",
+    tabLabel: "XR & Hardware",
+    skills: [
+      { name: "Unity", target: 85 },
+      { name: "XR Prototyping", target: 88 },
+      { name: "ROS", target: 70 },
+      { name: "IoT Systems", target: 78 },
+      { name: "Networking", target: 80 },
+      { name: "3D Printing", target: 75 },
+    ],
+  },
+  {
+    id: "soft-skills",
+    title: "Soft Skills",
+    tabLabel: "Soft Skills",
+    skills: [{ name: "Code Review", target: 86 }],
+  },
+  {
+    id: "spoken",
+    title: "Spoken Languages",
+    tabLabel: "Languages",
+    skills: [
+      { name: "English", target: 99 },
+      { name: "Spanish", target: 58 },
+      { name: "German", target: 38 },
+    ],
+  },
+];
 ---
 
 <BaseLayout title="Resume" sideBarActiveItemID="cv">
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Profile</div>
+  <div class="max-w-3xl space-y-8">
+    <section class="cv-section space-y-3">
+      <h1 class="text-3xl font-bold">CV Snapshot</h1>
+      <p class="text-base-content/80">
+        Quick view of my background and current focus. Scroll to reveal major events along the timeline.
+      </p>
+    </section>
+
+    <section class="cv-section space-y-3">
+      <h2 class="text-2xl font-bold">Major Events Timeline</h2>
+      <NerveTimeline idPrefix="cvTimeline" class="cv-nerve-timeline" rngSeedOffset={42069}>
+        <TimeLineElement
+          title="PhD in Computer Science"
+          subtitle="2025 - Present | George Mason University, Arlington, VA"
+          isCurrent={true}
+        >
+          Research at the intersection of interaction design, robotics partnership, and XR systems.
+        </TimeLineElement>
+        <TimeLineElement
+          title="Research Assistant at DCXR Lab"
+          subtitle="May 2022 - Present | FUSE, Arlington, VA"
+        >
+          Building XR and fabrication workflows for human-centered computing studies.
+        </TimeLineElement>
+        <TimeLineElement
+          title="B.S. in Computer Science"
+          subtitle="2022 - 2025 | George Mason University, Fairfax, VA"
+        >
+          Completed core CS training while contributing to multidisciplinary research projects.
+        </TimeLineElement>
+      </NerveTimeline>
+    </section>
+
+    <section class="cv-section cv-skills-glitch space-y-4">
+      <h2 class="text-2xl font-bold">Skills</h2>
+      <SkillTabs groups={skillGroups} />
+    </section>
   </div>
+  <script is:inline>
+    const sections = Array.from(document.querySelectorAll(".cv-section"));
+    const reveal = (entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+      }
+    };
 
-  <div class="mb-10 text-justify">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-    aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
-    aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </div>
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(reveal),
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -8% 0px"
+      }
+    );
 
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Education</div>
-  </div>
+    sections.forEach((section) => observer.observe(section));
+  </script>
+  <script>
+    import { initSkillMeters } from "../scripts/skill-meters";
+    import { initSkillTabs } from "../scripts/skill-tabs";
 
-  <div class="time-line-container grid gap-4 mb-10">
-    <TimeLineElement
-      title="PhD Student in Computer Science"
-      subtitle="Currently at George Mason University, Arlington, VA, USA"
-    />
-    <TimeLineElement
-      title="B.S in Computer Science"
-      subtitle="2022 to May 2025 at George Mason University, Fairfax, VA, USA"
-    />
-  </div>
-
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Experience</div>
-  </div>
-
-  <div class="time-line-container mb-10">
-    <TimeLineElement
-      title="Research Assistant at DCXR Lab"
-      subtitle="From May 2022 to current at DCXR Lab at FUSE, Arlington, VA, USA"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-    <TimeLineElement
-      title="Job Title at Project or Company Name"
-      subtitle="From [Start Date] to [End Date] at [Company], [City], [Country]"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-    <TimeLineElement
-      title="Job Title at Project or Company Name"
-      subtitle="From [Start Date] to [End Date] at [Company], [City], [Country]"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-  </div>
-
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Certifications</div>
-  </div>
-
-  <ul class="list-disc mx-6 mb-10 grid gap-2">
-    <li>
-      <a href="#" target="_blank"> Certification Name (with link)</a>
-    </li>
-    <li>
-      <a href="#" target="_blank"> Certification Name (with link)</a>
-    </li>
-  </ul>
-
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Skills</div>
-  </div>
-
-  <ul class="list-disc md:columns-5 columns-2 mx-6">
-    <li>C</li>
-    <li>Java</li>
-    <li>Unity</li>
-    <li>Python</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-  </ul>
+    const run = () => {
+      initSkillTabs();
+      initSkillMeters();
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", run);
+    } else {
+      run();
+    }
+    document.addEventListener("astro:page-load", run);
+  </script>
 </BaseLayout>

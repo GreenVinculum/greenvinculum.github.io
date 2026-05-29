@@ -1,0 +1,160 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "Stellar Slither";
+const description =
+  "Stellar Slither is a neon snake game on a Pimoroni Stellar Unicorn LED matrix, played with an Adafruit Qwiic Gamepad — classic arcade logic in a tiny constellation of pixels.";
+const heroImage = "/portfolio/personal-projects/stellar-slither/hero.svg";
+const tags = ["Raspberry Pi", "Game Dev", "LED Matrix", "Qwiic"];
+
+const parts = [
+  { item: "Pimoroni Stellar Unicorn HAT", note: "16×16 RGB LED matrix in a unicorn-shaped board — the whole display" },
+  { item: "Adafruit Qwiic Gamepad", note: "Joystick and buttons over I²C; no GPIO spaghetti for controls" },
+  { item: "Raspberry Pi", note: "Runs the game loop, reads input, and drives the matrix" },
+  { item: "Qwiic cable", note: "Single connector between Pi and gamepad for power + data" },
+];
+
+const buildSteps = [
+  {
+    title: "Map the playfield",
+    body: "The Stellar Unicorn gives a small grid, which is perfect for Snake — every pixel matters. The board coordinates become the game grid: snake segments, food spawn, and wall collisions all map directly to LED addresses.",
+  },
+  {
+    title: "Wire up controls",
+    body: "The Qwiic Gamepad plugs in over I²C, so direction input stays clean. The joystick maps to up/down/left/right; face buttons can restart or pause. No shift registers or matrix scanning on GPIO — just poll the gamepad and update velocity.",
+  },
+  {
+    title: "Build the game loop",
+    body: "A fixed tick drives movement: read input, advance the snake, check for food and collisions, then flush the frame to the matrix. Speed ramps slightly as the snake grows so runs feel tense on a display you can hold in one hand.",
+  },
+  {
+    title: "Make it readable on LEDs",
+    body: "Snake body uses a gradient along the tail; the head gets a brighter pixel so you always know which way you’re facing. Food blinks or shifts hue so it pops against the trail. Keep palettes high-contrast — what looks fine on a monitor can muddy on RGB LEDs.",
+  },
+  {
+    title: "Playtest and tune",
+    body: "Input lag and tick rate matter more on a 16×16 grid than on a phone screen. Tuning step interval, debounce, and wrap-vs-wall rules turns it from a tech demo into something people actually replay.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} sideBarActiveItemID="portfolioPersonal">
+  <article class="project-page max-w-[750px]">
+    <a href="/portfolio/personal" class="text-sm text-base-content/60 hover:text-secondary no-underline">
+      ← Personal projects
+    </a>
+
+    <header class="mt-4 mb-8">
+      <img
+        src={heroImage}
+        alt="Concept illustration of Stellar Slither snake game on a unicorn LED matrix with Qwiic gamepad"
+        width="640"
+        height="360"
+        class="w-full rounded-lg border border-base-300 shadow-lg mb-6"
+      />
+      <h1 class="text-4xl font-bold leading-tight mb-3">{title}</h1>
+      <p class="text-lg text-base-content/80 leading-relaxed">{description}</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {tags.map((tag) => (
+          <span class="badge badge-outline">{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Overview</h2>
+      <p>
+        <strong>Stellar Slither</strong> asks a simple question: what if Snake lived on a unicorn made of LEDs? The Pimoroni Stellar Unicorn is the screen — literally a grid of RGB pixels in a ridiculous, wonderful shape. An Adafruit Qwiic Gamepad is the controller. Together they make a desk toy that feels like a handheld from an alternate timeline.
+      </p>
+      <p>
+        The game is deliberately minimal: eat, grow, don’t hit yourself. But on a 16×16 matrix, every turn is visible and every mistake is instant. It’s the kind of project that exists because the hardware was fun, and the software had to catch up.
+      </p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-4">Hardware</h2>
+      <div class="overflow-x-auto rounded-lg border border-base-300">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parts.map(({ item, note }) => (
+              <tr>
+                <td class="font-medium whitespace-nowrap">{item}</td>
+                <td>{note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Why these parts</h2>
+      <ul>
+        <li>
+          <strong>Stellar Unicorn HAT</strong> — Pimoroni’s matrix HAT with a built-in unicorn aesthetic. It’s a display you don’t have to explain; the form factor is half the joke and half the charm.
+        </li>
+        <li>
+          <strong>Qwiic Gamepad</strong> — joystick plus buttons on a single I²C bus. Plug in, read registers, get on with game logic. Ideal for quick prototypes when you’d rather write collision code than solder button pulls.
+        </li>
+        <li>
+          <strong>Snake</strong> — the perfect game for the constraints: grid-native, no sprites, easy to read at a glance, and still addictive forty years later.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-6">Build process</h2>
+      <ol class="space-y-6">
+        {buildSteps.map(({ title: stepTitle, body }, index) => (
+          <li class="flex gap-4">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-content text-sm font-bold">
+              {index + 1}
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold mb-1">{stepTitle}</h3>
+              <p class="text-base-content/80 leading-relaxed">{body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Gameplay details</h2>
+      <p>
+        The snake starts short in the center of the usable matrix area. Each food pellet adds a segment and bumps the score. Runs end on self-collision or wall impact — keep it strict; wrapping the edges makes a tiny board too easy.
+      </p>
+      <p>
+        High scores can persist to a small file on the Pi so the unicorn remembers your best run between reboots. A face button restarts instantly; another can pause if you need to answer the door mid-streak.
+      </p>
+    </section>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Challenges</h2>
+      <ul>
+        <li><strong>Usable grid vs. unicorn shape</strong> — not every LED in the unicorn silhouette is a perfect rectangle; the playfield may clip to a subset of pixels.</li>
+        <li><strong>Refresh rate</strong> — smooth animation without flicker means batching matrix updates and keeping the game tick independent of input polling.</li>
+        <li><strong>I²C latency</strong> — reading the gamepad every frame is fine, but debouncing the joystick diagonals prevents accidental double-turns.</li>
+        <li><strong>Power and heat</strong> — full-brightness RGB at high FPS draws attention and amps; dimming the palette extends play sessions and keeps the Pi happy.</li>
+      </ul>
+    </section>
+
+    <section class="prose prose-lg max-w-none">
+      <h2>Status &amp; next steps</h2>
+      <p>
+        Stellar Slither is playable: joystick in, snake out, high scores on the line. Possible upgrades include a attract-mode demo when idle, a two-player variant if a second Qwiic controller shows up, or a tiny sound effect when you eat — because a unicorn that silently scores is only half as satisfying.
+      </p>
+      <p>
+        Add photos or a short clip to <code>public/portfolio/personal-projects/stellar-slither/</code> when you capture the build in action.
+      </p>
+    </section>
+  </article>
+</BaseLayout>

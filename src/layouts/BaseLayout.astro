@@ -6,11 +6,13 @@ import SideBar from "../components/SideBar.astro";
 import { ViewTransitions } from "astro:transitions";
 
 import { SITE_TITLE, SITE_DESCRIPTION, TRANSITION_API } from "../config";
+import { THEMES, THEME_STORAGE_KEY, VHS_STYLES } from "../scripts/theme-preference";
 
 const {
   image,
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
+  jsonLd,
   includeSidebar = true,
   sideBarActiveItemID,
   ogType,
@@ -18,13 +20,48 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="lofi">
+<html lang="en" data-vhs-style="cinematic">
   <head>
-    <BaseHead title={title} description={description} image={image} , ogType={ogType} />
+    <script is:inline define:vars={{ THEME_STORAGE_KEY, THEMES, VHS_STYLES }}>
+      (() => {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        const theme =
+          stored === THEMES.dark || stored === THEMES.light
+            ? stored
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? THEMES.dark
+              : THEMES.light;
+        const vhsStyle = VHS_STYLES[theme];
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-vhs-style", vhsStyle);
+        document.documentElement.style.colorScheme = theme === THEMES.dark ? "dark" : "light";
+      })();
+    </script>
+    <script>
+      import {
+        attachThemeGlobals,
+        initThemePreference,
+        syncThemePreference,
+      } from "../scripts/theme-preference";
+
+      attachThemeGlobals();
+      initThemePreference();
+      document.addEventListener("astro:page-load", syncThemePreference);
+    </script>
+    <BaseHead title={title} description={description} image={image} ogType={ogType} jsonLd={jsonLd} />
     {TRANSITION_API && <ViewTransitions />}
   </head>
   <body>
-    <div class="bg-base-100 drawer lg:drawer-open">
+    <div class="site-vhs-shell">
+      <div aria-hidden="true" class="site-vhs-bg">
+        <span class="site-vhs-layer site-vhs-layer-gradient"></span>
+        <span class="site-vhs-layer site-vhs-layer-grid"></span>
+        <span class="site-vhs-layer site-vhs-layer-noise"></span>
+        <span class="site-vhs-layer site-vhs-layer-scan"></span>
+        <span class="site-vhs-layer site-vhs-layer-vignette"></span>
+      </div>
+
+      <div class="site-vhs-content bg-base-100 drawer lg:drawer-open">
       <input id="my-drawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content bg-base-100">
         <Header title={SITE_TITLE} />
@@ -36,6 +73,7 @@ const {
         <Footer />
       </div>
       {includeSidebar && <SideBar sideBarActiveItemID={sideBarActiveItemID} />}
+    </div>
     </div>
   </body>
 </html>

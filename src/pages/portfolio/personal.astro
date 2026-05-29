@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import HorizontalCard from "../../components/HorizontalCard.astro";
+---
+
+<BaseLayout title="Personal Projects" sideBarActiveItemID="portfolioPersonal">
+  <div class="space-y-4 mb-5">
+    <div class="text-3xl w-full font-bold">Personal Projects</div>
+  </div>
+
+  <div class="mt-5">
+    <HorizontalCard
+      title="Stellar Slither"
+      img="/portfolio/personal-projects/stellar-slither/hero.svg"
+      desc="Snake on a Pimoroni Stellar Unicorn LED matrix, played with an Adafruit Qwiic Gamepad."
+      url="/portfolio/personal/stellar-slither"
+      target="_self"
+    />
+    <div class="divider my-0"></div>
+    <HorizontalCard
+      title="MintyPii"
+      img="/portfolio/personal-projects/mintypii/hero.svg"
+      desc="iPod-inspired pocket player in an Altoids tin — Raspberry Pi Zero 2 W, Pimoroni Headphone HAT, and an Inland rotary dial."
+      url="/portfolio/personal/mintypii"
+      target="_self"
+    />
+    <div class="divider my-0"></div>
+    <HorizontalCard
+      title="Personal Site Iteration"
+      img="/post_img.webp"
+      desc="Evolving portfolio design system with responsive sections, custom theming, and narrative structure."
+      url="#"
+    />
+    <div class="divider my-0"></div>
+    <HorizontalCard
+      title="Weekend IoT Sensor Rig"
+      img="/post_img.webp"
+      desc="A compact sensor and logging setup for outdoor experiments and data review."
+      url="#"
+    />
+    <div class="divider my-0"></div>
+    <HorizontalCard
+      title="Unity Prototype Collection"
+      img="/post_img.webp"
+      desc="Rapid gameplay and interaction experiments focused on novel interfaces."
+      url="#"
+    />
+  </div>
+</BaseLayout>

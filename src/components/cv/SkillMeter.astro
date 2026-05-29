@@ -1,0 +1,22 @@
+---
+interface Props {
+  name: string;
+  target: number;
+}
+
+const { name, target } = Astro.props;
+---
+
+<div class="skill-meter">
+  <div class="skill-meter-head"><span>{name}</span><span class="skill-meter-pct">0%</span></div>
+  <div class="skill-meter-track">
+    <div class="skill-meter-signal">
+      <span class="skill-meter-rgb skill-meter-rgb--a" aria-hidden="true"></span>
+      <span class="skill-meter-rgb skill-meter-rgb--b" aria-hidden="true"></span>
+      <span class="skill-meter-slice" aria-hidden="true"></span>
+      <span class="skill-meter-static" aria-hidden="true"></span>
+      <div class="skill-meter-fill" data-target={target}></div>
+    </div>
+    <span class="skill-meter-scan" aria-hidden="true"></span>
+  </div>
+</div>

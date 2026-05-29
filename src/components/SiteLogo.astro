@@ -1,0 +1,53 @@
+---
+import { Image } from "astro:assets";
+import logoDark from "../../assets/images/c-logo-dark.png";
+import logoLight from "../../assets/images/c-logo-light.png";
+import logoBrainLight from "../../assets/images/logo-brain-light.png";
+import logoBrainDark from "../../assets/images/logo-brain-dark.png";
+import ThemePullCord from "./ThemePullCord.astro";
+---
+
+<div class="site-logo-stack">
+  <a href="/" class="site-logo-link block transition ease-in-out hover:scale-[102%]">
+    <div class="site-logo-figure">
+      <Image
+        class="site-logo site-logo--base site-logo--theme-light"
+        src={logoDark}
+        alt="Charles logo"
+        width={340}
+        height={340}
+      />
+      <Image
+        class="site-logo site-logo--base site-logo--theme-dark"
+        src={logoLight}
+        alt="Charles logo"
+        width={340}
+        height={340}
+      />
+      <Image
+        class="site-logo-brain-light"
+        src={logoBrainLight}
+        alt=""
+        width={340}
+        height={340}
+        aria-hidden="true"
+      />
+      <Image
+        class="site-logo-brain-dark"
+        src={logoBrainDark}
+        alt=""
+        width={340}
+        height={340}
+        aria-hidden="true"
+      />
+    </div>
+  </a>
+  <ThemePullCord />
+</div>
+
+<script>
+  import { initLogoBrainFlicker } from "../scripts/logo-brain-flicker";
+
+  initLogoBrainFlicker();
+  document.addEventListener("astro:page-load", initLogoBrainFlicker);
+</script>

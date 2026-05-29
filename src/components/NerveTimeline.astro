@@ -1,0 +1,64 @@
+---
+interface Props {
+  idPrefix: string;
+  class?: string;
+  syncGlitch?: boolean;
+  rngSeedOffset?: number;
+}
+
+const { idPrefix, class: className = "", syncGlitch = false, rngSeedOffset = 0 } = Astro.props;
+---
+
+<div
+  class:list={["news-timeline", "news-timeline__viz", className]}
+  id={`${idPrefix}Viz`}
+  data-nerve-prefix={idPrefix}
+  data-sync-glitch={syncGlitch ? "1" : "0"}
+  data-rng-seed={String(rngSeedOffset)}
+>
+  <svg class="news-timeline__svg" id={`${idPrefix}Svg`} aria-hidden="true">
+    <g id={`${idPrefix}Wire`} class="news-timeline__wire">
+      <g id={`${idPrefix}Mesh`} class="news-timeline__mesh"></g>
+      <g id={`${idPrefix}Events`} class="news-timeline__events"></g>
+      <g id={`${idPrefix}Glitch`} class="news-timeline__glitch"></g>
+    </g>
+  </svg>
+  <div class="news-timeline__clouds" id={`${idPrefix}Clouds`} aria-hidden="true"></div>
+  <div class="news-timeline__items">
+    <slot />
+  </div>
+</div>
+
+<script>
+  import { initNerveTimeline } from "../scripts/nerve-timeline";
+
+  const bootNerveTimelines = () => {
+    document.querySelectorAll<HTMLElement>("[data-nerve-prefix]").forEach((root) => {
+      if (root.dataset.nerveReady === "1") return;
+      const prefix = root.dataset.nervePrefix;
+      if (!prefix) return;
+
+      root.dataset.nerveReady = "1";
+      initNerveTimeline({
+        ids: {
+          viz: `${prefix}Viz`,
+          svg: `${prefix}Svg`,
+          mesh: `${prefix}Mesh`,
+          events: `${prefix}Events`,
+          glitch: `${prefix}Glitch`,
+          clouds: `${prefix}Clouds`,
+        },
+        syncGlitchFromSelector: root.dataset.syncGlitch === "1" ? ".glitch-name-wrap" : undefined,
+        rngSeedOffset: Number(root.dataset.rngSeed) || 0,
+      });
+    });
+  };
+
+  const run = () => bootNerveTimelines();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run);
+  } else {
+    run();
+  }
+  document.addEventListener("astro:page-load", bootNerveTimelines);
+</script>

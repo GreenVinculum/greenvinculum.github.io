@@ -1,0 +1,60 @@
+---
+import SkillMeter from "./SkillMeter.astro";
+
+interface Skill {
+  name: string;
+  target: number;
+}
+
+interface SkillGroup {
+  id: string;
+  title: string;
+  tabLabel: string;
+  skills: Skill[];
+}
+
+interface Props {
+  groups: SkillGroup[];
+}
+
+const { groups } = Astro.props;
+const tabPrefix = "skill-tab";
+const panelPrefix = "skill-panel";
+---
+
+<div class="skill-tabs" data-skill-tabs>
+  <div class="skill-tabs-list" role="tablist" aria-label="Skill categories">
+    {
+      groups.map((group, index) => (
+        <button
+          type="button"
+          class:list={["skill-tab", { "is-active": index === 0 }]}
+          id={`${tabPrefix}-${group.id}`}
+          role="tab"
+          aria-selected={index === 0 ? "true" : "false"}
+          aria-controls={`${panelPrefix}-${group.id}`}
+          tabindex={index === 0 ? 0 : -1}
+        >
+          {group.tabLabel}
+        </button>
+      ))
+    }
+  </div>
+  {
+    groups.map((group, index) => (
+      <div
+        class:list={["skill-tab-panel", { "is-active": index === 0 }]}
+        id={`${panelPrefix}-${group.id}`}
+        role="tabpanel"
+        aria-labelledby={`${tabPrefix}-${group.id}`}
+        hidden={index !== 0 ? true : undefined}
+      >
+        <div class="grid gap-4 skill-meters-grid">
+          {group.skills.map((skill) => (
+            <SkillMeter name={skill.name} target={skill.target} />
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>

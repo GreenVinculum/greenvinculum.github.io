@@ -1,0 +1,38 @@
+---
+import { currentlyReading } from "../data/currentlyReading";
+
+const { title, series, bookNumber, author, synopsis, coverSrc, coverAlt, url } = currentlyReading;
+---
+
+<aside class="currently-reading mb-8" aria-label="Currently reading">
+  <p class="text-sm font-semibold uppercase tracking-wide text-base-content/70 mb-2">
+    Currently reading
+  </p>
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="currently-reading-link group flex gap-4 items-start rounded-lg bg-base-200/80 border border-base-300 p-4 transition ease-in-out hover:shadow-lg hover:scale-[101%] no-underline"
+  >
+    <img
+      src={coverSrc}
+      alt={coverAlt}
+      width="96"
+      height="144"
+      loading="lazy"
+      class="currently-reading-cover shrink-0 w-20 sm:w-24 rounded-md shadow-md ring-1 ring-base-300/60 object-cover"
+    />
+    <div class="min-w-0 pt-1 flex-1">
+      <p class="text-xs text-base-content/60 mb-1">
+        {series} · Book {bookNumber}
+      </p>
+      <p class="text-lg font-bold text-base-content leading-snug group-hover:text-secondary transition-colors">
+        {title}
+      </p>
+      <p class="text-sm text-base-content/70 mt-1">{author}</p>
+      <p class="text-sm text-base-content/75 leading-snug mt-2">
+        {synopsis}
+      </p>
+    </div>
+  </a>
+</aside>

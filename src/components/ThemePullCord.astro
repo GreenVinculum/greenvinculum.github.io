@@ -1,0 +1,27 @@
+---
+/** Simple brass pull-cord on the circuit “o” node; pull toggles theme. */
+---
+
+<div class="theme-pull-cord" data-theme-pull-cord>
+  <div class="theme-pull-cord__anchor" aria-hidden="true">
+    <span class="theme-pull-cord__stem"></span>
+  </div>
+
+  <button type="button" class="theme-pull-cord__handle" aria-pressed="false">
+    <span class="theme-pull-cord__cord" aria-hidden="true">
+      <span class="theme-pull-cord__cord-line">
+        <span class="theme-pull-cord__cord-extend"></span>
+        <span class="theme-pull-cord__cord-base"></span>
+      </span>
+      <span class="theme-pull-cord__tab"></span>
+    </span>
+    <span class="sr-only">Pull cord to toggle site lighting and theme</span>
+  </button>
+</div>
+
+<script>
+  import { initThemePullCord } from "../scripts/theme-pull-cord";
+
+  initThemePullCord();
+  document.addEventListener("astro:page-load", initThemePullCord);
+</script>

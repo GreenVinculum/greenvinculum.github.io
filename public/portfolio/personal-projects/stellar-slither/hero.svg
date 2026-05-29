@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Stellar Slither concept</title>
+  <desc id="desc">Unicorn LED matrix showing a snake game with a handheld gamepad</desc>
+  <defs>
+    <linearGradient id="horn" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="pad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="#0b1020"/>
+  <rect x="24" y="24" width="592" height="312" rx="18" fill="#111827" stroke="#312e81"/>
+
+  <!-- Unicorn head silhouette / matrix board -->
+  <path d="M200 280 L200 140 Q200 90 260 70 Q320 50 380 70 Q440 90 440 140 L440 280 Z" fill="#1f1147" stroke="#7c3aed" stroke-width="2"/>
+  <polygon points="260,70 240,20 280,55" fill="url(#horn)"/>
+
+  <!-- LED grid snake -->
+  <g fill="#22d3ee">
+    <rect x="268" y="200" width="14" height="14" rx="2" opacity="0.35"/>
+    <rect x="286" y="200" width="14" height="14" rx="2" opacity="0.55"/>
+    <rect x="304" y="200" width="14" height="14" rx="2" opacity="0.75"/>
+    <rect x="322" y="200" width="14" height="14" rx="2"/>
+    <rect x="322" y="182" width="14" height="14" rx="2"/>
+    <rect x="322" y="164" width="14" height="14" rx="2"/>
+    <rect x="340" y="164" width="14" height="14" rx="2"/>
+    <rect x="358" y="164" width="14" height="14" rx="2" fill="#f472b6"/>
+  </g>
+  <!-- Food pixel -->
+  <rect x="376" y="218" width="14" height="14" rx="2" fill="#fde047"/>
+
+  <!-- Gamepad -->
+  <rect x="470" y="118" width="130" height="170" rx="16" fill="url(#pad)" stroke="#475569" stroke-width="2"/>
+  <circle cx="510" cy="175" r="22" fill="#0ea5e9" opacity="0.25" stroke="#38bdf8"/>
+  <circle cx="510" cy="175" r="10" fill="#38bdf8"/>
+  <rect x="548" y="145" width="18" height="18" rx="4" fill="#ef4444" opacity="0.85"/>
+  <rect x="572" y="169" width="18" height="18" rx="4" fill="#eab308" opacity="0.85"/>
+  <rect x="548" y="193" width="18" height="18" rx="4" fill="#22c55e" opacity="0.85"/>
+  <rect x="524" y="169" width="18" height="18" rx="4" fill="#3b82f6" opacity="0.85"/>
+
+  <text x="320" y="328" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="#c4b5fd">Stellar Slither</text>
+  <text x="320" y="348" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#94a3b8">Stellar Unicorn · Qwiic Gamepad · Snake</text>
+</svg>
