@@ -1,10 +1,14 @@
 {
-  "magfest2025.jpeg": {
-    "caption": "MAGFest 2025",
-    "alt": "MAGFest 2025"
-  },
-  "fuse-demoday-2025.JPG": {
-    "caption": "FUSE Demo Day 2025",
-    "alt": "FUSE Demo Day 2025 demo"
-  }
+  "items": [
+    {
+      "file": "magfest2025.jpeg",
+      "caption": "MAGFest 2025",
+      "alt": "MAGFest 2025"
+    },
+    {
+      "file": "fuse-demoday-2025.JPG",
+      "caption": "FUSE Demo Day 2025",
+      "alt": "FUSE Demo Day 2025 demo"
+    }
+  ]
 }
