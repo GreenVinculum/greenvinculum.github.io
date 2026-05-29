@@ -3135,7 +3135,7 @@ const personJsonLd = {
         syncWireframePresentation();
       };
       const loadPrebakedMesh = async () => {
-        if (!meshUrl || wireframeBakeMode || !canRunLiveWireframe) return false;
+        if (!meshUrl || wireframeBakeMode) return false;
         try {
           const res = await fetch(meshUrl);
           if (!res.ok) return false;
@@ -3154,17 +3154,21 @@ const personJsonLd = {
           tryLoad(0);
           return;
         }
-        if (canRunLiveWireframe) {
-          const cached = loadMeshCache(src, w, h);
-          if (cached) {
-            restoreCachedMesh(cached);
-            return;
-          }
-          const idbRaw = await loadMeshIdb(meshCacheKey(src, w, h));
-          if (idbRaw?.v === WIREFRAME_MESH_VERSION) {
-            restoreCachedMesh(unpackMesh(idbRaw));
-            return;
-          }
+        if (!canRunLiveWireframe) {
+          if (!isLightTheme() && loopUrl) showPrebakedLoop();
+          else renderFallback();
+          syncWireframePresentation();
+          return;
+        }
+        const cached = loadMeshCache(src, w, h);
+        if (cached) {
+          restoreCachedMesh(cached);
+          return;
+        }
+        const idbRaw = await loadMeshIdb(meshCacheKey(src, w, h));
+        if (idbRaw?.v === WIREFRAME_MESH_VERSION) {
+          restoreCachedMesh(unpackMesh(idbRaw));
+          return;
         }
         if (!isLightTheme() && loopUrl) showPrebakedLoop();
         const loaded = await loadPrebakedMesh();
