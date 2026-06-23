@@ -14,6 +14,7 @@ const {
   description = SITE_DESCRIPTION,
   jsonLd,
   includeSidebar = true,
+  hideHeader = false,
   sideBarActiveItemID,
   ogType,
 } = Astro.props;
@@ -64,9 +65,9 @@ const {
       <div class="site-vhs-content bg-base-100 drawer lg:drawer-open">
       <input id="my-drawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content bg-base-100">
-        <Header title={SITE_TITLE} />
+        {!hideHeader && <Header title={SITE_TITLE} />}
         <div class="md:flex md:justify-center">
-          <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">
+          <main class:list={["p-6 max-w-[100vw]", hideHeader ? "pt-6" : "pt-10 lg:max-w-[900px]"]}>
             <slot />
           </main>
         </div>

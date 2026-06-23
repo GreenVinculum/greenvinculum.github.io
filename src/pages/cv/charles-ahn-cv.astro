@@ -1,0 +1,182 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const skillGroups = [
+  {
+    title: "Programming Languages",
+    skills: ["Python", "C", "C#", "MicroPython"],
+  },
+  {
+    title: "Data & Analysis",
+    skills: ["SQL", "R", "Excel"],
+  },
+  {
+    title: "XR, Robotics & Hardware",
+    skills: ["Unity", "XR Prototyping", "ROS", "IoT Systems", "Networking", "3D Printing"],
+  },
+  {
+    title: "Soft Skills",
+    skills: ["Code Review"],
+  },
+  {
+    title: "Spoken Languages",
+    skills: ["English", "Spanish", "German"],
+  },
+];
+---
+
+<BaseLayout title="Charles Ahn — CV" includeSidebar={false} hideHeader={true}>
+  <article class="cv-print max-w-[48rem] mx-auto text-[0.95rem] leading-relaxed text-base-content">
+    <header class="cv-print-header border-b border-base-300 pb-5 mb-6">
+      <h1 class="text-3xl font-bold tracking-tight">Charles Ahn</h1>
+      <p class="mt-1 text-lg text-base-content/80">PhD Student in Computer Science</p>
+      <p class="mt-2 text-sm text-base-content/70">
+        George Mason University · Arlington, VA
+        <span class="mx-2" aria-hidden="true">·</span>
+        <a class="cv-print-link" href="mailto:cahn4@gmu.edu">cahn4@gmu.edu</a>
+        <span class="mx-2" aria-hidden="true">·</span>
+        <a class="cv-print-link" href="https://greenvinculum.github.io/">greenvinculum.github.io</a>
+      </p>
+    </header>
+
+    <section class="cv-print-section">
+      <h2 class="cv-print-heading">Summary</h2>
+      <p>
+        PhD student researching human–computer interaction, robotics partnership, and extended reality systems.
+        Research assistant at the Design Computing and Extended Reality Group (DCXR), building XR and fabrication
+        workflows for human-centered computing studies.
+      </p>
+    </section>
+
+    <section class="cv-print-section">
+      <h2 class="cv-print-heading">Education</h2>
+      <div class="cv-print-entry">
+        <div class="cv-print-entry-head">
+          <strong>PhD in Computer Science</strong>
+          <span>2025 – Present</span>
+        </div>
+        <p class="text-base-content/75">George Mason University, Arlington, VA</p>
+        <p>Research at the intersection of interaction design, robotics partnership, and XR systems.</p>
+      </div>
+      <div class="cv-print-entry">
+        <div class="cv-print-entry-head">
+          <strong>B.S. in Computer Science</strong>
+          <span>2022 – 2025</span>
+        </div>
+        <p class="text-base-content/75">George Mason University, Fairfax, VA</p>
+        <p>Completed core CS training while contributing to multidisciplinary research projects.</p>
+      </div>
+    </section>
+
+    <section class="cv-print-section">
+      <h2 class="cv-print-heading">Experience</h2>
+      <div class="cv-print-entry">
+        <div class="cv-print-entry-head">
+          <strong>Research Assistant, DCXR Lab</strong>
+          <span>May 2022 – Present</span>
+        </div>
+        <p class="text-base-content/75">FUSE, Arlington, VA</p>
+        <ul class="cv-print-list">
+          <li>Designed 3D and VR experiences in Unity for human-centered computing studies.</li>
+          <li>Engineered mechanical parts and fabrication workflows with 3D printing.</li>
+          <li>Implemented IoT devices for field deployment and data collection.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cv-print-section">
+      <h2 class="cv-print-heading">Skills</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {skillGroups.map((group) => (
+          <div>
+            <h3 class="font-semibold text-sm uppercase tracking-wide text-base-content/80">{group.title}</h3>
+            <p class="mt-1">{group.skills.join(" · ")}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <p class="cv-print-actions mt-8 print:hidden">
+      <button type="button" class="btn btn-primary btn-sm" id="cv-print-btn">Save as PDF</button>
+      <a href="/cv" class="btn btn-ghost btn-sm ml-2">Back to CV page</a>
+    </p>
+  </article>
+
+  <style>
+    .cv-print-heading {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: hsl(var(--bc) / 0.72);
+      border-bottom: 1px solid hsl(var(--bc) / 0.14);
+      padding-bottom: 0.35rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .cv-print-section + .cv-print-section {
+      margin-top: 1.5rem;
+    }
+
+    .cv-print-entry + .cv-print-entry {
+      margin-top: 1rem;
+    }
+
+    .cv-print-entry-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .cv-print-entry-head span {
+      font-size: 0.88rem;
+      color: hsl(var(--bc) / 0.65);
+      white-space: nowrap;
+    }
+
+    .cv-print-list {
+      margin-top: 0.45rem;
+      padding-left: 1.1rem;
+      list-style: disc;
+    }
+
+    .cv-print-list li + li {
+      margin-top: 0.2rem;
+    }
+
+    .cv-print-link {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+
+    @media print {
+      .cv-print {
+        max-width: none;
+        font-size: 11pt;
+        line-height: 1.45;
+      }
+
+      .cv-print-header {
+        border-color: #ccc;
+      }
+
+      .cv-print-actions {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script is:inline>
+    const triggerPrint = () => window.print();
+
+    document.getElementById("cv-print-btn")?.addEventListener("click", triggerPrint);
+
+    if (new URLSearchParams(window.location.search).get("download") === "1") {
+      window.addEventListener("load", () => {
+        window.setTimeout(triggerPrint, 400);
+      });
+    }
+  </script>
+</BaseLayout>

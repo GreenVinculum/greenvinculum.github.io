@@ -61,10 +61,25 @@ const skillGroups = [
 <BaseLayout title="Resume" sideBarActiveItemID="cv">
   <div class="max-w-3xl space-y-8">
     <section class="cv-section space-y-3">
-      <h1 class="text-3xl font-bold">CV Snapshot</h1>
-      <p class="text-base-content/80">
-        Quick view of my background and current focus. Scroll to reveal major events along the timeline.
-      </p>
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="space-y-3">
+          <h1 class="text-3xl font-bold">CV Snapshot</h1>
+          <p class="text-base-content/80">
+            Quick view of my background and current focus. Scroll to reveal major events along the timeline.
+          </p>
+        </div>
+        <a
+          href="/cv/charles-ahn-cv?download=1"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary shrink-0 gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5" />
+          </svg>
+          Download CV
+        </a>
+      </div>
     </section>
 
     <section class="cv-section space-y-3">

@@ -2443,6 +2443,98 @@ body.gallery-lightbox-open {
     --skill-glow-b: rgba(45, 255, 130, 0.12);
 }
 
+/* Light theme: readable skill tabs, labels, and percentages */
+:root[data-theme="winter"] .cv-skills-glitch {
+    --skill-phosphor: hsl(var(--bc));
+    --skill-glow-a: hsl(var(--p) / 0.18);
+    --skill-glow-b: hsl(var(--p) / 0.1);
+}
+
+:root[data-theme="winter"] .cv-skills-glitch .skill-tabs-list {
+    background: hsl(var(--b3) / 0.72);
+    border-color: hsl(var(--bc) / 0.22);
+    box-shadow: inset 0 0 0 1px hsl(var(--bc) / 0.06);
+}
+
+:root[data-theme="winter"] .cv-skills-glitch .skill-tab {
+    color: hsl(var(--bc) / 0.72);
+}
+
+:root[data-theme="winter"] .cv-skills-glitch .skill-tab:hover {
+    color: hsl(var(--bc));
+    background: hsl(var(--b2) / 0.85);
+    border-color: hsl(var(--bc) / 0.18);
+}
+
+:root[data-theme="winter"] .cv-skills-glitch .skill-tab.is-active {
+    color: hsl(var(--bc));
+    background: hsl(var(--b1));
+    border-color: hsl(var(--p) / 0.5);
+    box-shadow:
+        inset 0 0 0 1px hsl(var(--p) / 0.22),
+        0 1px 5px hsl(var(--bc) / 0.1);
+    text-shadow: none;
+}
+
+:root[data-theme="winter"] .skill-meter-head {
+    color: hsl(var(--bc) / 0.9);
+    background: hsl(var(--b2) / 0.82);
+    text-shadow: none;
+    filter: none;
+}
+
+:root[data-theme="winter"] .skill-meter-head::before,
+:root[data-theme="winter"] .skill-meter-head::after {
+    opacity: 0.12;
+}
+
+:root[data-theme="winter"] .skill-meter-pct {
+    color: hsl(var(--bc) / 0.78);
+    text-shadow: none;
+    filter: none;
+}
+
+:root[data-theme="winter"] .skill-meter-body.is-interference-phase .skill-meter-head span:first-child,
+:root[data-theme="winter"] .skill-meter-body.is-interference-phase .skill-meter-pct,
+:root[data-theme="winter"] .skill-meter-body.is-partial-signal .skill-meter-head span:first-child,
+:root[data-theme="winter"] .skill-meter-body.is-partial-signal .skill-meter-pct {
+    color: hsl(var(--bc) / 0.82);
+    text-shadow: none;
+    filter: none;
+}
+
+.inline-link-highlight {
+    color: #0f2347;
+    text-decoration: underline;
+    text-decoration-color: rgba(15, 35, 71, 0.35);
+    text-underline-offset: 0.18em;
+    transition:
+        color 0.2s ease,
+        text-decoration-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.inline-link-highlight:hover,
+.inline-link-highlight:focus-visible {
+    color: #0f2347;
+    text-decoration-color: rgba(15, 35, 71, 0.5);
+    background-color: #eaf6ff;
+    border-radius: 0.15em;
+    outline: none;
+}
+
+:root[data-theme="dim"] .inline-link-highlight {
+    color: #c5daf5;
+    text-decoration-color: rgba(197, 218, 245, 0.45);
+}
+
+:root[data-theme="dim"] .inline-link-highlight:hover,
+:root[data-theme="dim"] .inline-link-highlight:focus-visible {
+    color: #e8f2fc;
+    text-decoration-color: rgba(232, 242, 252, 0.65);
+    background-color: rgba(234, 246, 255, 0.14);
+}
+
 .skill-meter-track {
     position: relative;
     z-index: 3;
