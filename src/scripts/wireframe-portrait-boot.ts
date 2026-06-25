@@ -5,7 +5,7 @@
 import {
   bootWireframe,
   disposeWireframe,
-  startWireframeMeshPrefetch,
+  startWireframePortraitWarmup,
 } from "../lib/wireframe/wireframe-boot";
 import type { WireframeScrollDriver } from "../lib/wireframe/wireframe-scroll";
 
@@ -34,10 +34,8 @@ function log(...args: unknown[]) {
   console.log("[wireframe]", ...args);
 }
 
-function warmGpuPortrait() {
-  startWireframeMeshPrefetch();
-  void import("../lib/wireframe/WireframePortrait");
-  void import("../lib/wireframe/WebGLWireframePortrait");
+function warmGpuPortrait(meshUrl: string) {
+  startWireframePortraitWarmup(meshUrl);
 }
 
 const onThemeChanged = () => {
@@ -163,7 +161,7 @@ async function bootGpu(el: PortraitElements, gen: number): Promise<boolean> {
     return false;
   }
 
-  warmGpuPortrait();
+  warmGpuPortrait(meshBinUrl);
   log("booting WebGL…", meshBinUrl);
 
   const ok = await bootWireframe({

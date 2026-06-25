@@ -1,0 +1,52 @@
+---
+import { booksRead, GENRE_COLORS, tallyBookGenres } from "../data/currentlyReading";
+
+const genreTally = tallyBookGenres(booksRead);
+const readCount = booksRead.length;
+---
+
+<section id="books-read-log" class="blog-read-log blog-read-log--page-bottom" aria-label="Books read stats">
+  <div class="blog-read-log__header">
+    <div>
+      <p class="blog-now-label mb-1">Read log</p>
+      <p class="blog-read-log__count">
+        <span class="blog-read-log__count-num">{readCount}</span>
+        {readCount === 1 ? "book finished" : "books finished"}
+      </p>
+    </div>
+    {
+      genreTally.length > 0 ? (
+        <div class="blog-genre-widget" aria-label="Book types read">
+          <p class="blog-genre-widget__title">Types read</p>
+          <ul class="blog-genre-widget__list">
+            {genreTally.map(({ genre, count }) => {
+              const max = genreTally[0]?.count ?? 1;
+              const pct = Math.round((count / max) * 100);
+              const color = GENRE_COLORS[genre];
+              return (
+                <li class="blog-genre-widget__row">
+                  <span class="blog-genre-widget__label">
+                    <span class="blog-genre-widget__swatch" style={`background: ${color}`} />
+                    {genre}
+                  </span>
+                  <span class="blog-genre-widget__bar-wrap">
+                    <span
+                      class="blog-genre-widget__bar"
+                      style={`width: ${pct}%; background: ${color}`}
+                    />
+                  </span>
+                  <span class="blog-genre-widget__count">{count}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <p class="blog-read-log__empty text-sm text-base-content/70">
+          Add finished books as genre-only entries in <code class="text-xs">booksRead</code> inside
+          <code class="text-xs">src/data/currentlyReading.ts</code>.
+        </p>
+      )
+    }
+  </div>
+</section>
