@@ -37,10 +37,11 @@ const jsonLdString =
       }
     </script>
     <script>
-      import { startWireframeMeshPrefetch } from "../lib/wireframe/wireframe-boot";
-      startWireframeMeshPrefetch();
-      void import("../lib/wireframe/WireframePortrait");
-      void import("../lib/wireframe/WebGLWireframePortrait");
+      import {
+        startWireframePortraitWarmup,
+        WIREFRAME_MESH_URL,
+      } from "../lib/wireframe/wireframe-boot";
+      startWireframePortraitWarmup(WIREFRAME_MESH_URL);
     </script>
   </>
 )}

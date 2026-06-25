@@ -5,11 +5,36 @@ import { gpuMeshCacheKey, loadGpuMeshIdb, saveGpuMeshIdb } from "./mesh-gpu-cach
 import type { GpuMeshBuffers } from "./mesh-packed";
 
 const DRACO_WRAP_MAGIC = 0x5a444657;
+export const WIREFRAME_MESH_URL = "/data/wireframe-mesh.pck.gz";
 
-export function startWireframeMeshPrefetch() {
-  const root = document.getElementById("wireframePortrait");
-  const meshUrl = root?.getAttribute("data-mesh-bin-url");
-  if (meshUrl) prefetchWireframeMesh(meshUrl);
+let warmedGpuUrl: string | null = null;
+let warmedGpuBuffers: Promise<GpuMeshBuffers | null> | null = null;
+
+function resolveMeshUrl(meshUrl?: string | null): string {
+  return (
+    meshUrl ??
+    document.getElementById("wireframePortrait")?.getAttribute("data-mesh-bin-url") ??
+    WIREFRAME_MESH_URL
+  );
+}
+
+/** Start mesh + GPU IDB + renderer chunk downloads as early as possible (homepage head). */
+export function startWireframePortraitWarmup(meshUrl?: string | null) {
+  const url = resolveMeshUrl(meshUrl);
+  prefetchWireframeMesh(url);
+
+  if (warmedGpuUrl !== url) {
+    warmedGpuUrl = url;
+    warmedGpuBuffers = loadGpuMeshIdb(gpuMeshCacheKey(url));
+  }
+
+  void import("./WireframePortrait");
+  void import("./WebGLWireframePortrait");
+  void import("three");
+}
+
+export function startWireframeMeshPrefetch(meshUrl?: string | null) {
+  startWireframePortraitWarmup(meshUrl);
 }
 
 async function fetchMeshAsset(packed?: string | null): Promise<ArrayBuffer | null> {
@@ -50,10 +75,16 @@ async function decodeMeshBuffer(raw: ArrayBuffer): Promise<ArrayBuffer> {
   return raw;
 }
 
-async function resolveGpuBuffers(meshUrl: string, buffer: ArrayBuffer): Promise<GpuMeshBuffers> {
+async function resolveGpuBuffers(
+  meshUrl: string,
+  buffer: ArrayBuffer,
+  cachedGpu: GpuMeshBuffers | null
+): Promise<GpuMeshBuffers> {
+  if (cachedGpu) return cachedGpu;
+
   const gpuKey = gpuMeshCacheKey(meshUrl);
-  const cached = await loadGpuMeshIdb(gpuKey);
-  if (cached) return cached;
+  const fromIdb = await loadGpuMeshIdb(gpuKey);
+  if (fromIdb) return fromIdb;
 
   const { prepareMesh } = await import("./mesh-prepare");
   const gpuBuffers = prepareMesh(buffer);
@@ -70,25 +101,37 @@ export async function bootWireframe(options: {
   onReady?: () => void;
   scrollDriver?: import("./wireframe-scroll").WireframeScrollDriver | null;
 }): Promise<boolean> {
+  const meshUrl = options.meshUrl;
+  const gpuKey = gpuMeshCacheKey(meshUrl);
   const portraitModulePromise = import("./WireframePortrait");
 
-  const rawBuffer = await fetchMeshAsset(options.meshUrl);
-  if (!rawBuffer) {
-    console.warn("[wireframe] mesh fetch failed:", options.meshUrl);
-    return false;
-  }
+  const gpuFromWarmup =
+    warmedGpuUrl === meshUrl && warmedGpuBuffers ? warmedGpuBuffers : loadGpuMeshIdb(gpuKey);
 
-  let buffer: ArrayBuffer;
-  try {
-    buffer = await decodeMeshBuffer(rawBuffer);
-  } catch (err) {
-    console.warn("[wireframe] mesh decode failed:", err);
+  const [rawBuffer, cachedGpu] = await Promise.all([
+    fetchMeshAsset(meshUrl),
+    gpuFromWarmup,
+  ]);
+
+  if (!rawBuffer && !cachedGpu) {
+    console.warn("[wireframe] mesh fetch failed:", meshUrl);
     return false;
   }
 
   let gpuBuffers: GpuMeshBuffers;
   try {
-    gpuBuffers = await resolveGpuBuffers(options.meshUrl, buffer);
+    if (cachedGpu) {
+      gpuBuffers = cachedGpu;
+    } else {
+      let buffer: ArrayBuffer;
+      try {
+        buffer = await decodeMeshBuffer(rawBuffer!);
+      } catch (err) {
+        console.warn("[wireframe] mesh decode failed:", err);
+        return false;
+      }
+      gpuBuffers = await resolveGpuBuffers(meshUrl, buffer, null);
+    }
   } catch (err) {
     console.warn("[wireframe] mesh prepare failed:", err);
     return false;

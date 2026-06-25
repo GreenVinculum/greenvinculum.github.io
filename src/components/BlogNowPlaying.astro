@@ -1,0 +1,112 @@
+---
+import { currentlyPlaying } from "../data/currentlyPlaying";
+import { currentlyReading, GENRE_COLORS } from "../data/currentlyReading";
+---
+
+<section class="blog-now-panel mb-8" aria-label="Currently playing and reading">
+  <div class="blog-now-grid">
+    <aside class="blog-now-card" aria-label="Currently playing">
+      <p class="blog-now-label">Currently playing</p>
+      <ul class="blog-now-games">
+        {
+          currentlyPlaying.map((game) => (
+            <li class="blog-now-game">
+              <a
+                href={game.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="blog-now-game__link"
+              >
+                <img
+                  src={game.coverSrc}
+                  alt={game.coverAlt}
+                  width="56"
+                  height="74"
+                  loading="lazy"
+                  class="blog-now-game__cover"
+                />
+                <span class="blog-now-game__body">
+                  <span class="blog-now-game__title">{game.title}</span>
+                  <span class="blog-now-game__meta">{game.platform}</span>
+                  <span class="blog-now-game__note">{game.note}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+
+    <aside class="blog-now-card" aria-label="Currently reading">
+      <p class="blog-now-label">Currently reading</p>
+      <button
+        type="button"
+        class="blog-now-book"
+        id="currentlyReadingToggle"
+        aria-expanded="false"
+        aria-controls="currentlyReadingDetails"
+        data-scroll-target="books-read-log"
+      >
+        <img
+          src={currentlyReading.coverSrc}
+          alt={currentlyReading.coverAlt}
+          width="96"
+          height="144"
+          loading="lazy"
+          class="blog-now-book__cover"
+        />
+        <span class="blog-now-book__body">
+          {
+            currentlyReading.series && currentlyReading.bookNumber ? (
+              <span class="blog-now-book__series">
+                {currentlyReading.series} · Book {currentlyReading.bookNumber}
+              </span>
+            ) : null
+          }
+          <span class="blog-now-book__title">{currentlyReading.title}</span>
+          <span class="blog-now-book__author">{currentlyReading.author}</span>
+          <span class="blog-now-book__hint">Click for synopsis · scrolls to read stats</span>
+        </span>
+      </button>
+      <div id="currentlyReadingDetails" class="blog-now-book__details hidden" hidden>
+        <p class="blog-now-book__synopsis">{currentlyReading.synopsis}</p>
+        <div class="blog-now-book__tags">
+          {currentlyReading.genres.map((genre) => (
+            <span
+              class="blog-now-genre-pill"
+              style={`--genre-color: ${GENRE_COLORS[genre]}`}
+            >
+              {genre}
+            </span>
+          ))}
+        </div>
+        <a
+          href={currentlyReading.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="blog-now-book__external link link-secondary text-sm"
+        >
+          More about this book
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  const toggle = document.getElementById("currentlyReadingToggle");
+  const details = document.getElementById("currentlyReadingDetails");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", open ? "false" : "true");
+    details?.classList.toggle("hidden", open);
+    details?.toggleAttribute("hidden", open);
+
+    if (!open) {
+      const targetId = toggle.getAttribute("data-scroll-target");
+      const target = targetId ? document.getElementById(targetId) : null;
+      target?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  });
+</script>
