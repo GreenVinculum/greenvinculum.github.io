@@ -1520,6 +1520,21 @@ body.gallery-lightbox-open {
     pointer-events: none;
 }
 
+.wireframe-portrait .wireframe-light-portrait {
+    grid-area: 1 / 1;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+}
+
+.wireframe-portrait[data-wireframe-state="gpu-live"] .wireframe-light-portrait,
+.wireframe-portrait[data-wireframe-state="2d-live"] .wireframe-light-portrait {
+    display: none;
+}
+
 .wireframe-portrait canvas {
     grid-area: 1 / 1;
     position: relative;
@@ -1527,6 +1542,7 @@ body.gallery-lightbox-open {
     cursor: grab;
     touch-action: none;
     user-select: none;
+    pointer-events: auto;
 }
 
 .wireframe-portrait .wireframe-loop {
@@ -1537,6 +1553,80 @@ body.gallery-lightbox-open {
 
 .wireframe-portrait .wireframe-loop.hidden {
     z-index: 0;
+}
+
+body.wormhole-active {
+    overflow: hidden;
+}
+
+.wormhole-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.wormhole-overlay__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.wormhole-overlay__scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.16) 0,
+        rgba(0, 0, 0, 0.16) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    mix-blend-mode: multiply;
+    animation: wormhole-scan-drift 0.12s linear infinite;
+}
+
+.wormhole-overlay__signal {
+    position: absolute;
+    left: 50%;
+    top: 72%;
+    transform: translate(-50%, -50%);
+    font-family: ui-monospace, "Cascadia Code", monospace;
+    font-size: clamp(0.62rem, 1.6vw, 0.82rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(174, 255, 214, 0.88);
+    text-shadow:
+        0 0 12px rgba(174, 255, 214, 0.45),
+        2px 0 rgba(255, 80, 140, 0.35),
+        -2px 0 rgba(80, 200, 255, 0.35);
+    white-space: nowrap;
+    opacity: 0;
+    animation: wormhole-signal-in 0.5s ease 0.35s forwards;
+}
+
+@keyframes wormhole-scan-drift {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(3px);
+    }
+}
+
+@keyframes wormhole-signal-in {
+    from {
+        opacity: 0;
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
 }
 
 .wireframe-bake-panel {
@@ -2504,14 +2594,71 @@ body.gallery-lightbox-open {
 }
 
 .inline-link-highlight {
+    position: relative;
+    display: inline;
+    isolation: isolate;
     color: #0f2347;
     text-decoration: underline;
     text-decoration-color: rgba(15, 35, 71, 0.35);
     text-underline-offset: 0.18em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding: 0.04em 0.1em;
     transition:
         color 0.2s ease,
         text-decoration-color 0.2s ease,
-        background-color 0.2s ease;
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        text-shadow 0.2s ease;
+}
+
+.inline-link-highlight::before,
+.inline-link-highlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.inline-link-highlight::before {
+    z-index: 0;
+    background:
+        linear-gradient(104deg, transparent 42%, rgba(232, 244, 238, 0.34) 48%, rgba(255, 255, 255, 0.22) 52%, transparent 58%),
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.14) 0,
+            rgba(255, 255, 255, 0.14) 1px,
+            rgba(0, 0, 0, 0) 1px,
+            rgba(0, 0, 0, 0) 3px
+        );
+    mix-blend-mode: screen;
+    animation: tape-smear-prelude var(--glitch-speed, 5s) steps(2, end) infinite;
+}
+
+.inline-link-highlight::after {
+    z-index: 1;
+    background-image: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.18) 0,
+        rgba(255, 255, 255, 0.18) 1px,
+        rgba(0, 0, 0, 0) 1px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(255, 255, 255, 0.07) 2px,
+        rgba(255, 255, 255, 0.07) 3px,
+        rgba(0, 0, 0, 0) 3px,
+        rgba(0, 0, 0, 0) 4px
+    );
+    background-size: 100% 4px;
+    mix-blend-mode: soft-light;
+    animation: vhs-scanline-roll calc(var(--glitch-speed, 5s) * 0.85) linear infinite;
+}
+
+.inline-link-label {
+    position: relative;
+    z-index: 2;
 }
 
 .inline-link-highlight:hover,
@@ -2520,7 +2667,24 @@ body.gallery-lightbox-open {
     text-decoration-color: rgba(15, 35, 71, 0.5);
     background-color: #eaf6ff;
     border-radius: 0.15em;
+    text-shadow:
+        -0.8px 0 rgba(255, 76, 120, 0.22),
+        0.8px 0 rgba(70, 155, 255, 0.24);
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 35, 71, 0.08),
+        -1px 0 rgba(255, 76, 120, 0.14),
+        1px 0 rgba(70, 155, 255, 0.16);
     outline: none;
+}
+
+.inline-link-highlight:hover::before,
+.inline-link-highlight:focus-visible::before {
+    opacity: 0.42;
+}
+
+.inline-link-highlight:hover::after,
+.inline-link-highlight:focus-visible::after {
+    opacity: 0.5;
 }
 
 :root[data-theme="dim"] .inline-link-highlight {
@@ -2533,6 +2697,106 @@ body.gallery-lightbox-open {
     color: #e8f2fc;
     text-decoration-color: rgba(232, 242, 252, 0.65);
     background-color: rgba(234, 246, 255, 0.14);
+    text-shadow:
+        -0.8px 0 rgba(255, 76, 120, 0.26),
+        0.8px 0 rgba(70, 155, 255, 0.28);
+    box-shadow:
+        inset 0 0 0 1px rgba(197, 218, 245, 0.12),
+        -1px 0 rgba(255, 76, 120, 0.2),
+        1px 0 rgba(70, 155, 255, 0.22);
+}
+
+:root[data-theme="winter"] .inline-link-highlight {
+    color: hsl(var(--bc) / 0.92);
+    text-decoration-color: hsl(var(--bc) / 0.35);
+    text-shadow:
+        -0.5px 0 rgba(255, 72, 88, 0.12),
+        0.5px 0 rgba(72, 138, 210, 0.12);
+}
+
+:root[data-theme="winter"] .inline-link-highlight::before {
+    background:
+        linear-gradient(104deg, transparent 42%, rgba(0, 0, 0, 0.06) 48%, rgba(255, 255, 255, 0.18) 52%, transparent 58%),
+        repeating-linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.08) 0,
+            rgba(0, 0, 0, 0.08) 1px,
+            rgba(0, 0, 0, 0) 1px,
+            rgba(0, 0, 0, 0) 3px
+        );
+    mix-blend-mode: multiply;
+}
+
+:root[data-theme="winter"] .inline-link-highlight::after {
+    mix-blend-mode: multiply;
+    background-image: repeating-linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.12) 0,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(255, 255, 255, 0.03) 2px,
+        rgba(255, 255, 255, 0.03) 3px,
+        rgba(0, 0, 0, 0.05) 3px,
+        rgba(0, 0, 0, 0.05) 4px
+    );
+}
+
+:root[data-theme="winter"] .inline-link-highlight:hover,
+:root[data-theme="winter"] .inline-link-highlight:focus-visible {
+    color: hsl(var(--bc));
+    background-color: hsl(var(--b2) / 0.88);
+    text-decoration-color: hsl(var(--bc) / 0.5);
+    text-shadow:
+        -0.8px 0 rgba(255, 72, 88, 0.18),
+        0.8px 0 rgba(72, 138, 210, 0.2);
+    box-shadow:
+        inset 0 0 0 1px hsl(var(--bc) / 0.1),
+        -1px 0 rgba(255, 72, 88, 0.16),
+        1px 0 rgba(72, 138, 210, 0.18);
+}
+
+:root[data-theme="winter"] .inline-link-highlight:hover::after,
+:root[data-theme="winter"] .inline-link-highlight:focus-visible::after {
+    opacity: 0.34;
+}
+
+.cv-download-btn {
+    background-color: hsl(var(--p));
+    color: hsl(var(--pc));
+    border-color: hsl(var(--p));
+}
+
+.cv-download-btn:hover,
+.cv-download-btn:focus-visible {
+    background-color: hsl(var(--pf, var(--p)));
+    border-color: hsl(var(--pf, var(--p)));
+    color: hsl(var(--pc));
+}
+
+:root[data-theme="winter"] .cv-download-btn {
+    background-color: hsl(var(--n));
+    color: hsl(var(--nc));
+    border-color: hsl(var(--n) / 0.88);
+    box-shadow: inset 0 0 0 1px hsl(var(--bc) / 0.08);
+}
+
+:root[data-theme="winter"] .cv-download-btn:hover,
+:root[data-theme="winter"] .cv-download-btn:focus-visible {
+    background-color: hsl(var(--bc) / 0.92);
+    color: hsl(var(--b1));
+    border-color: hsl(var(--bc) / 0.8);
+}
+
+:root[data-theme="dim"] .cv-download-btn {
+    background-color: hsl(var(--p));
+    color: hsl(var(--pc));
+    border-color: hsl(var(--p) / 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .inline-link-highlight::before,
+    .inline-link-highlight::after {
+        animation: none;
+    }
 }
 
 .skill-meter-track {
