@@ -6,6 +6,7 @@ The portrait wireframe is generated in the browser. To ship fast-loading assets:
 2. Open **`http://localhost:4321/?wireframeBake=1`** in **Firefox, Safari, or Edge** (any browser you use)
 3. Wait for the mesh to finish, then use the bake panel:
    - **Download mesh JSON** → save as `public/data/wireframe-mesh.json`
+   - Run **`npm run encode:wireframe-mesh`** → writes `public/data/wireframe-mesh.pck.gz` (~600 KB gzip)
    - **Record loop video** → save as `public/media/wireframe-loop.webm`
    - **Download poster** → save as `public/media/wireframe-poster.png`
 4. Commit those files. Visitors get the video loop immediately; capable devices load the JSON for the interactive canvas.
