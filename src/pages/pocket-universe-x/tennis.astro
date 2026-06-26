@@ -1,0 +1,276 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Pocket Tennis — Universe ████████████"
+  description="Vertical pong in the pocket dimension. First to 21."
+  includeSidebar={false}
+  noindex={true}
+  sideBarActiveItemID=""
+>
+  <div class="tennis-page pb-10">
+    <header class="tennis-page__header">
+      <a class="btn btn-ghost btn-sm" href="/pocket-universe-x/">← Cartridge bay</a>
+      <div class="tennis-page__titles">
+        <p class="text-xs uppercase tracking-[0.35em] opacity-50">Universe feed</p>
+        <h1 class="text-3xl md:text-4xl font-bold">Pocket Tennis</h1>
+      </div>
+    </header>
+
+    <div class="tennis-layout">
+      <aside class="tennis-hud" aria-live="polite">
+        <div class="tennis-hud__player">
+          <label class="tennis-hud__label" for="tennis-name">Pilot</label>
+          <input
+            id="tennis-name"
+            class="tennis-hud__name input input-sm input-bordered w-full"
+            type="text"
+            maxlength="24"
+            autocomplete="nickname"
+            placeholder="Your name"
+          />
+        </div>
+
+        <dl class="tennis-hud__scores">
+          <div class="tennis-hud__score-row">
+            <dt>You</dt>
+            <dd id="tennis-player-score">0</dd>
+          </div>
+          <div class="tennis-hud__score-row tennis-hud__score-row--cpu">
+            <dt>CPU <span id="tennis-ai-level" class="tennis-hud__level">Lv 1</span></dt>
+            <dd id="tennis-ai-score">0</dd>
+          </div>
+        </dl>
+
+        <div class="tennis-hud__status" id="tennis-status">Click the court to start</div>
+
+        <button type="button" class="btn btn-sm btn-outline w-full" id="tennis-pause" disabled>
+          Pause
+        </button>
+
+        <dl class="tennis-hud__stats">
+          <div><dt>Wins</dt><dd id="tennis-wins">0</dd></div>
+          <div><dt>Losses</dt><dd id="tennis-losses">0</dd></div>
+          <div><dt>Best score</dt><dd id="tennis-best">0</dd></div>
+          <div><dt>Peak CPU</dt><dd id="tennis-peak-cpu">1</dd></div>
+        </dl>
+
+        <p class="tennis-hud__hint text-xs opacity-60">
+          Move: mouse, touch, or ← → / A D · Slide on contact to steer and add speed · P or Esc to pause · First to 21
+        </p>
+      </aside>
+
+      <div class="tennis-court-wrap">
+        <canvas id="tennis-canvas" class="tennis-court" aria-label="Pocket Tennis court"></canvas>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { TennisGame } from "../../games/tennis/TennisGame";
+  import {
+    loadProfile,
+    recordMatchResult,
+    saveDisplayName,
+    type UniverseProfile,
+  } from "../../games/tennis/tennis-storage";
+
+  let game: TennisGame | null = null;
+  let profile: UniverseProfile = loadProfile();
+
+  const $ = (id: string) => document.getElementById(id)!;
+
+  function renderProfile(p: UniverseProfile) {
+    ($("tennis-wins") as HTMLElement).textContent = String(p.tennis.wins);
+    ($("tennis-losses") as HTMLElement).textContent = String(p.tennis.losses);
+    ($("tennis-best") as HTMLElement).textContent = String(p.tennis.bestPlayerScore);
+    ($("tennis-peak-cpu") as HTMLElement).textContent = String(p.tennis.highestAiLevel);
+  }
+
+  function setStatus(text: string) {
+    ($("tennis-status") as HTMLElement).textContent = text;
+  }
+
+  function mount() {
+    const canvas = document.getElementById("tennis-canvas") as HTMLCanvasElement | null;
+    const nameInput = document.getElementById("tennis-name") as HTMLInputElement | null;
+    const pauseBtn = document.getElementById("tennis-pause") as HTMLButtonElement | null;
+    if (!canvas || !nameInput) return;
+
+    game?.dispose();
+    profile = loadProfile();
+    nameInput.value = profile.displayName;
+    renderProfile(profile);
+
+    nameInput.onchange = () => {
+      saveDisplayName(nameInput.value);
+      profile = loadProfile();
+    };
+    nameInput.onblur = nameInput.onchange;
+
+    pauseBtn && (pauseBtn.onclick = () => game?.togglePause());
+
+    game = new TennisGame({
+      canvas,
+      initialAiLevel: profile.tennis.currentCpuLevel,
+      onHudUpdate: (state) => {
+        ($("tennis-player-score") as HTMLElement).textContent = String(state.playerScore);
+        ($("tennis-ai-score") as HTMLElement).textContent = String(state.aiScore);
+        ($("tennis-ai-level") as HTMLElement).textContent = `Lv ${state.aiLevel}`;
+
+        const canPause =
+          state.phase === "serve" || state.phase === "playing" || state.phase === "paused";
+        if (pauseBtn) {
+          pauseBtn.disabled = !canPause;
+          pauseBtn.textContent = state.paused ? "Resume" : "Pause";
+        }
+
+        if (state.phase === "menu") setStatus(`Click the court — CPU Lv ${state.aiLevel}`);
+        else if (state.paused) setStatus("Paused");
+        else if (state.phase === "serve") setStatus("Serve...");
+        else if (state.phase === "playing") setStatus("Rally!");
+        else if (state.phase === "point" && state.pointWinner)
+          setStatus(state.pointWinner === "player" ? "Point for you" : "Point for CPU");
+        else if (state.phase === "matchover" && state.matchWinner)
+          setStatus(
+            state.matchWinner === "player"
+              ? `Match won — CPU Lv ${state.aiLevel + 1} next`
+              : `Match lost — CPU Lv ${Math.max(1, state.aiLevel - 1)} next`
+          );
+      },
+      onMatchComplete: (result) => {
+        profile = recordMatchResult(
+          result.playerScore,
+          result.aiScore,
+          result.aiLevel,
+          result.playerWon
+        );
+        renderProfile(profile);
+      },
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
+  }
+  document.addEventListener("astro:page-load", mount);
+</script>
+
+<style>
+  .tennis-page__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tennis-layout {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .tennis-layout {
+      grid-template-columns: minmax(11rem, 14rem) 1fr;
+      align-items: start;
+    }
+  }
+
+  .tennis-hud {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.65rem;
+    border: 1px solid hsl(var(--bc) / 0.18);
+    background: linear-gradient(165deg, hsl(var(--b2) / 0.9), hsl(var(--b3) / 0.55));
+  }
+
+  .tennis-hud__label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.55;
+    margin-bottom: 0.35rem;
+  }
+
+  .tennis-hud__scores {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .tennis-hud__score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .tennis-hud__score-row dd {
+    font-variant-numeric: tabular-nums;
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .tennis-hud__score-row--cpu dt {
+    color: hsl(var(--er) / 0.9);
+  }
+
+  .tennis-hud__level {
+    font-size: 0.72rem;
+    font-weight: 600;
+    opacity: 0.7;
+    margin-left: 0.25rem;
+  }
+
+  .tennis-hud__status {
+    font-size: 0.9rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.4rem;
+    background: hsl(var(--b1) / 0.65);
+    border: 1px solid hsl(var(--bc) / 0.1);
+  }
+
+  .tennis-hud__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .tennis-hud__stats dt {
+    opacity: 0.55;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tennis-hud__stats dd {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tennis-court-wrap {
+    border-radius: 0.65rem;
+    overflow: hidden;
+    border: 1px solid hsl(var(--bc) / 0.2);
+    box-shadow: 0 12px 32px hsl(var(--bc) / 0.1);
+    background: hsl(160 18% 6%);
+  }
+
+  .tennis-court {
+    display: block;
+    width: 100%;
+    height: min(72vh, 640px);
+    touch-action: none;
+    cursor: crosshair;
+  }
+</style>

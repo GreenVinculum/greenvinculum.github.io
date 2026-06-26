@@ -1,0 +1,238 @@
+[
+  {
+    "title": "Dungeon Crawler Carl",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 1,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "Carl's Doomsday Scenario",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 2,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "The Dungeon Anarchist's Cookbook",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 3,
+    "genres": ["LitRPG", "Science Fiction", "Horror"]
+  },
+  {
+    "title": "The Gate of the Feral Gods",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 4,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "The Butcher's Masquerade",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 5,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "The Eye of the Bedlam Bride",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 6,
+    "genres": ["LitRPG", "Science Fiction", "Horror"]
+  },
+  {
+    "title": "This Inevitable Ruin",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 7,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "A Parade of Horribles",
+    "author": "Matt Dinniman",
+    "series": "Dungeon Crawler Carl",
+    "bookNumber": 8,
+    "genres": ["LitRPG", "Science Fiction"]
+  },
+  {
+    "title": "Harry Potter and the Philosopher's Stone",
+    "author": "J.K. Rowling",
+    "series": "Harry Potter",
+    "bookNumber": 1,
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "Harry Potter and the Chamber of Secrets",
+    "author": "J.K. Rowling",
+    "series": "Harry Potter",
+    "bookNumber": 2,
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "Harry Potter and the Prisoner of Azkaban",
+    "author": "J.K. Rowling",
+    "series": "Harry Potter",
+    "bookNumber": 3,
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "Harry Potter and the Goblet of Fire",
+    "author": "J.K. Rowling",
+    "series": "Harry Potter",
+    "bookNumber": 4,
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "Harry Potter and the Order of the Phoenix",
+    "author": "J.K. Rowling",
+    "series": "Harry Potter",
+    "bookNumber": 5,
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "How to Win Friends and Influence People",
+    "author": "Dale Carnegie",
+    "genres": ["Non-fiction"]
+  },
+  {
+    "title": "The Art of Peace",
+    "author": "Morihei Ueshiba",
+    "genres": ["Non-fiction"]
+  },
+  {
+    "title": "Brief Answers to the Big Questions",
+    "author": "Stephen Hawking",
+    "genres": ["Non-fiction"]
+  },
+  {
+    "title": "The Five Love Languages",
+    "author": "Gary Chapman",
+    "genres": ["Non-fiction"]
+  },
+  {
+    "title": "The Mathematics of Love",
+    "author": "Hannah Fry",
+    "genres": ["Non-fiction"]
+  },
+  {
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "author": "Douglas Adams",
+    "genres": ["Science Fiction"]
+  },
+  {
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "genres": ["Science Fiction"]
+  },
+  {
+    "title": "Murder on the Orient Express",
+    "author": "Agatha Christie",
+    "genres": ["Mystery"]
+  },
+  {
+    "title": "The Murder of Roger Ackroyd",
+    "author": "Agatha Christie",
+    "genres": ["Mystery"]
+  },
+  {
+    "title": "And Then There Were None",
+    "author": "Agatha Christie",
+    "genres": ["Mystery"]
+  },
+  {
+    "title": "Magpie Murders",
+    "author": "Anthony Horowitz",
+    "genres": ["Mystery"]
+  },
+  {
+    "title": "Moonflower Murders",
+    "author": "Anthony Horowitz",
+    "genres": ["Mystery"]
+  },
+  {
+    "title": "Watchmen",
+    "author": "Alan Moore",
+    "genres": ["Graphic Novel", "Science Fiction"]
+  },
+  {
+    "title": "V for Vendetta",
+    "author": "Alan Moore",
+    "genres": ["Graphic Novel", "Science Fiction"]
+  },
+  {
+    "title": "Dandadan",
+    "author": "Yukinobu Tatsu",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Doraemon",
+    "author": "Fujiko F. Fujio",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Bleach",
+    "author": "Tite Kubo",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Detective Conan",
+    "author": "Gosho Aoyama",
+    "genres": ["Manga", "Mystery"]
+  },
+  {
+    "title": "Jujutsu Kaisen",
+    "author": "Gege Akutami",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Demon Slayer",
+    "author": "Koyoharu Gotouge",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Mashle",
+    "author": "Hajime Komoto",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Chainsaw Man",
+    "author": "Tatsuki Fujimoto",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Ranma ½",
+    "author": "Rumiko Takahashi",
+    "genres": ["Manga", "Fantasy"]
+  },
+  {
+    "title": "Uzumaki",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  },
+  {
+    "title": "Yon & Mu",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  },
+  {
+    "title": "The Liminal Zone",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  },
+  {
+    "title": "Alley",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  },
+  {
+    "title": "Venus in the Blind Spot",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  },
+  {
+    "title": "The Deserter",
+    "author": "Junji Ito",
+    "genres": ["Manga", "Horror"]
+  }
+]
