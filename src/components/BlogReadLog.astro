@@ -1,52 +1,107 @@
 ---
-import { booksRead, GENRE_COLORS, tallyBookGenres } from "../data/currentlyReading";
+import {
+  booksRead,
+  GENRE_COLORS,
+  tallyReadLogSegments,
+  tallyVisualMediaByGenre,
+  type ReadLogSegment,
+} from "../data/currentlyReading";
 
-const genreTally = tallyBookGenres(booksRead);
-const readCount = booksRead.length;
+const proseTally = tallyReadLogSegments(booksRead, {
+  includeIf: (entry) => !entry.genres.includes("Manga") && !entry.genres.includes("Graphic Novel"),
+});
+
+const visualTally = tallyVisualMediaByGenre(booksRead);
+
+const segmentTotal = (segments: ReadLogSegment[]) =>
+  segments.reduce((sum, { count }) => sum + count, 0);
+
+const legendLabel = (segments: ReadLogSegment[]) =>
+  segments.map(({ genre }) => genre).join(", ");
+
+const proseTotal = segmentTotal(proseTally);
+const visualTotal = segmentTotal(visualTally);
+const hasAny = proseTotal + visualTotal > 0;
 ---
 
-<section id="books-read-log" class="blog-read-log blog-read-log--page-bottom" aria-label="Books read stats">
-  <div class="blog-read-log__header">
-    <div>
-      <p class="blog-now-label mb-1">Read log</p>
-      <p class="blog-read-log__count">
-        <span class="blog-read-log__count-num">{readCount}</span>
-        {readCount === 1 ? "book finished" : "books finished"}
-      </p>
-    </div>
-    {
-      genreTally.length > 0 ? (
-        <div class="blog-genre-widget" aria-label="Book types read">
-          <p class="blog-genre-widget__title">Types read</p>
-          <ul class="blog-genre-widget__list">
-            {genreTally.map(({ genre, count }) => {
-              const max = genreTally[0]?.count ?? 1;
-              const pct = Math.round((count / max) * 100);
-              const color = GENRE_COLORS[genre];
-              return (
-                <li class="blog-genre-widget__row">
-                  <span class="blog-genre-widget__label">
-                    <span class="blog-genre-widget__swatch" style={`background: ${color}`} />
-                    {genre}
-                  </span>
-                  <span class="blog-genre-widget__bar-wrap">
+<section id="books-read-log" class="blog-read-log blog-read-log--page-bottom" aria-label="Read log">
+  <p class="blog-now-label mb-3">Read log</p>
+
+  {
+    hasAny ? (
+      <div class="blog-read-chart">
+        <div class="blog-read-chart__columns">
+          {
+            proseTotal > 0 ? (
+              <div class="blog-read-chart__group">
+                <p class="blog-read-chart__group-label">Books</p>
+                <div
+                  class="blog-read-chart__stack"
+                  role="img"
+                  aria-label={`Books by genre: ${legendLabel(proseTally)}`}
+                >
+                  {proseTally.map(({ genre, count }) => (
                     <span
-                      class="blog-genre-widget__bar"
-                      style={`width: ${pct}%; background: ${color}`}
+                      class="blog-read-chart__segment"
+                      style={`flex-grow: ${count}; background: ${GENRE_COLORS[genre]}`}
+                      title={genre}
                     />
-                  </span>
-                  <span class="blog-genre-widget__count">{count}</span>
-                </li>
-              );
-            })}
-          </ul>
+                  ))}
+                </div>
+                <ul class="blog-read-chart__legend" aria-hidden="true">
+                  {proseTally.map(({ genre }) => (
+                    <li class="blog-read-chart__legend-item">
+                      <span
+                        class="blog-read-chart__swatch"
+                        style={`background: ${GENRE_COLORS[genre]}`}
+                      />
+                      <span class="blog-read-chart__legend-label">{genre}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null
+          }
+
+          {
+            visualTotal > 0 ? (
+              <div class="blog-read-chart__group">
+                <p class="blog-read-chart__group-label">Manga / graphic novels</p>
+                <div
+                  class="blog-read-chart__stack"
+                  role="img"
+                  aria-label={`Manga and graphic novels by genre: ${legendLabel(visualTally)}`}
+                >
+                  {visualTally.map(({ genre, count }) => (
+                    <span
+                      class="blog-read-chart__segment"
+                      style={`flex-grow: ${count}; background: ${GENRE_COLORS[genre]}`}
+                      title={genre}
+                    />
+                  ))}
+                </div>
+                <ul class="blog-read-chart__legend" aria-hidden="true">
+                  {visualTally.map(({ genre }) => (
+                    <li class="blog-read-chart__legend-item">
+                      <span
+                        class="blog-read-chart__swatch"
+                        style={`background: ${GENRE_COLORS[genre]}`}
+                      />
+                      <span class="blog-read-chart__legend-label">{genre}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null
+          }
         </div>
-      ) : (
-        <p class="blog-read-log__empty text-sm text-base-content/70">
-          Add finished books as genre-only entries in <code class="text-xs">booksRead</code> inside
-          <code class="text-xs">src/data/currentlyReading.ts</code>.
-        </p>
-      )
-    }
-  </div>
+      </div>
+    ) : (
+      <p class="blog-read-log__empty text-sm text-base-content/70">
+        Add finished books to <code class="text-xs">src/data/books-read.json</code> — each entry
+        needs <code class="text-xs">title</code>, <code class="text-xs">author</code>, and
+        <code class="text-xs">genres</code>.
+      </p>
+    )
+  }
 </section>

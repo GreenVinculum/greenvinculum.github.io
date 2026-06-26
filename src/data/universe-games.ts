@@ -38,10 +38,11 @@ export const UNIVERSE_GAMES: UniverseGame[] = [
   },
   {
     slug: "pong",
-    title: "Pong",
-    tagline: "Two paddles, one ball.",
+    title: "Pocket Tennis",
+    tagline: "Two paddles, one ball — first to 21.",
     decade: "1972",
-    available: false,
+    available: true,
+    href: "/pocket-universe-x/tennis/",
   },
   {
     slug: "pac",

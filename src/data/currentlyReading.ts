@@ -1,78 +1,42 @@
-/** Book genres — used for the read tally widget on the blog page. */
-export const BOOK_GENRES = [
-  "LitRPG",
-  "Science Fiction",
-  "Fantasy",
-  "Horror",
-  "Mystery",
-  "Literary Fiction",
-  "Non-fiction",
-  "Technical",
-] as const;
+import { booksReadCatalog } from "./books-read";
+import {
+  type BookGenre,
+  type ReadLogEntry,
+  type ReadLogSegment,
+  type ReadingBook,
+  GENRE_COLORS,
+  BOOK_GENRES,
+} from "./currentlyReading-genres";
 
-export type BookGenre = (typeof BOOK_GENRES)[number];
-
-/** Bar color per genre in the read log widget. */
-export const GENRE_COLORS: Record<BookGenre, string> = {
-  LitRPG: "#34d399",
-  "Science Fiction": "#60a5fa",
-  Fantasy: "#c084fc",
-  Horror: "#f87171",
-  Mystery: "#fbbf24",
-  "Literary Fiction": "#fb923c",
-  "Non-fiction": "#94a3b8",
-  Technical: "#22d3ee",
+export {
+  BOOK_GENRES,
+  GENRE_COLORS,
+  type BookGenre,
+  type ReadingBook,
+  type ReadLogEntry,
+  type ReadLogSegment,
 };
-
-export type ReadingBook = {
-  id: string;
-  title: string;
-  series?: string;
-  bookNumber?: number;
-  author: string;
-  synopsis: string;
-  coverSrc: string;
-  coverAlt: string;
-  url: string;
-  genres: BookGenre[];
-};
-
-/** One finished book — only genres are shown in the public read log. */
-export type ReadLogEntry = {
-  genres: BookGenre[];
-};
-
+export { booksReadCatalog, type BooksReadRecord } from "./books-read";
 /**
  * Active title on the blog page.
- * When you finish a book: push `{ genres: [...] }` onto booksRead, then update currentlyReading.
+ * When you finish a book: add an entry to src/data/books-read.json, then update currentlyReading.
  */
 export const currentlyReading: ReadingBook = {
-  id: "dcc-8",
-  title: "A Parade of Horribles",
-  series: "Dungeon Crawler Carl",
-  bookNumber: 8,
-  author: "Matt Dinniman",
+  id: "abundance",
+  title: "Abundance",
+  author: "Ezra Klein & Derek Thompson",
   synopsis:
-    "Carl and the surviving crawlers enter open faction warfare on the dungeon's upper floors — galactic politics, sponsored armies, and gods turn the crawl into a regulated fight to the last team standing.",
-  coverSrc: "/images/dcc-book8-cover.jpg",
-  coverAlt: "Cover of A Parade of Horribles by Matt Dinniman",
-  url: "https://en.wikipedia.org/wiki/Dungeon_Crawler_Carl",
-  genres: ["LitRPG", "Science Fiction"],
+    "Klein and Thompson argue that America's crises — housing, infrastructure, clean energy — stem less from scarcity than from systems that block building. They make the case for an abundance agenda that prioritizes supply, state capacity, and getting things done.",
+  coverSrc: "https://covers.openlibrary.org/b/isbn/9781668023488-L.jpg",
+  coverAlt: "Cover of Abundance by Ezra Klein and Derek Thompson",
+  url: "https://en.wikipedia.org/wiki/Abundance_(book_by_Ezra_Klein_and_Derek_Thompson)",
+  genres: ["Non-fiction"],
 };
 
-/** Finished books — genres only (titles stay private). Newest last when you append. */
-export const booksRead: ReadLogEntry[] = [
-  { genres: ["LitRPG", "Science Fiction"] },
-  { genres: ["LitRPG", "Science Fiction"] },
-  { genres: ["LitRPG", "Science Fiction", "Horror"] },
-  { genres: ["LitRPG", "Science Fiction"] },
-  { genres: ["LitRPG", "Science Fiction"] },
-  { genres: ["LitRPG", "Science Fiction", "Horror"] },
-  { genres: ["LitRPG", "Science Fiction"] },
-];
+/** Derived from books-read.json for the read log charts. */
+export const booksRead: ReadLogEntry[] = booksReadCatalog.map(({ genres }) => ({ genres }));
 
-export function tallyBookGenres(books: ReadLogEntry[]): { genre: BookGenre; count: number }[] {
-  const counts = new Map<BookGenre, number>();
+export function tallyBookGenres(books: ReadLogEntry[]): { genre: BookGenre; count: number }[] {  const counts = new Map<BookGenre, number>();
   for (const book of books) {
     for (const genre of book.genres) {
       counts.set(genre, (counts.get(genre) ?? 0) + 1);
@@ -81,4 +45,33 @@ export function tallyBookGenres(books: ReadLogEntry[]): { genre: BookGenre; coun
   return [...counts.entries()]
     .map(([genre, count]) => ({ genre, count }))
     .sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre));
+}
+
+/** Tally genre tags for a filtered slice of the read log (optionally drop wrapper genres). */
+export function tallyReadLogSegments(  books: ReadLogEntry[],
+  options: {
+    includeIf: (entry: ReadLogEntry) => boolean;
+    omitGenres?: BookGenre[];
+  }
+): ReadLogSegment[] {
+  const omit = new Set(options.omitGenres ?? []);
+  const counts = new Map<BookGenre, number>();
+  for (const book of books) {
+    if (!options.includeIf(book)) continue;
+    for (const genre of book.genres) {
+      if (omit.has(genre)) continue;
+      counts.set(genre, (counts.get(genre) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .map(([genre, count]) => ({ genre, count }))
+    .sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre));
+}
+
+export function tallyVisualMediaByGenre(books: ReadLogEntry[]): ReadLogSegment[] {
+  return tallyReadLogSegments(books, {
+    includeIf: (entry) =>
+      entry.genres.includes("Manga") || entry.genres.includes("Graphic Novel"),
+    omitGenres: ["Manga", "Graphic Novel"],
+  });
 }
