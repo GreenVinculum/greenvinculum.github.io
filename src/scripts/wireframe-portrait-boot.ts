@@ -7,7 +7,7 @@ import {
   disposeWireframe,
   startWireframePortraitWarmup,
 } from "../lib/wireframe/wireframe-boot";
-import { drawRoughMesh, loadRoughMesh, readCachedRoughMesh, type RoughMesh } from "../lib/wireframe/rough-mesh";
+import { loadRoughMesh, readCachedRoughMesh, startMeshSparkle, type RoughMesh } from "../lib/wireframe/rough-mesh";
 import type { WireframeScrollDriver } from "../lib/wireframe/wireframe-scroll";
 
 const THEME_LIGHT = "winter";
@@ -31,6 +31,7 @@ let bootAttempts = 0;
 let runGen = 0;
 let bootGen = 0;
 let roughGen = 0;
+let stopSparkle: (() => void) | null = null;
 
 function log(...args: unknown[]) {
   console.log("[wireframe]", ...args);
@@ -77,17 +78,8 @@ function roughCanvas() {
 
 function stopRoughPreview() {
   roughGen += 1;
-}
-
-function paintRough(canvas: HTMLCanvasElement, mesh: RoughMesh, gen: number, started: number) {
-  const reduced = prefersReducedMotion();
-  const frame = (now: number) => {
-    if (gen !== roughGen) return;
-    const progress = reduced ? 1 : Math.min(1, (now - started) / 1100);
-    drawRoughMesh(canvas, mesh, progress, now, isLightTheme());
-    if (!reduced) requestAnimationFrame(frame);
-  };
-  requestAnimationFrame(frame);
+  stopSparkle?.();
+  stopSparkle = null;
 }
 
 function startRoughPreview(el: PortraitElements) {
@@ -96,12 +88,23 @@ function startRoughPreview(el: PortraitElements) {
   const gen = ++roughGen;
   canvas.classList.remove("hidden");
   const url = el.root.getAttribute("data-rough-url") || "/data/wireframe-mesh-rough.json";
-  const started = performance.now();
+  const play = (mesh: RoughMesh) => {
+    if (gen !== roughGen) return;
+    stopSparkle?.();
+    stopSparkle = startMeshSparkle(canvas, mesh, {
+      light: isLightTheme,
+      reduced: prefersReducedMotion(),
+      portraitSrc: sampleSrc(el, isLightTheme()),
+    });
+    setState(el.root, "mesh-live");
+    if (isLightTheme()) showLightPortrait(el);
+    else hideLightPortrait(el);
+  };
   const cached = readCachedRoughMesh();
-  if (cached) paintRough(canvas, cached, gen, started);
+  if (cached) play(cached);
   void loadRoughMesh(url).then((mesh) => {
     if (!mesh || gen !== roughGen || cached) return;
-    paintRough(canvas, mesh, gen, started);
+    play(mesh);
   });
 }
 
@@ -111,6 +114,13 @@ function showPoster(el: PortraitElements) {
 
 function hidePoster(el: PortraitElements) {
   el.poster?.classList.add("hidden");
+}
+
+function sampleSrc(el: PortraitElements, light: boolean) {
+  const base = light
+    ? el.root.getAttribute("data-light-portrait") || el.root.getAttribute("data-source") || "/images/profile"
+    : el.root.getAttribute("data-source") || "/images/profile";
+  return /\.(png|jpe?g|webp|gif)$/i.test(base) ? base : `${base}.png`;
 }
 
 function showLightPortrait(el: PortraitElements) {
@@ -246,6 +256,11 @@ async function runBoot(el: PortraitElements) {
   setState(el.root, "booting");
 
   startRoughPreview(el);
+  booting = false;
+
+  const params = new URLSearchParams(window.location.search);
+  const bake = params.has("wireframeBake") || params.has("wireframeOverlay");
+  if (!bake) return;
 
   const gpuOk = await bootGpu(el, gen);
   booting = false;

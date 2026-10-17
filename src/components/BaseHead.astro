@@ -30,19 +30,6 @@ const jsonLdString =
 {Astro.url.pathname === "/" && (
   <>
     <link rel="preload" href="/data/wireframe-mesh-rough.json" as="fetch" crossorigin fetchpriority="high" />
-    <link rel="preload" href="/data/wireframe-mesh.pck.gz" as="fetch" crossorigin />
-    <script is:inline>
-      if (!window.__wireframeMeshPrefetch) {
-        window.__wireframeMeshPrefetch = fetch("/data/wireframe-mesh.pck.gz", { credentials: "same-origin" });
-      }
-    </script>
-    <script>
-      import {
-        startWireframePortraitWarmup,
-        WIREFRAME_MESH_URL,
-      } from "../lib/wireframe/wireframe-boot";
-      startWireframePortraitWarmup(WIREFRAME_MESH_URL);
-    </script>
   </>
 )}
 
