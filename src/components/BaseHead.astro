@@ -29,8 +29,8 @@ const jsonLdString =
 <meta name="google-site-verification" content="0Mt9SH3wtgxY2tMpxD_snDilZ9LdYj1-M4yi4wgctbs" />
 {Astro.url.pathname === "/" && (
   <>
-    <link rel="preload" href="/data/wireframe-mesh.pck.gz" as="fetch" crossorigin fetchpriority="high" />
-    <link rel="preload" href="/media/wireframe-poster.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/data/wireframe-mesh-rough.json" as="fetch" crossorigin fetchpriority="high" />
+    <link rel="preload" href="/data/wireframe-mesh.pck.gz" as="fetch" crossorigin />
     <script is:inline>
       if (!window.__wireframeMeshPrefetch) {
         window.__wireframeMeshPrefetch = fetch("/data/wireframe-mesh.pck.gz", { credentials: "same-origin" });

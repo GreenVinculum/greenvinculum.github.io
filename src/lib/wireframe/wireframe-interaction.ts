@@ -13,6 +13,7 @@ export type InteractionUniforms = {
   uDragActive: { value: number };
   uScrollY: { value: number };
   uScrollVel: { value: number };
+  uAssemble: { value: number };
 };
 
 export type LayoutUniforms = {
@@ -67,6 +68,7 @@ export function makeInteractionUniforms(): InteractionUniforms {
     uDragActive: { value: 0 },
     uScrollY: { value: 0 },
     uScrollVel: { value: 0 },
+    uAssemble: { value: 1 },
   };
 }
 
@@ -209,6 +211,7 @@ export class WireframeInteraction {
       uDragActive: { value: this.dragActive ? 1 : 0 },
       uScrollY: { value: scroll?.uScrollY ?? 0 },
       uScrollVel: { value: scroll?.uScrollVel ?? 0 },
+      uAssemble: { value: 1 },
     };
   }
 }

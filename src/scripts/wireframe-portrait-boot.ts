@@ -7,6 +7,7 @@ import {
   disposeWireframe,
   startWireframePortraitWarmup,
 } from "../lib/wireframe/wireframe-boot";
+import { drawRoughMesh, loadRoughMesh, readCachedRoughMesh, type RoughMesh } from "../lib/wireframe/rough-mesh";
 import type { WireframeScrollDriver } from "../lib/wireframe/wireframe-scroll";
 
 const THEME_LIGHT = "winter";
@@ -29,6 +30,7 @@ let themeListenerBound = false;
 let bootAttempts = 0;
 let runGen = 0;
 let bootGen = 0;
+let roughGen = 0;
 
 function log(...args: unknown[]) {
   console.log("[wireframe]", ...args);
@@ -67,6 +69,40 @@ function getElements(): PortraitElements | null {
 
 function setState(root: HTMLElement, state: string) {
   root.dataset.wireframeState = state;
+}
+
+function roughCanvas() {
+  return document.getElementById("wireframeRough") as HTMLCanvasElement | null;
+}
+
+function stopRoughPreview() {
+  roughGen += 1;
+}
+
+function paintRough(canvas: HTMLCanvasElement, mesh: RoughMesh, gen: number, started: number) {
+  const reduced = prefersReducedMotion();
+  const frame = (now: number) => {
+    if (gen !== roughGen) return;
+    const progress = reduced ? 1 : Math.min(1, (now - started) / 1100);
+    drawRoughMesh(canvas, mesh, progress, now, isLightTheme());
+    if (!reduced) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+function startRoughPreview(el: PortraitElements) {
+  const canvas = roughCanvas();
+  if (!canvas) return;
+  const gen = ++roughGen;
+  canvas.classList.remove("hidden");
+  const url = el.root.getAttribute("data-rough-url") || "/data/wireframe-mesh-rough.json";
+  const started = performance.now();
+  const cached = readCachedRoughMesh();
+  if (cached) paintRough(canvas, cached, gen, started);
+  void loadRoughMesh(url).then((mesh) => {
+    if (!mesh || gen !== roughGen || cached) return;
+    paintRough(canvas, mesh, gen, started);
+  });
 }
 
 function showPoster(el: PortraitElements) {
@@ -134,6 +170,7 @@ function showLiveCanvas(el: PortraitElements) {
   hidePoster(el);
   hideLightPortrait(el);
   setState(el.root, "gpu-live");
+  stopRoughPreview();
 }
 
 async function attachScroll(el: PortraitElements) {
@@ -208,16 +245,7 @@ async function runBoot(el: PortraitElements) {
   bootAttempts += 1;
   setState(el.root, "booting");
 
-  if (prefersReducedMotion()) {
-    showPoster(el);
-    if (isLightTheme()) showLightPortrait(el);
-    setState(el.root, "reduced-motion");
-    booting = false;
-    return;
-  }
-
-  showPoster(el);
-  if (isLightTheme()) showLightPortrait(el);
+  startRoughPreview(el);
 
   const gpuOk = await bootGpu(el, gen);
   booting = false;
@@ -238,6 +266,7 @@ async function runBoot(el: PortraitElements) {
 }
 
 function teardown() {
+  stopRoughPreview();
   runGen += 1;
   void disposeWireframe();
   activeScroll?.detach();

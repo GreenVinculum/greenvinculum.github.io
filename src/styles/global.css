@@ -1535,6 +1535,19 @@ body.gallery-lightbox-open {
     display: none;
 }
 
+.wireframe-portrait .wireframe-rough {
+    grid-area: 1 / 1;
+    z-index: 1;
+    pointer-events: none;
+    cursor: default;
+}
+
+.wireframe-portrait[data-wireframe-state="gpu-live"] .wireframe-rough,
+.wireframe-portrait[data-wireframe-state="2d-live"] .wireframe-rough {
+    opacity: 0;
+    transition: opacity 0.85s ease 0.2s;
+}
+
 .wireframe-portrait canvas {
     grid-area: 1 / 1;
     position: relative;

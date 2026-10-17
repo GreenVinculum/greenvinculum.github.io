@@ -167,6 +167,7 @@ uniform float uPointerRadius;
 uniform float uDragActive;
 uniform float uPixelRatio;
 uniform float uLightTheme;
+uniform float uAssemble;
 
 varying float vAlpha;
 varying float vSmoke;
@@ -274,6 +275,14 @@ void main() {
   dotR *= mix(0.82, 1.08, depthNorm);
   dotR *= 1.0 - smoke * 0.35;
   if (smoke > 0.97 && edgeW > 0.62) alpha = 0.0;
+
+  float stagger = pulseOffset;
+  float arrive = smoothstep(stagger * 0.62, stagger * 0.62 + 0.28, uAssemble);
+  float drift = 1.0 - arrive;
+  screen.y -= drift * (18.0 + stagger * 46.0);
+  screen.x += sin(uTime * 2.2 + stagger * 14.0) * drift * 7.0;
+  alpha *= arrive;
+
   vAlpha = alpha;
 
   gl_Position = vec4(
