@@ -46,6 +46,7 @@ export class WebGLWireframePortrait {
   private clock = createRenderClock();
   private layout: GpuMeshBuffers["layout"];
   private scrollDriver: WireframeScrollDriver | null;
+  private born = performance.now();
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -111,6 +112,9 @@ export class WebGLWireframePortrait {
     applyInteractionUniforms(this.gpuGeo.uniforms, tick);
     if (this.depthCloudGeo) applyInteractionUniforms(this.depthCloudGeo.uniforms, tick);
     const pr = clampPixelRatio();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const assemble = reduced ? 1 : Math.min(1, (performance.now() - this.born) / 1500);
+    this.gpuGeo.uniforms.uAssemble.value = assemble;
     this.gpuGeo.uniforms.uPixelRatio.value = pr;
     if (this.depthCloudGeo) this.depthCloudGeo.uniforms.uPixelRatio.value = pr;
 

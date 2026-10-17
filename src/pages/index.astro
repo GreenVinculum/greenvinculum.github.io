@@ -27,39 +27,45 @@ const personJsonLd = {
         data-light-portrait="/images/profile-inverted"
         data-mesh-url="/data/wireframe-mesh.json"
         data-mesh-bin-url="/data/wireframe-mesh.pck.gz"
+        data-rough-url="/data/wireframe-mesh-rough.json"
         data-loop-url="/media/wireframe-loop.webm"
         data-poster-url="/media/wireframe-poster.png"
         aria-label="Wireframe profile portrait"
       >
+        <canvas
+          id="wireframeRough"
+          class="wireframe-rough"
+          width="760"
+          height="760"
+          aria-hidden="true"
+        ></canvas>
         <img
           id="wireframePoster"
-          class="wireframe-poster"
-          src="/media/wireframe-poster.png"
+          class="wireframe-poster hidden"
           alt=""
           width="760"
-          height="1080"
+          height="760"
           decoding="async"
-          fetchpriority="high"
         />
         <img
           id="wireframeLightPortrait"
           class="wireframe-light-portrait hidden"
           alt=""
           width="760"
-          height="1080"
+          height="760"
           decoding="async"
         />
         <video
           id="wireframeLoop"
           class="wireframe-loop hidden"
           width="760"
-          height="1080"
+          height="760"
           muted
           loop
           playsinline
           preload="none"
         ></video>
-        <canvas id="wireframeCanvas" class="wireframe-canvas-live hidden" width="760" height="1080"></canvas>
+        <canvas id="wireframeCanvas" class="wireframe-canvas-live hidden" width="760" height="760"></canvas>
         <p id="wireframeFallback" class="wireframe-fallback hidden">
           Add your portrait to <code>/public/images/profile.png</code> or <code>/public/images/profile.jpg</code>
         </p>
@@ -107,8 +113,9 @@ const personJsonLd = {
         
       </text>
     </div>
-    <div class="mt-8">
-      <a class="btn" href="https://twitter.com/ " target="_blank"> Let's connect!</a>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="btn" href="https://www.linkedin.com/in/charles-ahn-381403207" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a class="btn" href="https://scholar.google.com/citations?user=J3DGeLAAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener noreferrer">Google Scholar</a>
     </div>
   </div>
 
