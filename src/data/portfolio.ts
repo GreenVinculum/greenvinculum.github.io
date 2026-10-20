@@ -25,8 +25,8 @@ export const recentPortfolioProjects: PortfolioProject[] = [
   },
   {
     title: "MintyPii",
-    img: "/portfolio/personal-projects/mintypii/hero.svg",
-    desc: "Pocket iPod-style player in an Altoids tin — Pi Zero 2 W, Pimoroni Headphone HAT, and a rotary dial.",
+    img: "/portfolio/personal-projects/mintypii/hero.jpg",
+    desc: "Pocket iPod-style player in an Altoids tin — Pi Zero 2 W, Pirate Audio, and a rotary dial.",
     url: "/portfolio/personal/mintypii",
     target: "_self",
   },
