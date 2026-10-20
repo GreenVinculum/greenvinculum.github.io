@@ -194,6 +194,7 @@
 }
 
 .site-logo-link {
+    display: block;
     width: 100%;
     border-radius: 50%;
     overflow: hidden;
@@ -473,6 +474,22 @@
     --cord-brass: #c4a060;
     --cord-brass-mid: #a88848;
     --cord-brass-dark: #806838;
+}
+
+.sidebar-theme-toggle {
+    justify-content: center;
+    border: 1px solid hsl(var(--bc) / 0.14);
+    background: hsl(var(--b1) / 0.55);
+}
+
+.sidebar-theme-toggle__sun,
+.sidebar-theme-toggle__moon {
+    display: none;
+}
+
+:root[data-theme="dim"] .sidebar-theme-toggle__sun,
+:root[data-theme="winter"] .sidebar-theme-toggle__moon {
+    display: block;
 }
 
 .sr-only {
@@ -808,6 +825,12 @@ body.gallery-lightbox-open {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.site-logo--photo {
+    display: block;
+    border-radius: 50%;
+    object-position: center 18%;
 }
 
 .site-logo--base {
