@@ -153,29 +153,7 @@ const personJsonLd = {
     </NerveTimeline>
   </section>
 
-  <section class="visit-widget mt-8">
-    <h2 class="text-xl font-bold mb-2">Site Activity</h2>
-    <p class="opacity-80">Total visits from this browser: <span id="visitCountValue">-</span></p>
-    <p class="opacity-70 text-sm">Last visit: <span id="visitLastValue">First time visitor</span></p>
-  </section>
-
   <script is:inline>
-    const countEl = document.getElementById("visitCountValue");
-    const lastEl = document.getElementById("visitLastValue");
-    const countKey = "siteVisitCount";
-    const lastKey = "siteVisitLastAt";
-    const previousLastVisit = localStorage.getItem(lastKey);
-    const count = Number(localStorage.getItem(countKey) || "0") + 1;
-
-    localStorage.setItem(countKey, String(count));
-    localStorage.setItem(lastKey, new Date().toISOString());
-
-    if (countEl) countEl.textContent = String(count);
-    if (lastEl && previousLastVisit) {
-      const date = new Date(previousLastVisit);
-      lastEl.textContent = date.toLocaleString();
-    }
-
     const glitchWrap = document.querySelector(".glitch-name-wrap");
     if (glitchWrap) {
       const glitchChars = Array.from(document.querySelectorAll(".glitch-char"));
