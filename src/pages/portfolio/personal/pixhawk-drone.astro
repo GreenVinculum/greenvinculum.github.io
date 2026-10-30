@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "Building a Drone";
+const description =
+  "An ongoing personal build centered on a Pixhawk 6C flight controller — airframe, power, radios, and first flights still in progress.";
+const heroImage = "/portfolio/personal-projects/pixhawk-drone/hero.jpg";
+const tags = ["Drone", "Pixhawk 6C", "Hardware", "Ongoing"];
+
+const stack = [
+  { item: "Pixhawk 6C", note: "Flight controller — sensors, failsafe logic, and mission brain" },
+  { item: "Airframe", note: "Frame and propulsion still being sized for the mission profile" },
+  { item: "ESCs + motors", note: "Matched for thrust, efficiency, and hover margin" },
+  { item: "GPS / compass", note: "External GNSS for position hold and return-to-land" },
+  { item: "Radio link", note: "Control + telemetry to the ground station" },
+  { item: "Battery", note: "Pack voltage and capacity tuned once AUW is known" },
+];
+
+const phases = [
+  {
+    title: "Flight controller bring-up",
+    body: "Flash and configure the Pixhawk 6C, verify IMUs and compasses, and get a clean sensor health check before the airframe is fully dressed.",
+  },
+  {
+    title: "Power and propulsion",
+    body: "Wire the power module, ESCs, and motors with strain relief and clear labeling. Bench-test spin direction and current draw before anything leaves the bench.",
+  },
+  {
+    title: "Radio, GPS, and failsafes",
+    body: "Bind the transmitter, confirm telemetry, mount GPS away from noise, then walk through low-battery, loss-of-signal, and geofence behaviors on the bench.",
+  },
+  {
+    title: "First flights",
+    body: "Still ahead: tame hover, tune rates, and expand the envelope only after the boring safety checklist is boring on purpose.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} sideBarActiveItemID="portfolioPersonal">
+  <article class="project-page max-w-[750px]">
+    <a href="/portfolio/personal" class="text-sm text-base-content/60 hover:text-secondary no-underline">
+      ← Personal projects
+    </a>
+
+    <header class="mt-4 mb-8">
+      <img
+        src={heroImage}
+        alt="Pixhawk flight controller and GPS module on the bench during drone bring-up"
+        width="768"
+        height="1024"
+        class="w-full max-h-[32rem] rounded-lg border border-base-300 shadow-lg mb-6 object-cover object-center"
+      />
+      <h1 class="text-4xl font-bold leading-tight mb-3">
+        {title}
+        <span class="badge badge-secondary align-middle ml-2 text-sm font-semibold">Ongoing</span>
+      </h1>
+      <p class="text-lg text-base-content/80 leading-relaxed">{description}</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {tags.map((tag) => (
+          <span class="badge badge-outline">{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Overview</h2>
+      <p>
+        This is a living build log for a DIY drone built around a <strong>Pixhawk 6C</strong>. The goal is a reliable
+        platform I understand end-to-end — not a black-box toy — with configuration, power, and failsafes documented as
+        the airframe comes together.
+      </p>
+      <p>
+        Status today: flight-controller focused bring-up is underway. Airframe integration and maiden flights are still
+        ahead. Expect this page to grow with wiring notes, parameter dumps, and flight impressions.
+      </p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-4">Core stack</h2>
+      <ul class="space-y-3">
+        {stack.map((row) => (
+          <li class="border-b border-base-300 pb-3">
+            <div class="font-semibold">{row.item}</div>
+            <div class="text-base-content/70 text-sm">{row.note}</div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-4">Build phases</h2>
+      <ol class="space-y-6 list-decimal list-inside">
+        {phases.map((step) => (
+          <li>
+            <span class="font-semibold text-lg">{step.title}</span>
+            <p class="mt-2 text-base-content/80 ml-6">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  </article>
+</BaseLayout>

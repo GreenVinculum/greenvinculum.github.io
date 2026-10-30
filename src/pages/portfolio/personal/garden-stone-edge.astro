@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "Weekend Garden Landscaping";
+const description =
+  "A weekend landscaping project: cut a clean bed line and build a dry-stacked stone edge / low retainer to hold soil, mulch, and plantings in place.";
+const heroImage = "/portfolio/personal-projects/garden-stone-edge/hero.jpg";
+const plantingImage = "/portfolio/personal-projects/garden-stone-edge/planting.jpg";
+const tags = ["Landscaping", "Stonework", "Garden", "Weekend build"];
+
+const materials = [
+  { item: "Landscape stone", note: "Flat-faced pieces sized for a low edge / retainer course — mix of lengths for a staggered joint line" },
+  { item: "Base gravel / crushed stone", note: "Compactable bedding under the first course so the wall does not settle into soft soil" },
+  { item: "Landscape fabric (optional)", note: "Behind the face where soil would otherwise migrate through gaps" },
+  { item: "Mulch + plants", note: "Finish the bed once the edge is locked — the retainer only earns its keep when the planting is in" },
+  { item: "Hand tools", note: "Shovel, spade, rake, rubber mallet, level, string line, and a wheelbarrow for spoil" },
+];
+
+const phases = [
+  {
+    title: "Mark the bed line",
+    body: "Stake a string or hose the curve so the edge looks intentional from the house and the walk. Prefer gentle arcs over tight S-curves — stone follows a line more happily than a scribble.",
+  },
+  {
+    title: "Excavate and set the base",
+    body: "Dig a shallow trench along the line, deeper where the retainer needs to hold a soil step. Lay crushed stone, compact it, and check level along the run before any face stone goes down.",
+  },
+  {
+    title: "Dry-stack the stone edge",
+    body: "Set the largest, flattest stones as the base course. Stagger vertical joints, tilt slightly into the bed for lean, and tap for full contact. Build a second course where the soil face is taller or the bed wants a clearer lip.",
+  },
+  {
+    title: "Backfill and finish",
+    body: "Backfill behind the wall in lifts, tamping as you go so the face does not bulge. Cap with soil, plant, and mulch so water sheds cleanly over the edge instead of undercutting the first course.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} sideBarActiveItemID="portfolioPersonal">
+  <article class="project-page max-w-[750px]">
+    <a href="/portfolio/personal" class="text-sm text-base-content/60 hover:text-secondary no-underline">
+      ← Personal projects
+    </a>
+
+    <header class="mt-4 mb-8">
+      <img
+        src={heroImage}
+        alt="Dry-stacked stone garden edge retaining a mulched planting bed"
+        width="1024"
+        height="483"
+        class="w-full rounded-lg border border-base-300 shadow-lg mb-6 object-cover"
+      />
+      <h1 class="text-4xl font-bold leading-tight mb-3">{title}</h1>
+      <p class="text-lg text-base-content/80 leading-relaxed">{description}</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {tags.map((tag) => (
+          <span class="badge badge-outline">{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="prose prose-lg max-w-none mb-10">
+      <h2>Overview</h2>
+      <p>
+        A weekend garden job with a clear finish line: pull a crisp bed edge and build a
+        <strong>stone edge / low retainer</strong> that keeps soil and mulch where they belong.
+        No mortar — just a compacted base, careful dry-stack, and a backfill that leans into the wall instead of pushing it over.
+      </p>
+      <p>
+        The goal is a line that still looks good after rain and freeze–thaw: stones seated hard on a gravel bed,
+        joints staggered, and the planting bed graded so runoff does not wash out under the first course.
+      </p>
+    </section>
+
+    <figure class="mb-10">
+      <img
+        src={plantingImage}
+        alt="New planting in the mulched bed behind the stone edge"
+        width="575"
+        height="1024"
+        class="w-full max-h-[36rem] rounded-lg border border-base-300 shadow-lg object-cover object-center"
+      />
+      <figcaption class="mt-2 text-sm text-base-content/60">
+        After the edge is locked: soil, mulch, and plants so the retainer actually has a job.
+      </figcaption>
+    </figure>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-4">Materials &amp; tools</h2>
+      <ul class="space-y-3">
+        {materials.map((row) => (
+          <li class="border-b border-base-300 pb-3">
+            <div class="font-semibold">{row.item}</div>
+            <div class="text-base-content/70 text-sm">{row.note}</div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-4">Weekend sequence</h2>
+      <ol class="space-y-6 list-decimal list-inside">
+        {phases.map((step) => (
+          <li>
+            <span class="font-semibold text-lg">{step.title}</span>
+            <p class="mt-2 text-base-content/80 ml-6">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  </article>
+</BaseLayout>

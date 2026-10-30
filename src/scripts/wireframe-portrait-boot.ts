@@ -19,6 +19,7 @@ type PortraitElements = {
   loop: HTMLVideoElement | null;
   poster: HTMLImageElement | null;
   lightPortrait: HTMLImageElement | null;
+  darkDepth: HTMLImageElement | null;
   fallback: HTMLElement | null;
 };
 
@@ -64,6 +65,7 @@ function getElements(): PortraitElements | null {
     loop: document.getElementById("wireframeLoop") as HTMLVideoElement | null,
     poster: document.getElementById("wireframePoster") as HTMLImageElement | null,
     lightPortrait: document.getElementById("wireframeLightPortrait") as HTMLImageElement | null,
+    darkDepth: document.getElementById("wireframeDarkDepth") as HTMLImageElement | null,
     fallback: document.getElementById("wireframeFallback"),
   };
 }
@@ -97,8 +99,13 @@ function startRoughPreview(el: PortraitElements) {
       portraitSrc: sampleSrc(el, isLightTheme()),
     });
     setState(el.root, "mesh-live");
-    if (isLightTheme()) showLightPortrait(el);
-    else hideLightPortrait(el);
+    if (isLightTheme()) {
+      showLightPortrait(el);
+      hideDarkDepth(el);
+    } else {
+      hideLightPortrait(el);
+      showDarkDepth(el);
+    }
   };
   const cached = readCachedRoughMesh();
   if (cached) play(cached);
@@ -134,6 +141,29 @@ function showLightPortrait(el: PortraitElements) {
 
 function hideLightPortrait(el: PortraitElements) {
   el.lightPortrait?.classList.add("hidden");
+}
+
+function depthDrawCanvas() {
+  return document.getElementById("wireframeDepthDraw") as HTMLCanvasElement | null;
+}
+
+function showDarkDepth(el: PortraitElements) {
+  const base = el.root.getAttribute("data-dark-depth") || "/images/profile-depth-dark.png";
+  const src = /\.(png|jpe?g|webp|gif)$/i.test(base) ? base : `${base}.png`;
+  if (!el.darkDepth) return;
+  // Lazy: assign src only when dark theme mesh is live, never on first HTML paint.
+  if (el.darkDepth.getAttribute("src") !== src) el.darkDepth.src = src;
+  el.darkDepth.classList.remove("hidden");
+  depthDrawCanvas()?.classList.remove("hidden");
+}
+
+function hideDarkDepth(el: PortraitElements) {
+  el.darkDepth?.classList.add("hidden");
+  const depthDraw = depthDrawCanvas();
+  if (depthDraw) {
+    depthDraw.classList.add("hidden");
+    depthDraw.style.transform = "";
+  }
 }
 
 function canPlayWebm(loop: HTMLVideoElement | null) {
@@ -179,6 +209,7 @@ function showLiveCanvas(el: PortraitElements) {
   el.fallback?.classList.add("hidden");
   hidePoster(el);
   hideLightPortrait(el);
+  hideDarkDepth(el);
   setState(el.root, "gpu-live");
   stopRoughPreview();
 }
@@ -198,6 +229,7 @@ function showLive2dCanvas(el: PortraitElements) {
   el.fallback?.classList.add("hidden");
   hidePoster(el);
   hideLightPortrait(el);
+  hideDarkDepth(el);
   setState(el.root, "2d-live");
 }
 

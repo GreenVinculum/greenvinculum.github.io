@@ -11,6 +11,16 @@ export type RoughMesh = {
 };
 
 const CACHE_KEY = "wireframeRoughMesh:v12";
+const DRAWN_CACHE_KEY = "wireframeDrawnMesh:v4";
+
+type DrawnProgress = {
+  v: 4;
+  lines: number[];
+  tris: number[];
+  ageMs: number;
+  visits: number;
+  savedAt: number;
+};
 
 export function readCachedRoughMesh(): RoughMesh | null {
   try {
@@ -24,13 +34,45 @@ export function readCachedRoughMesh(): RoughMesh | null {
   }
 }
 
-function forgetDrawnMesh() {
+function forgetOldDrawnMeshKeys() {
   try {
     localStorage.removeItem("wireframeDrawnMesh:v1");
     localStorage.removeItem("wireframeDrawnMesh:v2");
     localStorage.removeItem("wireframeDrawnMesh:v3");
   } catch {
     /* private mode */
+  }
+}
+
+function readDrawnProgress(): DrawnProgress | null {
+  try {
+    const raw = localStorage.getItem(DRAWN_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DrawnProgress;
+    if (parsed?.v !== 4) return null;
+    if (!Array.isArray(parsed.lines) || !Array.isArray(parsed.tris)) return null;
+    if (parsed.lines.length % 4 !== 0 || parsed.tris.length % 6 !== 0) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function storeDrawnProgress(progress: DrawnProgress) {
+  try {
+    localStorage.setItem(DRAWN_CACHE_KEY, JSON.stringify(progress));
+  } catch {
+    // Quota — trim and retry once with a lighter snapshot.
+    try {
+      const slim: DrawnProgress = {
+        ...progress,
+        lines: progress.lines.slice(-Math.min(progress.lines.length, 12000)),
+        tris: progress.tris.slice(-Math.min(progress.tris.length, 18000)),
+      };
+      localStorage.setItem(DRAWN_CACHE_KEY, JSON.stringify(slim));
+    } catch {
+      /* private mode / hard quota */
+    }
   }
 }
 
@@ -95,6 +137,8 @@ type Tether = {
   x: number;
   y: number;
   width: number;
+  /** Peak opacity scale; most sit near 0 so only a few read clearly. */
+  fade: number;
   kinks: { t: number; side: number; amp: number }[];
 };
 type Explosion = {
@@ -143,7 +187,20 @@ export function startMeshSparkle(
   const tethers: Tether[] = [];
   let holes = placeHoles(mesh, null);
   const explosions: Explosion[] = [];
-  forgetDrawnMesh();
+  let darkTethersSeeded = false;
+  forgetOldDrawnMeshKeys();
+  const prior = readDrawnProgress();
+  let visits = (prior?.visits ?? 0) + 1;
+  let restoredAge = Math.max(0, prior?.ageMs ?? 0);
+  // Each return visit nudges progress forward so ships keep discovering new edges.
+  if (prior) restoredAge += 1800 + Math.min(12000, visits * 400);
+  if (prior?.lines?.length) {
+    drawnLines.push(...prior.lines);
+    for (let i = 0; i < drawnLines.length; i += 4) {
+      edgeSeen.add(edgeKey(drawnLines[i], drawnLines[i + 1], drawnLines[i + 2], drawnLines[i + 3]));
+    }
+  }
+  if (prior?.tris?.length) drawnTris.push(...prior.tris);
   const rememberPoint = (x: number, y: number) => {
     const key = cellKey(x, y);
     const list = pointCells.get(key);
@@ -158,8 +215,29 @@ export function startMeshSparkle(
     list.push({ x, y });
   };
   const ships: Ship[] = [];
-  const started = performance.now();
+  const started = performance.now() - restoredAge;
   let photo: ImageData | null = null;
+  let lastProgressSave = 0;
+  const persistProgress = (now: number, force = false) => {
+    if (!force && now - lastProgressSave < 2500) return;
+    lastProgressSave = now;
+    storeDrawnProgress({
+      v: 4,
+      lines: drawnLines.slice(),
+      tris: drawnTris.slice(),
+      ageMs: Math.max(0, now - started),
+      visits,
+      savedAt: Date.now(),
+    });
+  };
+  // Rebuild point cells from restored geometry so ships can extend it.
+  for (let i = 0; i < drawnLines.length; i += 4) {
+    rememberPoint(drawnLines[i], drawnLines[i + 1]);
+    rememberPoint(drawnLines[i + 2], drawnLines[i + 3]);
+  }
+  for (let i = 0; i < drawnTris.length; i += 2) {
+    rememberPoint(drawnTris[i], drawnTris[i + 1]);
+  }
   const pointer: PointerState = {
     active: false,
     dragging: false,
@@ -296,7 +374,9 @@ export function startMeshSparkle(
     drawnLines.push(ax, ay, bx, by);
     rememberPoint(ax, ay);
     rememberPoint(bx, by);
-    if (tethers.length < 200 && Math.random() < 0.08) tethers.push(makeTether(ax, ay));
+    const tetherChance = opts.light() ? 0.08 : 0.85;
+    const tetherCap = opts.light() ? 200 : 720;
+    if (tethers.length < tetherCap && Math.random() < tetherChance) tethers.push(makeTether(ax, ay));
     return true;
   };
   const findThird = (ax: number, ay: number, bx: number, by: number) => {
@@ -499,18 +579,21 @@ export function startMeshSparkle(
     drawnTris.push(x, y, ax, ay, bx, by);
     return true;
   };
-  const budget = compact ? 700 : 1800;
-  let made = 0;
-  for (let n = 0; n < sparkCount * 2 && made < budget; n++) {
-    const i = (Math.random() * sparkCount) | 0;
-    const x = mesh.sparks[i * 3];
-    const y = mesh.sparks[i * 3 + 1];
-    if (inChinNeck(mesh, x, y)) {
-      if (closeTriangle(i, 16)) made++;
-      continue;
+  // Fresh visits seed a starter mesh; returning visits keep growing from the cache.
+  if (drawnLines.length < 80) {
+    const budget = compact ? 700 : 1800;
+    let made = 0;
+    for (let n = 0; n < sparkCount * 2 && made < budget; n++) {
+      const i = (Math.random() * sparkCount) | 0;
+      const x = mesh.sparks[i * 3];
+      const y = mesh.sparks[i * 3 + 1];
+      if (inChinNeck(mesh, x, y)) {
+        if (closeTriangle(i, 16)) made++;
+        continue;
+      }
+      if (inHat(mesh, x, y) && Math.random() < 0.55 && closeTriangle(i, 30)) made++;
+      else if (inTorso(mesh, x, y) && Math.random() < 0.42 && closeTriangle(i, 26)) made++;
     }
-    if (inHat(mesh, x, y) && Math.random() < 0.55 && closeTriangle(i, 30)) made++;
-    else if (inTorso(mesh, x, y) && Math.random() < 0.42 && closeTriangle(i, 26)) made++;
   }
 
   const frame = (now: number) => {
@@ -532,6 +615,25 @@ export function startMeshSparkle(
         const ship = makeShip(mesh, (["hat", "neck", "torso", "hat", "neck"] as const)[ships.length % 5]);
         placeShip(ship, now);
         ships.push(ship);
+      }
+    }
+    if (!opts.light() && drawnLines.length >= 12) {
+      const want = compact ? 260 : 520;
+      const cropY = frameBottom(mesh);
+      // Keep topping up joiners as the mesh grows so the cloud stays stitched on.
+      if (!darkTethersSeeded || (tethers.length < want && Math.random() < 0.08)) {
+        darkTethersSeeded = true;
+        const batch = darkTethersSeeded && tethers.length > 40 ? (compact ? 8 : 16) : want;
+        for (let n = 0; n < sparkCount * 6 && tethers.length < Math.min(want, tethers.length + batch); n++) {
+          const i = (Math.random() * sparkCount) | 0;
+          const x = mesh.sparks[i * 3];
+          const y = mesh.sparks[i * 3 + 1];
+          if (!inBust(mesh, x, y) || y > cropY * 0.92) continue;
+          // Bias face features so joiners read over cheeks/eyes/brow.
+          const face = y > cropY * 0.26 && y < cropY * 0.68 && x > mesh.w * 0.28 && x < mesh.w * 0.72;
+          if (!face && Math.random() > 0.45) continue;
+          tethers.push(makeTether(x, y));
+        }
       }
     }
     if (!pointer.dragging) {
@@ -657,12 +759,23 @@ export function startMeshSparkle(
       photo,
       pointer
     );
+    persistProgress(now);
     raf = requestAnimationFrame(frame);
   };
+
+  const onPageHide = () => persistProgress(performance.now(), true);
+  const onVisibility = () => {
+    if (document.visibilityState === "hidden") persistProgress(performance.now(), true);
+  };
+  window.addEventListener("pagehide", onPageHide);
+  document.addEventListener("visibilitychange", onVisibility);
 
   raf = requestAnimationFrame(frame);
   return () => {
     alive = false;
+    persistProgress(performance.now(), true);
+    window.removeEventListener("pagehide", onPageHide);
+    document.removeEventListener("visibilitychange", onVisibility);
     cancelAnimationFrame(raf);
     stage.removeEventListener("pointerenter", onEnter);
     stage.removeEventListener("pointerdown", onDown);
@@ -671,12 +784,14 @@ export function startMeshSparkle(
     stage.removeEventListener("pointercancel", onUp);
     stage.removeEventListener("pointerleave", onLeave);
     canvas.style.transform = "";
-    const portrait = document.getElementById("wireframeLightPortrait");
-    if (portrait) portrait.style.transform = "";
+    for (const id of ["wireframeLightPortrait", "wireframeDarkDepth", "wireframeDepthDraw"]) {
+      const portrait = document.getElementById(id);
+      if (portrait) portrait.style.transform = "";
+    }
   };
 }
 
-const YAW_LIMIT = 0.24;
+const YAW_LIMIT = 0.32;
 
 function clampYaw(yaw: number) {
   return Math.max(-YAW_LIMIT, Math.min(YAW_LIMIT, yaw));
@@ -686,34 +801,291 @@ function applyPortraitMotion(canvas: HTMLCanvasElement, pointer: PointerState, l
   const stage = canvas.parentElement;
   if (stage) stage.style.transformStyle = "preserve-3d";
   const pan = `translate3d(${pointer.panX.toFixed(1)}px, ${pointer.panY.toFixed(1)}px, 0)`;
-  const turn = light ? `${pan} rotateY(${pointer.yaw.toFixed(4)}rad)` : pan;
-  canvas.style.transform = turn;
-  canvas.style.transformOrigin = "50% 40%";
+  const yaw = pointer.yaw;
+  // Shared yaw keeps features locked; Z separation + canvas curve sell the predictive depth.
+  const perspective = 1200;
+  const meshZ = 28;
+  const depthZ = -64;
+  const origin = "50% 36%"; // near eye line so scale/Z doesn't drift facial features
+  const meshTurn = `${pan} translateZ(${meshZ}px) rotateY(${yaw.toFixed(4)}rad)`;
+  canvas.style.transform = meshTurn;
+  canvas.style.transformOrigin = origin;
   canvas.style.transformStyle = "preserve-3d";
-  const portrait = document.getElementById("wireframeLightPortrait");
-  if (!portrait) return;
-  portrait.style.transform = turn;
-  portrait.style.transformOrigin = "50% 40%";
-  portrait.style.transformStyle = "preserve-3d";
+
+  const lightPortrait = document.getElementById("wireframeLightPortrait");
+  if (lightPortrait) {
+    lightPortrait.style.transform = `${pan} translateZ(-36px) rotateY(${yaw.toFixed(4)}rad)`;
+    lightPortrait.style.transformOrigin = origin;
+    lightPortrait.style.transformStyle = "preserve-3d";
+  }
+
+  const depthDraw = document.getElementById("wireframeDepthDraw") as HTMLCanvasElement | null;
+  if (depthDraw) {
+    if (light) {
+      depthDraw.style.transform = "";
+    } else {
+      const meshAppear = perspective / (perspective - meshZ);
+      const depthAppear = perspective / (perspective - depthZ);
+      // Perspective-only size match — keep depth and mesh the same on-screen scale.
+      const matchScale = meshAppear / depthAppear;
+      depthDraw.style.transform = `${pan} translateZ(${depthZ}px) rotateY(${yaw.toFixed(4)}rad) scale(${matchScale.toFixed(4)})`;
+      depthDraw.style.transformOrigin = origin;
+      depthDraw.style.transformStyle = "preserve-3d";
+    }
+  }
 }
 
-function curvePoint(mesh: RoughMesh, x: number, y: number, yaw: number) {
-  const bend = Math.min(1, Math.abs(yaw) / 0.08);
-  if (bend < 0.02) return { x, y };
+function curvePoint(mesh: RoughMesh, x: number, y: number, yaw: number, strength = 1) {
+  const bend = Math.min(1, (Math.abs(yaw) / 0.07) * strength);
+  if (bend < 0.015) return { x, y };
   const cx = mesh.w * 0.5;
   const cy = mesh.h * 0.4;
   const nx = Math.max(-1.2, Math.min(1.2, (x - cx) / (mesh.w * 0.46)));
-  const span = 1.05;
-  const theta = nx * span + yaw;
+  const span = 1.12;
+  const boosted = yaw * (0.9 + 0.35 * strength);
+  const theta = nx * span + boosted;
   const radius = (mesh.w * 0.46) / Math.sin(span);
   const z = radius * (Math.cos(nx * span) - Math.cos(theta));
-  const depth = 480 / Math.max(140, 480 + z);
+  const depth = 460 / Math.max(130, 460 + z);
   const curvedX = cx + Math.sin(theta) * radius * depth;
   const curvedY = cy + (y - cy) * depth;
   return {
     x: x + (curvedX - x) * bend,
     y: y + (curvedY - y) * bend,
   };
+}
+
+/** Mild cylinder warp for the dark depth cloud (always on, softer than the live mesh). */
+function depthCurve(mesh: RoughMesh, x: number, y: number, yaw: number, strength = 0.36) {
+  const cx = mesh.w * 0.5;
+  const cy = frameBottom(mesh) * 0.4;
+  const nx = Math.max(-1.15, Math.min(1.15, (x - cx) / (mesh.w * 0.5)));
+  const span = Math.max(0.18, 0.55 * strength);
+  const theta = nx * span + yaw;
+  const radius = (mesh.w * 0.5) / Math.sin(span);
+  const z = radius * (Math.cos(nx * span) - Math.cos(theta));
+  const depth = 580 / Math.max(220, 580 + z);
+  return {
+    x: cx + Math.sin(theta) * radius * depth,
+    y: cy + (y - cy) * depth,
+  };
+}
+
+/** Cloud-side tether anchor: sits further back and recesses more as the portrait turns. */
+function depthAnchor(mesh: RoughMesh, x: number, y: number, yaw: number) {
+  const curved = depthCurve(mesh, x, y, yaw * 0.1, 0.3);
+  const cx = mesh.w * 0.5;
+  const cy = frameBottom(mesh) * 0.36;
+  // Always recess a bit so joiners read even before the pointer turns.
+  const recess = 0.08 + Math.min(0.28, Math.abs(yaw) * 0.75);
+  return {
+    x: curved.x + (cx - curved.x) * recess,
+    y: curved.y + (cy - curved.y) * recess * 0.5,
+  };
+}
+
+function sizeCanvas(canvas: HTMLCanvasElement, cssW: number, cssH: number, dpr: number) {
+  const pxW = Math.max(1, Math.round(cssW * dpr));
+  const pxH = Math.max(1, Math.round(cssH * dpr));
+  if (canvas.width !== pxW || canvas.height !== pxH) {
+    canvas.width = pxW;
+    canvas.height = pxH;
+  }
+  return { pxW, pxH };
+}
+
+type TwinkleBody = {
+  x: number;
+  y: number;
+  kind: "star" | "planet";
+  /** 0 = recess / far, 1 = ridge / near */
+  depth: number;
+  phase: number;
+  speed: number;
+  size: number;
+  rgb: string;
+  ring: boolean;
+};
+
+/** Feature stars snapped to real mesh sparks so they stay locked to the wireframe. */
+const twinkleCache = new WeakMap<RoughMesh, TwinkleBody[]>();
+
+const TWINKLE_NEAR = ["240, 255, 250", "255, 255, 255", "210, 255, 235", "255, 245, 210"];
+const TWINKLE_FAR = ["90, 130, 160", "110, 120, 170", "70, 110, 140", "120, 100, 150"];
+const TWINKLE_MID = ["170, 220, 210", "180, 200, 240", "200, 190, 170"];
+
+function twinkleBodies(mesh: RoughMesh): TwinkleBody[] {
+  const cached = twinkleCache.get(mesh);
+  if (cached) return cached;
+  const crop = frameBottom(mesh);
+  const count = Math.max(1, Math.floor(mesh.sparks.length / 3));
+  const bodies: TwinkleBody[] = [];
+  const used = new Set<number>();
+
+  const inBox = (x: number, y: number, x0: number, x1: number, y0: number, y1: number) =>
+    x >= mesh.w * x0 && x <= mesh.w * x1 && y >= crop * y0 && y <= crop * y1;
+
+  const gather = (x0: number, x1: number, y0: number, y1: number) => {
+    const list: number[] = [];
+    for (let i = 0; i < count; i++) {
+      const x = mesh.sparks[i * 3];
+      const y = mesh.sparks[i * 3 + 1];
+      if (inBox(x, y, x0, x1, y0, y1)) list.push(i);
+    }
+    return list;
+  };
+
+  const take = (pool: number[], n: number, depth: number, sizeLo: number, sizeHi: number, kind: "star" | "planet" = "star") => {
+    if (!pool.length || n <= 0) return;
+    for (let k = 0; k < n; k++) {
+      const i = pool[(Math.random() * pool.length) | 0];
+      if (used.has(i) && Math.random() > 0.15) {
+        k--;
+        continue;
+      }
+      used.add(i);
+      const x = mesh.sparks[i * 3];
+      const y = mesh.sparks[i * 3 + 1];
+      const near = depth > 0.55;
+      const far = depth < 0.4;
+      const palette = near ? TWINKLE_NEAR : far ? TWINKLE_FAR : TWINKLE_MID;
+      bodies.push({
+        x,
+        y,
+        kind,
+        depth,
+        phase: Math.random() * Math.PI * 2,
+        speed: (kind === "planet" ? 0.35 : 1.2) * (0.7 + Math.random() * 0.9),
+        size: sizeLo + Math.random() * (sizeHi - sizeLo),
+        rgb: palette[(Math.random() * palette.length) | 0],
+        ring: kind === "planet" && Math.random() < 0.5,
+      });
+    }
+  };
+
+  // Zones mapped to the live spark field (same coords as the drawn mesh).
+  const leftEye = gather(0.28, 0.48, 0.3, 0.42);
+  const rightEye = gather(0.52, 0.72, 0.3, 0.42);
+  const brow = gather(0.3, 0.7, 0.24, 0.32);
+  const nose = gather(0.44, 0.56, 0.34, 0.5);
+  const leftCheek = gather(0.26, 0.4, 0.4, 0.56);
+  const rightCheek = gather(0.6, 0.74, 0.4, 0.56);
+  const mouth = gather(0.38, 0.62, 0.5, 0.6);
+  const chin = gather(0.36, 0.64, 0.58, 0.7);
+  const hat = gather(0.22, 0.78, 0.08, 0.26);
+  const leftTemple = gather(0.2, 0.3, 0.3, 0.45);
+  const rightTemple = gather(0.7, 0.8, 0.3, 0.45);
+  const leftShoulder = gather(0.12, 0.36, 0.7, 0.92);
+  const rightShoulder = gather(0.64, 0.88, 0.7, 0.92);
+
+  // Bright ridge / feature stars
+  take(leftEye, 10, 0.88, 1.1, 2.2);
+  take(rightEye, 10, 0.88, 1.1, 2.2);
+  take(brow, 12, 0.9, 1.0, 2.1);
+  take(nose, 10, 0.92, 1.1, 2.3);
+  take(leftCheek, 8, 0.78, 0.9, 1.9);
+  take(rightCheek, 8, 0.78, 0.9, 1.9);
+  take(chin, 7, 0.8, 0.9, 1.8);
+  take(hat, 10, 0.7, 0.8, 1.7);
+  // Dimmer recess stars (sockets / temples / mouth hollow)
+  take(leftEye, 5, 0.25, 0.45, 1.0);
+  take(rightEye, 5, 0.25, 0.45, 1.0);
+  take(leftTemple, 4, 0.28, 0.45, 0.95);
+  take(rightTemple, 4, 0.28, 0.45, 0.95);
+  take(mouth, 5, 0.4, 0.5, 1.1);
+  // Planets on shoulders / hat — still on spark points
+  take(leftShoulder, 4, 0.45, 2.2, 4.2, "planet");
+  take(rightShoulder, 4, 0.45, 2.2, 4.2, "planet");
+  take(hat, 2, 0.55, 2.0, 3.6, "planet");
+
+  twinkleCache.set(mesh, bodies);
+  return bodies;
+}
+
+function drawTwinkles(
+  ctx: CanvasRenderingContext2D,
+  mesh: RoughMesh,
+  now: number,
+  px: number,
+  yaw: number,
+  bend: number
+) {
+  const bodies = twinkleBodies(mesh);
+  const t = now * 0.001;
+  const ordered = bodies.slice().sort((a, b) => a.depth - b.depth);
+  for (const body of ordered) {
+    const wave = 0.5 + 0.5 * Math.sin(t * body.speed + body.phase);
+    // Same deformation as the live mesh so features stay locked while turning.
+    const p = curvePoint(mesh, body.x, body.y, yaw, bend);
+    if (body.kind === "star") {
+      const base = 0.15 + body.depth * 0.55;
+      const bright = base + wave * (0.25 + body.depth * 0.45);
+      if (bright < 0.18) continue;
+      const r = body.size * (0.55 + body.depth * 0.35 + wave * (0.25 + body.depth * 0.35)) * px;
+      ctx.fillStyle = `rgba(${body.rgb},${Math.min(0.95, 0.22 + bright * 0.75).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      if (body.depth > 0.6 && bright > 0.55) {
+        ctx.fillStyle = `rgba(255, 255, 255,${(bright * 0.4 * body.depth).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(0.35 * px, r * 0.32), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      const bright = 0.3 + body.depth * 0.35 + wave * 0.3;
+      const r = body.size * (0.85 + body.depth * 0.25) * px;
+      ctx.fillStyle = `rgba(${body.rgb},${bright.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(255, 255, 255,${(0.12 + body.depth * 0.22 + wave * 0.12).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(p.x - r * 0.28, p.y - r * 0.28, r * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(20, 30, 40,${(0.18 + (1 - body.depth) * 0.2).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(p.x + r * 0.22, p.y + r * 0.2, r * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+      if (body.ring) {
+        ctx.strokeStyle = `rgba(${body.rgb},${(0.2 + wave * 0.3).toFixed(3)})`;
+        ctx.lineWidth = Math.max(0.45 * px, r * 0.1);
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, r * 1.8, r * 0.4, -0.4 + yaw * 0.8, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawDepthBackdrop(
+  canvas: HTMLCanvasElement,
+  mesh: RoughMesh,
+  _yaw: number,
+  img: HTMLImageElement,
+  _now: number
+) {
+  const ctx = canvas.getContext("2d");
+  if (!ctx || !img.complete || img.naturalWidth < 2) return;
+  const cssW = canvas.clientWidth || mesh.w;
+  const cssH = canvas.clientHeight || mesh.h;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const { pxW, pxH } = sizeCanvas(canvas, cssW, cssH, dpr);
+  const crop = frameBottom(mesh);
+  // Identical framing to the mesh canvas so spark-baked stars stay locked.
+  const scale = Math.max(pxW / mesh.w, pxH / crop);
+  const offsetX = (pxW - mesh.w * scale) / 2;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, pxW, pxH);
+  ctx.save();
+  ctx.setTransform(scale, 0, 0, scale, offsetX, 0);
+  ctx.beginPath();
+  ctx.rect(0, 0, mesh.w, crop);
+  ctx.clip();
+  ctx.globalAlpha = 0.72;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, mesh.w, crop);
+  ctx.restore();
 }
 
 function placeHoles(mesh: RoughMesh, photo: ImageData | null): BlackHole[] {
@@ -783,7 +1155,14 @@ function makeTether(x: number, y: number): Tether {
       amp: 3 + Math.random() * 14,
     });
   }
-  return { x, y, width: 0.35 + Math.random() * 2.4, kinks };
+  // Many readable joiners; a share still fades so the field isn't solid.
+  const fade =
+    Math.random() < 0.42
+      ? 0.45 + Math.random() * 0.5
+      : Math.random() < 0.55
+        ? 0.18 + Math.random() * 0.28
+        : 0.08 + Math.pow(Math.random(), 1.6) * 0.12;
+  return { x, y, width: 0.32 + Math.random() * 1.9, fade, kinks };
 }
 
 function makeShip(mesh: RoughMesh, zone: Ship["zone"]): Ship {
@@ -920,6 +1299,18 @@ function draw(
 
   const lines = drawnLines;
   const yaw = pointer.yaw;
+  const depthDraw = document.getElementById("wireframeDepthDraw") as HTMLCanvasElement | null;
+  const depthImg = document.getElementById("wireframeDarkDepth") as HTMLImageElement | null;
+  if (!light && depthDraw && depthImg) {
+    drawDepthBackdrop(depthDraw, mesh, yaw, depthImg, now);
+  } else if (depthDraw) {
+    const dctx = depthDraw.getContext("2d");
+    if (dctx) {
+      dctx.setTransform(1, 0, 0, 1, 0, 0);
+      dctx.clearRect(0, 0, depthDraw.width, depthDraw.height);
+    }
+  }
+  const meshBend = light ? 1 : 1.65;
   const placed = (x: number, y: number) => {
     if (pointer.active) {
       const dx = x - pointer.x;
@@ -931,7 +1322,7 @@ function draw(
         y += (dy / dist) * push;
       }
     }
-    return curvePoint(mesh, x, y, yaw);
+    return curvePoint(mesh, x, y, yaw, meshBend);
   };
   for (const hole of holes) {
     const hx = hole.x + Math.sin(now * 0.00035 + hole.phase) * 4;
@@ -1025,30 +1416,46 @@ function draw(
     }
   }
 
-  if (light) {
-    for (const tether of tethers) {
-      const lifted = curvePoint(mesh, tether.x, tether.y, yaw);
-      const dx = lifted.x - tether.x;
-      const dy = lifted.y - tether.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy / len;
-      const ny = dx / len;
-      const tone = "16, 32, 26";
-      const bend = Math.min(1, len / 36);
-      ctx.strokeStyle = `rgba(${tone},0.5)`;
-      ctx.lineWidth = tether.width * px;
-      ctx.beginPath();
-      ctx.moveTo(tether.x, tether.y);
-      for (const kink of tether.kinks) {
-        const amp = kink.amp * bend;
-        const x = tether.x + dx * kink.t + nx * kink.side * amp;
-        const y = tether.y + dy * kink.t + ny * kink.side * amp;
-        ctx.lineTo(x, y);
-      }
-      ctx.lineTo(lifted.x, lifted.y);
-      ctx.stroke();
+  for (const tether of tethers) {
+    const lifted = curvePoint(mesh, tether.x, tether.y, yaw, meshBend);
+    // Light: flat photo. Dark: cloud plane → predictive mesh lift.
+    const base = light
+      ? { x: tether.x, y: tether.y }
+      : depthAnchor(mesh, tether.x, tether.y, yaw);
+    const dx = lifted.x - base.x;
+    const dy = lifted.y - base.y;
+    const len = Math.hypot(dx, dy) || 1;
+    if (len < (light ? 0.4 : 0.5)) continue;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const tone = light ? "16, 32, 26" : "150, 235, 200";
+    const bend = Math.min(1, len / 36);
+    const peak = light
+      ? 0.5
+      : Math.min(0.7, tether.fade * (0.85 + Math.min(1, len / 20) * 0.9 + Math.min(1, Math.abs(yaw) / 0.2) * 0.4));
+    if (peak < 0.02) continue;
+    const grad = ctx.createLinearGradient(base.x, base.y, lifted.x, lifted.y);
+    // Fade out into the background cloud; brighter where they meet the mesh.
+    grad.addColorStop(0, `rgba(${tone},0)`);
+    grad.addColorStop(0.28, `rgba(${tone},${(peak * 0.14).toFixed(3)})`);
+    grad.addColorStop(0.68, `rgba(${tone},${(peak * 0.55).toFixed(3)})`);
+    grad.addColorStop(1, `rgba(${tone},${peak.toFixed(3)})`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = tether.width * px * (light ? 1 : 0.95);
+    ctx.beginPath();
+    ctx.moveTo(base.x, base.y);
+    for (const kink of tether.kinks) {
+      const amp = kink.amp * bend * (light ? 1 : 0.55);
+      const x = base.x + dx * kink.t + nx * kink.side * amp;
+      const y = base.y + dy * kink.t + ny * kink.side * amp;
+      ctx.lineTo(x, y);
     }
+    ctx.lineTo(lifted.x, lifted.y);
+    ctx.stroke();
   }
+
+  // Feature twinkles live on the mesh canvas (spark-locked + same curve) so they stay aligned.
+  if (!light) drawTwinkles(ctx, mesh, now, px, yaw, meshBend);
 
   for (const ship of ships) {
     const trail = ship.trail;
