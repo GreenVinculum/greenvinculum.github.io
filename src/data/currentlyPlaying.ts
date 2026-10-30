@@ -3,12 +3,29 @@ export type CurrentlyPlayingGame = {
   title: string;
   platform: string;
   note: string;
-  coverSrc: string;
-  coverAlt: string;
+  coverSrc?: string;
+  coverAlt?: string;
   url?: string;
 };
 
 export const currentlyPlaying: CurrentlyPlayingGame[] = [
+  {
+    title: "Welcome to Elderfield",
+    platform: "Steam Deck",
+    note: "Cozy horror farm days, Old Gods at night.",
+    coverSrc:
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3195440/49d893d1f030279f33e27f3e5074853476c4030f/library_capsule_2x.jpg",
+    coverAlt: "Welcome to Elderfield cover art",
+    url: "https://store.steampowered.com/app/3195440/Welcome_to_Elderfield/",
+  },
+  {
+    title: "Octopath Traveler",
+    platform: "Nintendo Switch",
+    note: "First game — eight travelers, one HD-2D road.",
+    coverSrc: "/images/games/octopath-traveler.jpg",
+    coverAlt: "Octopath Traveler cover art",
+    url: "https://www.nintendo.com/us/store/products/octopath-traveler-switch/",
+  },
   {
     title: "Balatro",
     platform: "Steam Deck",
@@ -16,21 +33,5 @@ export const currentlyPlaying: CurrentlyPlayingGame[] = [
     coverSrc: "/images/games/balatro.jpg",
     coverAlt: "Balatro cover art",
     url: "https://store.steampowered.com/app/2379780/Balatro/",
-  },
-  {
-    title: "Dave the Diver",
-    platform: "Steam Deck",
-    note: "Evening dives and sushi shifts.",
-    coverSrc: "/images/games/dave-the-diver.jpg",
-    coverAlt: "Dave the Diver cover art",
-    url: "https://store.steampowered.com/app/1868140/DAVE_THE_DIVER/",
-  },
-  {
-    title: "Hollow Knight",
-    platform: "Nintendo Switch",
-    note: "Hallownest map completion on the couch.",
-    coverSrc: "/images/games/hollow-knight.jpg",
-    coverAlt: "Hollow Knight cover art",
-    url: "https://store.steampowered.com/app/367520/Hollow_Knight/",
   },
 ];

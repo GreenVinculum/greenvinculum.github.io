@@ -22,15 +22,17 @@ export { booksReadCatalog, type BooksReadRecord } from "./books-read";
  * When you finish a book: add an entry to src/data/books-read.json, then update currentlyReading.
  */
 export const currentlyReading: ReadingBook = {
-  id: "abundance",
-  title: "Abundance",
-  author: "Ezra Klein & Derek Thompson",
+  id: "dust-silo",
+  title: "Dust",
+  series: "Silo",
+  bookNumber: 3,
+  author: "Hugh Howey",
   synopsis:
-    "Klein and Thompson argue that America's crises — housing, infrastructure, clean energy — stem less from scarcity than from systems that block building. They make the case for an abundance agenda that prioritizes supply, state capacity, and getting things done.",
-  coverSrc: "https://covers.openlibrary.org/b/isbn/9781668023488-L.jpg",
-  coverAlt: "Cover of Abundance by Ezra Klein and Derek Thompson",
-  url: "https://en.wikipedia.org/wiki/Abundance_(book_by_Ezra_Klein_and_Derek_Thompson)",
-  genres: ["Non-fiction"],
+    "The finale of the Silo trilogy. Wool introduced the underground world; Shift told how it was built. Dust follows Juliette and Donald as the silos' carefully managed order starts to come apart — and asks what it costs to let a new world begin.",
+  coverSrc: "https://covers.openlibrary.org/b/isbn/9780544838260-L.jpg",
+  coverAlt: "Cover of Dust by Hugh Howey",
+  url: "https://en.wikipedia.org/wiki/Dust_(novel)",
+  genres: ["Science Fiction"],
 };
 
 /** Derived from books-read.json for the read log charts. */

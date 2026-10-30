@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="576" viewBox="0 0 1024 576" fill="none">
+  <rect width="1024" height="576" fill="#0f1714"/>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#1a3d32"/>
+      <stop offset="100%" stop-color="#0f1714"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="576" fill="url(#g)"/>
+  <!-- arms -->
+  <g stroke="#7dffc3" stroke-width="6" stroke-linecap="round" opacity="0.9">
+    <line x1="512" y1="288" x2="280" y2="180"/>
+    <line x1="512" y1="288" x2="744" y2="180"/>
+    <line x1="512" y1="288" x2="280" y2="396"/>
+    <line x1="512" y1="288" x2="744" y2="396"/>
+  </g>
+  <!-- motors -->
+  <g fill="#b8ffe0" opacity="0.85">
+    <circle cx="280" cy="180" r="28"/>
+    <circle cx="744" cy="180" r="28"/>
+    <circle cx="280" cy="396" r="28"/>
+    <circle cx="744" cy="396" r="28"/>
+  </g>
+  <!-- props hint -->
+  <g stroke="#5ad4a4" stroke-width="3" opacity="0.5">
+    <ellipse cx="280" cy="180" rx="52" ry="10"/>
+    <ellipse cx="744" cy="180" rx="52" ry="10"/>
+    <ellipse cx="280" cy="396" rx="52" ry="10"/>
+    <ellipse cx="744" cy="396" rx="52" ry="10"/>
+  </g>
+  <!-- FC body -->
+  <rect x="452" y="248" width="120" height="80" rx="10" fill="#16352c" stroke="#7dffc3" stroke-width="4"/>
+  <text x="512" y="298" text-anchor="middle" fill="#c9ffe6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="600">Pixhawk 6C</text>
+  <text x="512" y="470" text-anchor="middle" fill="#7a9e90" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22">Drone build  ongoing</text>
+</svg>

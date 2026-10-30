@@ -1552,8 +1552,29 @@ body.gallery-lightbox-open {
     pointer-events: none;
 }
 
+.wireframe-portrait .wireframe-dark-depth {
+    /* Texture loader only — painted on the behind depth canvas. */
+    z-index: 0;
+    object-fit: fill;
+    object-position: center top;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.wireframe-portrait .wireframe-depth-draw {
+    z-index: 1;
+    pointer-events: none;
+}
+
 .wireframe-portrait[data-wireframe-state="gpu-live"] .wireframe-light-portrait,
 .wireframe-portrait[data-wireframe-state="2d-live"] .wireframe-light-portrait {
+    display: none;
+}
+
+.wireframe-portrait[data-wireframe-state="gpu-live"] .wireframe-dark-depth,
+.wireframe-portrait[data-wireframe-state="2d-live"] .wireframe-dark-depth,
+.wireframe-portrait[data-wireframe-state="gpu-live"] .wireframe-depth-draw,
+.wireframe-portrait[data-wireframe-state="2d-live"] .wireframe-depth-draw {
     display: none;
 }
 

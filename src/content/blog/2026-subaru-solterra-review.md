@@ -2,7 +2,7 @@
 title: "2026 Subaru Solterra: A Quick Review"
 description: "Real-world range, charging, and daily-driver notes after living with the 2026 Solterra — the good, the compromises, and what still feels very Subaru."
 pubDate: "May 28 2026"
-heroImage: "/post_img.webp"
+heroImage: "/images/blog/2026-subaru-solterra-review.webp"
 badge: "Review"
 tags: ["ev", "subaru", "solterra"]
 ---

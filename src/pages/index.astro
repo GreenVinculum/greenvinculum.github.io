@@ -25,6 +25,7 @@ const personJsonLd = {
         id="wireframePortrait"
         data-source="/images/profile"
         data-light-portrait="/images/profile-inverted"
+        data-dark-depth="/images/profile-depth-dark.png?v=19"
         data-mesh-url="/data/wireframe-mesh.json"
         data-mesh-bin-url="/data/wireframe-mesh.pck.gz"
         data-rough-url="/data/wireframe-mesh-rough.json"
@@ -32,6 +33,13 @@ const personJsonLd = {
         data-poster-url="/media/wireframe-poster.png"
         aria-label="Wireframe profile portrait"
       >
+        <canvas
+          id="wireframeDepthDraw"
+          class="wireframe-depth-draw hidden"
+          width="760"
+          height="760"
+          aria-hidden="true"
+        ></canvas>
         <canvas
           id="wireframeRough"
           class="wireframe-rough"
@@ -54,6 +62,15 @@ const personJsonLd = {
           width="760"
           height="760"
           decoding="async"
+        />
+        <img
+          id="wireframeDarkDepth"
+          class="wireframe-dark-depth hidden"
+          alt=""
+          width="760"
+          height="760"
+          decoding="async"
+          loading="lazy"
         />
         <video
           id="wireframeLoop"

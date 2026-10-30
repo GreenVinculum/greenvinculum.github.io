@@ -17,14 +17,20 @@ import { currentlyReading, GENRE_COLORS } from "../data/currentlyReading";
                 rel="noopener noreferrer"
                 class="blog-now-game__link"
               >
-                <img
-                  src={game.coverSrc}
-                  alt={game.coverAlt}
-                  width="56"
-                  height="74"
-                  loading="lazy"
-                  class="blog-now-game__cover"
-                />
+                {game.coverSrc ? (
+                  <img
+                    src={game.coverSrc}
+                    alt={game.coverAlt ?? ""}
+                    width="56"
+                    height="74"
+                    loading="lazy"
+                    class="blog-now-game__cover"
+                  />
+                ) : (
+                  <span class="blog-now-game__glyph" aria-hidden="true">
+                    {game.title.charAt(0)}
+                  </span>
+                )}
                 <span class="blog-now-game__body">
                   <span class="blog-now-game__title">{game.title}</span>
                   <span class="blog-now-game__meta">{game.platform}</span>
